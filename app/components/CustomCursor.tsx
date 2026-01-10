@@ -8,12 +8,23 @@ export default function CustomCursor() {
   const cursorRef = useRef<HTMLDivElement>(null);
   const [state, setState] = useState<CursorState>("default");
   const [isPointer, setIsPointer] = useState(false);
+  const [enabled, setEnabled] = useState(false);
+
+  // 👉 определяем устройство
+  useEffect(() => {
+    const isTouch =
+      window.matchMedia("(hover: none)").matches ||
+      window.matchMedia("(pointer: coarse)").matches;
+
+    setEnabled(!isTouch);
+  }, []);
 
   useEffect(() => {
+    if (!enabled) return;
+
     const move = (e: MouseEvent) => {
       if (!cursorRef.current) return;
 
-      // мгновенно, без React
       cursorRef.current.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
 
       const target = e.target as HTMLElement;
@@ -45,7 +56,10 @@ export default function CustomCursor() {
       window.removeEventListener("mousedown", down);
       window.removeEventListener("mouseup", up);
     };
-  }, [isPointer, state]);
+  }, [enabled, isPointer, state]);
+
+  // ❌ мобилки / планшеты
+  if (!enabled) return null;
 
   const isHover = state === "hover" || state === "active";
 

@@ -119,7 +119,7 @@ export default function NavigationSection() {
   };
 
   return (
-    <div className="relative flex overflow-hidden">
+    <div className="relative flex">
       {/* Left Navigation - sticky внутри NavigationSection */}
       <div className="sticky top-0 h-screen w-1/3 px-8 py-8 z-20 pointer-events-none shrink-0">
         <div className="flex h-full flex-col justify-center gap-0 pointer-events-auto mt-5  ">

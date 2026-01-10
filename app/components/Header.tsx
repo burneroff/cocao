@@ -10,10 +10,10 @@ export default function Header() {
           href="https://linkedin.com"
           target="_blank"
           rel="noopener noreferrer"
-          className="group relative px-3 py-2 text-base overflow-hidden"
+          className="group relative md:px-3 px-2 py-2 text-base overflow-hidden"
         >
           <span
-            className="relative z-10 transition-colors text-[#9F9B96] font-medium text-2xl hover:text-white"
+            className="relative z-10 transition-colors text-[#9F9B96] font-medium text-[clamp(18px,2vw,28px)] hover:text-white"
             style={{
               transition: "color 0.3s ease-in-out",
             }}
@@ -25,10 +25,10 @@ export default function Header() {
 
         <Link
           href="mailto:"
-          className="group relative px-3 py-2 text-base overflow-hidden"
+          className="group relative md:px-3 px-2 py-2 text-base overflow-hidden"
         >
           <span
-            className="relative z-10 transition-colors text-[#9F9B96] font-medium text-2xl hover:text-white"
+            className="relative z-10 transition-colors text-[#9F9B96] font-medium text-[clamp(18px,2vw,28px)] hover:text-white"
             style={{
               transition: "color 0.3s ease-in-out",
             }}
@@ -42,10 +42,10 @@ export default function Header() {
           href="https://apps.apple.com"
           target="_blank"
           rel="noopener noreferrer"
-          className="group relative px-3 py-2 text-base overflow-hidden"
+          className="group relative md:px-3 px-2 py-2 text-base overflow-hidden"
         >
           <span
-            className="relative z-10 transition-colors text-[#9F9B96] font-medium text-2xl hover:text-white"
+            className="relative z-10 transition-colors text-[#9F9B96] font-medium text-[clamp(18px,2vw,28px)] hover:text-white"
             style={{
               transition: "color 0.3s ease-in-out",
             }}

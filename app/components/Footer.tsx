@@ -7,7 +7,8 @@ export default function Footer() {
       className="
         w-full h-[204px] relative
         flex items-center
-        px-[40px]
+        px-[16px]
+        md:px-[40px]
         min-[1000px]:justify-start
         justify-between
       "

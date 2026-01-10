@@ -1,4 +1,5 @@
 import Header from "./Header";
+import { FloatingNav } from "./ui/floating-navbar";
 
 export default function Hero() {
   return (
@@ -23,8 +24,6 @@ export default function Hero() {
       />
 
       <div className="relative z-10 flex h-full flex-col">
-        <Header />
-
         <div className="flex flex-1 items-center justify-center min-[1000px]:justify-end px-4 min-[1000px]:pr-16">
           <div className="flex flex-col text-center min-[1000px]:text-right">
             <h1

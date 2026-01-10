@@ -3,20 +3,23 @@ import { Cross } from "../icons/Cross";
 
 export default function US() {
   return (
-    <div className="h-[150vh] flex items-start justify-end px-16 py-16 relative">
-      <div className="flex justify-end flex-col">
+    <div className="h-auto min-h-[100vh] md:min-h-[150vh] flex items-start justify-end px-4 py-4 md:px-16 md:py-16 relative">
+      <div className="flex justify-end flex-col w-full">
         <div
-          className="text-[40px] text-[#CDCDCD] font-normal leading-[70px] tracking-[0%] text-justify"
-          style={{ maxWidth: "910px" }}
+          className="text-[#CDCDCD] font-normal leading-normal md:leading-[70px] tracking-[0%] text-justify w-full max-w-full md:max-w-[910px]"
+          style={{
+            fontSize: "clamp(20px, 4vw, 2.5rem)",
+            lineHeight: "clamp(32px, 5vw, 3.5rem)",
+          }}
         >
-          <p>
+          <p className="mb-4 md:mb-8">
             We're a product team developing and growing mobile{" "}
             <span
               className="inline"
               style={{
                 background:
                   "linear-gradient(to bottom, transparent 0%, transparent 50%, #0100F4 50%, #0100F4 100%)",
-                backgroundSize: "100% 35px",
+                backgroundSize: "100% clamp(20px, 4vw, 35px)",
                 backgroundRepeat: "no-repeat",
                 backgroundPosition: "0 bottom",
               }}
@@ -31,7 +34,7 @@ export default function US() {
               style={{
                 background:
                   "linear-gradient(to bottom, transparent 0%, transparent 50%, #0100F4 50%, #0100F4 100%)",
-                backgroundSize: "100% 35px",
+                backgroundSize: "100% clamp(20px, 4vw, 35px)",
                 backgroundRepeat: "no-repeat",
                 backgroundPosition: "0 bottom",
               }}
@@ -47,7 +50,7 @@ export default function US() {
               style={{
                 background:
                   "linear-gradient(to bottom, transparent 0%, transparent 50%, #0100F4 50%, #0100F4 100%)",
-                backgroundSize: "100% 35px",
+                backgroundSize: "100% clamp(20px, 4vw, 35px)",
                 backgroundRepeat: "no-repeat",
                 backgroundPosition: "0 bottom",
               }}
@@ -59,24 +62,25 @@ export default function US() {
         </div>
       </div>
 
-      {/* Картинка в правом углу */}
-      <div className="absolute right-[70px] bottom-[100px] w-[184px] h-[184px]">
+      {/* Картинка в правом углу - адаптивная */}
+      <div className="absolute right-4 md:right-[70px] bottom-[100px] md:bottom-[100px] w-[184px] h-[184px]">
         <Image
           src="/frames/frame_US.png"
           alt="Frame US"
           width={184}
           height={184}
           className="w-full h-full object-contain"
+          priority
         />
 
-        {/* Первый Cross: 50px влево и вниз от картинки */}
-        <div className="absolute left-[-90px] bottom-[-50px]">
-          <Cross color="#CDCDCD" />
+        {/* Первый Cross: адаптивное позиционирование */}
+        <div className="absolute left-[-50px] md:left-[-90px] bottom-[-30px] md:bottom-[-50px]">
+          <Cross color="#CDCDCD" className="w-8 h-8 md:w-auto md:h-auto" />
         </div>
 
-        {/* Второй Cross: 300px влево и 100px вверх от картинки */}
-        <div className="absolute left-[-300px] top-[-100px]">
-          <Cross color="#CDCDCD" />
+        {/* Второй Cross: адаптивное позиционирование */}
+        <div className="absolute left-[-150px] md:left-[-300px] top-[-50px] md:top-[-100px] md:block">
+          <Cross color="#CDCDCD" className="w-8 h-8 md:w-auto md:h-auto" />
         </div>
       </div>
     </div>

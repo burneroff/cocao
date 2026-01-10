@@ -56,6 +56,7 @@ const sections = [
 export default function NavigationSection() {
   const [activeSection, setActiveSection] = useState("us");
   const sectionRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
 
   useEffect(() => {
     const observers: IntersectionObserver[] = [];
@@ -118,20 +119,46 @@ export default function NavigationSection() {
   };
 
   return (
-    <div className="relative flex">
+    <div className="relative flex overflow-hidden">
       {/* Left Navigation - sticky внутри NavigationSection */}
       <div className="sticky top-0 h-screen w-1/3 px-8 py-8 z-20 pointer-events-none shrink-0">
-        <div className="flex h-full flex-col justify-center gap-0 pointer-events-auto mt-5">
+        <div className="flex h-full flex-col justify-center gap-0 pointer-events-auto mt-5  ">
           {sections.map((section) => (
             <button
               key={section.id}
               onClick={() => scrollToSection(section.id)}
-              style={{ lineHeight: "100px" }}
-              className={`flex items-center gap-0 text-left text-[100px] font-semibold uppercase transition-colors duration-500 ease-in-out ${
-                activeSection === section.id
-                  ? "text-[#0100F4]"
-                  : "text-[#9F9B96]"
-              }`}
+              onMouseEnter={() => {
+                if (activeSection !== section.id) {
+                  setHoveredId(section.id);
+                }
+              }}
+              onMouseLeave={() => setHoveredId(null)}
+              style={{
+                lineHeight: "100px",
+                color:
+                  activeSection === section.id
+                    ? "#0100F4"
+                    : hoveredId === section.id
+                    ? "#ffffff"
+                    : "#9F9B96",
+
+                backgroundImage:
+                  activeSection !== section.id
+                    ? "linear-gradient(to bottom, transparent 0%, transparent 50%, #0100F4 50%, #0100F4 100%)"
+                    : "none",
+
+                backgroundSize:
+                  hoveredId === section.id && activeSection !== section.id
+                    ? "100% 95px"
+                    : "0% 95px",
+
+                backgroundRepeat: "no-repeat",
+                backgroundPosition: "0 bottom",
+
+                transition:
+                  "background-size 0.5s ease-in-out, color 0.5s ease-in-out",
+              }}
+              className="flex items-center gap-0 text-left text-[100px] font-semibold uppercase"
             >
               <span
                 className={`inline-block transition-all duration-500 ease-in-out ${
@@ -140,8 +167,9 @@ export default function NavigationSection() {
                     : "opacity-0 -translate-x-4 w-0 overflow-hidden"
                 }`}
               >
-                &gt;
+                ›
               </span>
+
               <span>{section.label}</span>
             </button>
           ))}

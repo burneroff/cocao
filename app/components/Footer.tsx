@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Footer() {
   return (
@@ -25,15 +26,48 @@ export default function Footer() {
 
       {/* CENTER: Links */}
       <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col gap-1 text-[#35353C] font-medium text-[16px]">
-        <a href="mailto:burneroff@outlook.com" className="hover:underline">
-          Email
-        </a>
-        <a href="#" className="hover:underline">
-          LinkedIn
-        </a>
-        <a href="#" className="hover:underline">
-          Privacy Policy?
-        </a>
+        <Link
+          href="mailto:"
+          className="group relative text-base overflow-hidden"
+        >
+          <span
+            className="relative z-10 transition-colors text-[#35353C]text-base hover:text-white"
+            style={{
+              transition: "color 0.3s ease-in-out",
+            }}
+          >
+            Email
+          </span>
+          <span className="absolute inset-0 top-1/2 h-1/2 bg-[#0100F4] origin-left scale-x-0 transition-transform duration-300 ease-out group-hover:scale-x-100"></span>
+        </Link>
+        <Link
+          href="mailto:"
+          className="group relative text-base overflow-hidden"
+        >
+          <span
+            className="relative z-10 transition-colors text-[#35353C]text-base hover:text-white"
+            style={{
+              transition: "color 0.3s ease-in-out",
+            }}
+          >
+            LinkedIn
+          </span>
+          <span className="absolute inset-0 top-1/2 h-1/2 bg-[#0100F4] origin-left scale-x-0 transition-transform duration-300 ease-out group-hover:scale-x-100"></span>
+        </Link>
+        <Link
+          href="mailto:"
+          className="group relative text-base overflow-hidden"
+        >
+          <span
+            className="relative z-10 transition-colors text-[#35353C]text-base hover:text-white"
+            style={{
+              transition: "color 0.3s ease-in-out",
+            }}
+          >
+            Privacy Policy?
+          </span>
+          <span className="absolute inset-0 top-1/2 h-1/2 bg-[#0100F4] origin-left scale-x-0 transition-transform duration-300 ease-out group-hover:scale-x-100"></span>
+        </Link>
       </div>
     </footer>
   );

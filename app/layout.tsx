@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import CustomCursor from "./components/CustomCursor";
 
 const neueRegrade = localFont({
   src: [
@@ -41,9 +42,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${neueRegrade.variable} antialiased`}
-      >
+      <body className={`${neueRegrade.variable} antialiased cursor-none`}>
+        <CustomCursor />
         {children}
       </body>
     </html>

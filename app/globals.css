@@ -16,3 +16,12 @@ body {
   color: var(--foreground);
   font-family: var(--font-neue-regrade), Arial, Helvetica, sans-serif;
 }
+
+.a,
+button {
+  cursor: none !important;
+}
+
+* {
+  cursor: none !important;
+}

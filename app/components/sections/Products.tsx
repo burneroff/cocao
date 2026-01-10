@@ -131,7 +131,7 @@ export default function Products() {
       </table>
 
       {/* Frame products 3 с крестами справа */}
-      <div className="absolute bottom-[100px] w-[184px] h-[184px]">
+      <div className="absolute bottom-[100px] left-[318px] w-[184px] h-[184px]">
         <Image
           src="/frames/frame_products_3.png"
           alt="Frame products 3"

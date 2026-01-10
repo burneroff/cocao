@@ -3,7 +3,7 @@ import Link from "next/link";
 export default function Header() {
   return (
     <header className="flex w-full items-center justify-between px-4 py-6 sm:px-8">
-      <div className="font-medium text-white text-2xl">Cocao Mobile</div>
+      <div className="font-medium text-[#9F9B96] text-2xl">Cocao Mobile</div>
 
       <nav className="flex items-center gap-6">
         <Link
@@ -12,7 +12,12 @@ export default function Header() {
           rel="noopener noreferrer"
           className="group relative px-3 py-2 text-base overflow-hidden"
         >
-          <span className="relative z-10 transition-colors text-white text-2xl">
+          <span
+            className="relative z-10 transition-colors text-[#9F9B96] font-medium text-2xl hover:text-white"
+            style={{
+              transition: "color 0.3s ease-in-out",
+            }}
+          >
             LinkedIn
           </span>
           <span className="absolute inset-0 top-1/2 h-1/2 bg-[#0100F4] origin-left scale-x-0 transition-transform duration-300 ease-out group-hover:scale-x-100"></span>
@@ -22,7 +27,12 @@ export default function Header() {
           href="mailto:"
           className="group relative px-3 py-2 text-base overflow-hidden"
         >
-          <span className="relative z-10 transition-colors text-white text-2xl">
+          <span
+            className="relative z-10 transition-colors text-[#9F9B96] font-medium text-2xl hover:text-white"
+            style={{
+              transition: "color 0.3s ease-in-out",
+            }}
+          >
             Email
           </span>
           <span className="absolute inset-0 top-1/2 h-1/2 bg-[#0100F4] origin-left scale-x-0 transition-transform duration-300 ease-out group-hover:scale-x-100"></span>
@@ -34,7 +44,12 @@ export default function Header() {
           rel="noopener noreferrer"
           className="group relative px-3 py-2 text-base overflow-hidden"
         >
-          <span className="relative z-10 transition-colors text-white text-2xl">
+          <span
+            className="relative z-10 transition-colors text-[#9F9B96] font-medium text-2xl hover:text-white"
+            style={{
+              transition: "color 0.3s ease-in-out",
+            }}
+          >
             AppStore
           </span>
           <span className="absolute inset-0 top-1/2 h-1/2 bg-[#0100F4] origin-left scale-x-0 transition-transform duration-300 ease-out group-hover:scale-x-100"></span>

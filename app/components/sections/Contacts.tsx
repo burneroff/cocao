@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Cross } from "../icons/Cross";
 
 export default function Contacts() {
   const [email, setEmail] = useState("");
@@ -76,6 +77,9 @@ export default function Contacts() {
             </div>
           </div>
         </div>
+      </div>
+      <div className="absolute bottom-[50px] left-1/2 -translate-x-1/2">
+        <Cross color="#35353C" />
       </div>
     </section>
   );

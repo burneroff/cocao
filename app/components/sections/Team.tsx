@@ -85,7 +85,7 @@ export default function Team() {
           </div>
         </div>
       </div>
-      <div className="2xl:ml-50">
+      <div className="2xl:ml-22">
         <AnimatedTestimonials testimonials={testimonials} />
       </div>
       {/* ВТОРАЯ РАМКА */}

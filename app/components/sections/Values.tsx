@@ -212,7 +212,7 @@ export default function Values() {
           {/* Контент поверх фона */}
           <div className="relative z-10 h-full flex items-center justify-end">
             {/* Внутренняя обертка для блока с картинкой и заголовком */}
-            <div className="flex flex-col w-full 2xl:w-[910px] 2xl:flex-row items-center md:items-start 2xl:items-start gap-6 md:gap-8 2xl:gap-[15px]">
+            <div className="flex flex-col w-full 2xl:w-[910px] 2xl:flex-row items-center md:items-start 2xl:items-start gap-6 md:gap-8 2xl:gap-[15px] min-[1775px]:ml-[100px]">
               {/* Картинка с адаптивными размерами */}
               <div className="relative h-[250px] w-[280px] sm:h-[300px] sm:w-[320px] md:h-[350px] md:w-[380px] lg:h-[400px] lg:w-[420px] xl:h-[468px] xl:w-[450px] 2xl:h-[468px] 2xl:w-[450px] shrink-0">
                 <Image
@@ -229,7 +229,7 @@ export default function Values() {
                   style={{
                     left: "300px",
                     top: "120px",
-                    width: "610px",
+                    width: "640px",
                     height: "217px",
                     fontWeight: 500,
                     fontStyle: "normal",
@@ -269,7 +269,7 @@ export default function Values() {
                     textAlignLast: "justify",
                     textTransform: "uppercase",
                     width: "100vw",
-                    maxWidth: "465px",
+                    maxWidth: "490px",
                     marginTop: "5px",
                     display: "block",
                   }}

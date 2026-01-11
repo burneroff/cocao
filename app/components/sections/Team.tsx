@@ -1,66 +1,71 @@
 import Image from "next/image";
-import { useState } from "react";
 import { Cross } from "../icons/Cross";
+import { AnimatedTestimonials } from "../ui/animated-testimonials";
 
-const team = [
+const testimonials = [
   {
+    quote:
+      "This platform revolutionized our portfolio strategy. Managing diverse apps from games to fintech is now seamless, and the data insights give us a sharp competitive edge.",
     name: "Ivan Marzan",
-    position: "CEO",
-    image: "/team/Ivan Marzan.png",
-    offset: -10,
+    designation: "CEO",
+    src: "/team/Ivan Marzan.png",
   },
   {
+    quote:
+      "Transformed our efficiency. The intuitive interface manages our yoga app launch and racing game update simultaneously. It's so reliable, I almost miss our old spreadsheet chaos.",
     name: "Anna Marzan",
-    position: "CEO",
-    image: "/team/Anna Marzan.png",
-    offset: 25,
+    designation: "CEO",
+    src: "/team/Anna Marzan.png",
   },
   {
+    quote:
+      "The technical architecture is impeccable. It handles simultaneous updates for different apps with rock-solid scalability, letting our engineers focus on innovation instead of firefighting.",
     name: "Radzivon Bartoshyk",
-    position: "Chief Technology Officer",
-    image: "/team/Radzivon Bartoshyk.png",
-    offset: 15,
+    designation: "Chief Technology Officer",
+    src: "/team/Radzivon Bartoshyk.png",
   },
   {
+    quote:
+      "The innovative approach to cross-platform development is remarkable. It serves both a meditation app and a noisy party game equally well, allowing us to ship both with fewer headaches.",
     name: "Stanislay Kotau",
-    position: "Cccc",
-    image: "/team/Stanislay Kotau.png",
-    offset: 5,
+    designation: "Head of Innovation",
+    src: "/team/Stanislay Kotau.png",
   },
   {
+    quote:
+      "This platform unites our diverse teams perfectly. It bridges zen UI designers and adrenaline-fueled game devs, transforming our collaboration and company culture.",
     name: "Kiryl Sauchuk",
-    position: "Human Resources Generalist",
-    image: "/team/Kiryl Sauchuk.png",
-    offset: 15,
+    designation: "Human Resources Generalist",
+    src: "/team/Kiryl Sauchuk.png",
   },
   {
+    quote:
+      "Our product development accelerated by 40%. Managing roadmaps for a recipe app and a fantasy RPG is no longer a nightmare. The agile workflow tools handle it perfectly.",
     name: "Anna Tsilind",
-    position: "Product Manager",
-    image: "/team/Anna Tsilind.png",
-    offset: 15,
+    designation: "Product Manager",
+    src: "/team/Anna Tsilind.png",
   },
   {
+    quote:
+      "Managing multiple product lines became seamless. The analytics dashboard brilliantly segments data from different user groups, providing clear, actionable insights.",
     name: "Ruslan Larbi",
-    position: "Product Manager",
-    image: "/team/Ruslan Larbi.png",
-    offset: 0,
+    designation: "Product Manager",
+    src: "/team/Ruslan Larbi.png",
   },
   {
+    quote:
+      "The attention to detail in feature implementation is extraordinary. Every update brings measurable improvements, whether for a shopping app or a trivia game, making users happier.",
     name: "Krukau Yauheni",
-    position: "Product Manager",
-    image: "/team/Krukau Yauheni.png",
-    offset: 0,
+    designation: "Product Manager",
+    src: "/team/Krukau Yauheni.png",
   },
 ];
-
 export default function Team() {
-  const [activeIndex, setActiveIndex] = useState<number | null>(null);
-
   return (
     <section className="relative w-full overflow-x-hidden px-4 md:px-8 lg:px-16 py-8 md:py-12 lg:py-16">
       {/* FRAME + CROSSES BLOCK */}
       <div className="relative mt-12 md:mt-24 lg:mt-[180px] mb-16 md:mb-32 lg:mb-[300px] flex justify-end">
-        <div className="relative w-24 h-24 md:w-32 md:h-32 lg:w-[184px] lg:h-[184px]">
+        <div className="relative w-[120px] h-[120px] md:w-[150px] md:h-[150px] lg:w-[184px] lg:h-[184px]">
           <Image
             src="/frames/frame_team_1.png"
             alt="Frame Team"
@@ -69,233 +74,21 @@ export default function Team() {
             className="w-full h-full object-contain"
             priority
           />
-
-          {/* Crosses - скрыть на маленьких экранах */}
-          <div className="hidden lg:block absolute left-[-354px] top-[-50px]">
+          <div className=" absolute left-[-204] sm:left-[-354px] top-[-50px]">
             <Cross color="#35353C" />
           </div>
-          <div className="hidden lg:block absolute left-[-354px] bottom-[-50px]">
+          <div className="absolute left-[-204] sm:left-[-354px]  bottom-[-50px]">
             <Cross color="#35353C" />
           </div>
-          <div className="hidden lg:block absolute left-[-50px] bottom-[-50px]">
+          <div className=" absolute left-[-50px] bottom-[-50px]">
             <Cross color="#35353C" />
           </div>
         </div>
       </div>
-
-      {/* ОРИГИНАЛЬНЫЙ ДИЗАЙН ТОЛЬКО НА 2XL И ВЫШЕ (1536px+) - СЕРЫЕ КАРТОЧКИ */}
-      <div className="hidden 2xl:flex justify-end">
-        {team.map((member, index) => {
-          const isActive = activeIndex === index;
-          const baseWidth = index === 0 ? "w-[140px]" : "w-[110px]";
-
-          return (
-            <div
-              key={member.name}
-              onMouseEnter={() => setActiveIndex(index)}
-              onMouseLeave={() => setActiveIndex(null)}
-              className={`relative cursor-pointer transition-all duration-500 ease-in-out
-                ${isActive ? "w-[340px] z-10" : baseWidth}
-              `}
-            >
-              {/* IMAGE */}
-              <div className="relative w-full h-[450px] overflow-hidden">
-                <Image
-                  src={member.image}
-                  alt={member.name}
-                  fill
-                  className={`object-cover grayscale transition-all duration-500
-                    ${isActive ? "grayscale-0" : ""}
-                  `}
-                  style={{
-                    objectPosition: isActive
-                      ? "50% 50%"
-                      : `calc(50% + ${member.offset}px) 50%`,
-                  }}
-                  sizes="(min-width: 1536px) 340px, 140px"
-                />
-              </div>
-
-              {/* TEXT */}
-              <div className="mt-6 h-[70px] overflow-hidden w-[350px]">
-                <div
-                  className={`transition-all duration-300
-                    ${
-                      isActive
-                        ? "opacity-100 translate-y-0"
-                        : "opacity-0 translate-y-2"
-                    }
-                  `}
-                >
-                  <p
-                    className="text-[25px] leading-[35px] font-medium"
-                    style={{ color: "#3F3E3D" }}
-                  >
-                    {member.position}
-                  </p>
-                  <p
-                    className="text-[16px] leading-[25px] font-normal"
-                    style={{ color: "#3F3E3D" }}
-                  >
-                    {member.name}
-                  </p>
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* СЕТКА 4 КОЛОНКИ ДЛЯ ЭКРАНОВ lg-xl (1280px-1535px) */}
-      <div className="hidden lg:grid 2xl:hidden">
-        <div className="grid grid-cols-4 gap-8 max-w-7xl mx-auto">
-          {team.map((member, index) => {
-            const isActive = activeIndex === index;
-
-            return (
-              <div
-                key={member.name}
-                onMouseEnter={() => setActiveIndex(index)}
-                onMouseLeave={() => setActiveIndex(null)}
-                onClick={() => setActiveIndex(index)}
-                className="relative cursor-pointer"
-              >
-                {/* IMAGE - ВСЕГДА ЦВЕТНАЯ, ФИКСИРОВАННАЯ ВЫСОТА */}
-                <div className="relative w-full h-[400px] overflow-hidden">
-                  <Image
-                    src={member.image}
-                    alt={member.name}
-                    fill
-                    className="object-cover grayscale-0"
-                    style={{
-                      objectPosition: `calc(50% + ${member.offset}px) 50%`,
-                    }}
-                    sizes="25vw"
-                  />
-                </div>
-
-                {/* TEXT - ВСЕГДА ВИДИМ */}
-                <div className="mt-6">
-                  <p
-                    className="text-xl font-medium mb-2"
-                    style={{ color: "#3F3E3D" }}
-                  >
-                    {member.position}
-                  </p>
-                  <p
-                    className="text-base font-normal"
-                    style={{ color: "#3F3E3D" }}
-                  >
-                    {member.name}
-                  </p>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* СЕТКА 2 КОЛОНКИ ДЛЯ ЭКРАНОВ sm-md (640px-1279px) */}
-      <div className="hidden sm:grid lg:hidden">
-        <div className="grid grid-cols-2 gap-6 md:gap-8 max-w-3xl mx-auto">
-          {team.map((member, index) => {
-            const isActive = activeIndex === index;
-
-            return (
-              <div
-                key={member.name}
-                onMouseEnter={() => setActiveIndex(index)}
-                onMouseLeave={() => setActiveIndex(null)}
-                onClick={() => setActiveIndex(index)}
-                className="relative cursor-pointer"
-              >
-                {/* IMAGE - ВСЕГДА ЦВЕТНАЯ, ФИКСИРОВАННАЯ ВЫСОТА */}
-                <div className="relative w-full h-[350px] overflow-hidden">
-                  <Image
-                    src={member.image}
-                    alt={member.name}
-                    fill
-                    className="object-cover grayscale-0"
-                    style={{
-                      objectPosition: `calc(50% + ${member.offset}px) 50%`,
-                    }}
-                    sizes="50vw"
-                  />
-                </div>
-
-                {/* TEXT - ВСЕГДА ВИДИМ */}
-                <div className="mt-4 md:mt-6">
-                  <p
-                    className="text-lg md:text-xl font-medium mb-1 md:mb-2"
-                    style={{ color: "#3F3E3D" }}
-                  >
-                    {member.position}
-                  </p>
-                  <p
-                    className="text-sm md:text-base font-normal"
-                    style={{ color: "#3F3E3D" }}
-                  >
-                    {member.name}
-                  </p>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* СЕТКА 1 КОЛОНКА ДЛЯ МОБИЛЬНЫХ ЭКРАНОВ (< 640px) */}
-      <div className="sm:hidden">
-        <div className="grid grid-cols-1 gap-6 max-w-md mx-auto">
-          {team.map((member, index) => {
-            const isActive = activeIndex === index;
-
-            return (
-              <div
-                key={member.name}
-                onMouseEnter={() => setActiveIndex(index)}
-                onMouseLeave={() => setActiveIndex(null)}
-                onClick={() => setActiveIndex(index)}
-                className="relative cursor-pointer"
-              >
-                {/* IMAGE - ВСЕГДА ЦВЕТНАЯ, ФИКСИРОВАННАЯ ВЫСОТА */}
-                <div className="relative w-full h-[300px] overflow-hidden">
-                  <Image
-                    src={member.image}
-                    alt={member.name}
-                    fill
-                    className="object-cover grayscale-0"
-                    style={{
-                      objectPosition: `calc(50% + ${member.offset}px) 50%`,
-                    }}
-                    sizes="100vw"
-                  />
-                </div>
-
-                {/* TEXT - ВСЕГДА ВИДИМ */}
-                <div className="mt-4">
-                  <p
-                    className="text-lg font-medium mb-1"
-                    style={{ color: "#3F3E3D" }}
-                  >
-                    {member.position}
-                  </p>
-                  <p
-                    className="text-sm font-normal"
-                    style={{ color: "#3F3E3D" }}
-                  >
-                    {member.name}
-                  </p>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
+      <AnimatedTestimonials testimonials={testimonials} />
       {/* ВТОРАЯ РАМКА */}
-      <div className="relative mt-12 md:mt-24 lg:mt-[180px] mb-8 md:mb-16 lg:mb-[300px] flex justify-end lg:mr-[300px]">
-        <div className="relative w-24 h-24 md:w-32 md:h-32 lg:w-[184px] lg:h-[184px]">
+      <div className="relative mt-12 md:mt-24 lg:mt-[180px] mb-8 md:mb-16 lg:mb-[300px] flex justify-center">
+        <div className="relative w-[120px] h-[120px] md:w-[150px] md:h-[150px] lg:w-[184px] lg:h-[184px]">
           <Image
             src="/frames/frame_team_2.png"
             alt="Frame Team"
@@ -303,12 +96,10 @@ export default function Team() {
             height={184}
             className="w-full h-full object-contain"
           />
-
-          {/* Crosses - скрыть на маленьких экранах */}
-          <div className="hidden lg:block absolute right-[-50px] bottom-[-50px]">
+          <div className="absolute right-[-50px] bottom-[-50px]">
             <Cross color="#35353C" />
           </div>
-          <div className="hidden lg:block absolute left-[-50px] bottom-[-50px]">
+          <div className="absolute left-[-50px] bottom-[-50px]">
             <Cross color="#35353C" />
           </div>
         </div>

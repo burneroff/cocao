@@ -3,8 +3,8 @@ import { Cross } from "../icons/Cross";
 
 export default function US() {
   return (
-    <div className="h-auto min-h-[100vh] md:min-h-[150vh] flex items-start justify-end px-4 py-4 md:px-16 md:py-16 relative">
-      <div className="flex justify-end flex-col w-full">
+    <div className="min-h-[100vh] md:min-h-[150vh] flex items-start justify-end px-4 py-4 md:px-16 md:py-16 relative">
+      <div className="flex justify-end flex-col">
         <div
           className="text-[#CDCDCD] font-normal leading-normal md:leading-[70px] tracking-[0%] text-justify w-full max-w-full md:max-w-[910px]"
           style={{

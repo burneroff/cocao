@@ -19,7 +19,7 @@ export default function Header() {
         isScrolled ? "bg-black/90 backdrop-blur-sm" : "bg-transparent"
       }`}
     >
-      <div className="font-medium text-[#9F9B96] text-2xl">Cocao Mobile</div>
+      <div className="font-medium text-[#35353C] text-2xl">Cocao Mobile</div>
 
       {/* Desktop Navigation */}
       <nav className="hidden md:flex items-center gap-6">

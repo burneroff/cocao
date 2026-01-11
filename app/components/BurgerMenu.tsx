@@ -35,21 +35,16 @@ export default function BurgerMenu({ scrollToSection }: BurgerMenuProps) {
       {/* Burger Button */}
       <button
         onClick={toggleMenu}
-        className="relative z-50 flex flex-col items-center justify-center w-10 h-10"
+        className="relative z-50 flex flex-col items-end justify-center w-20 h-20"
         aria-label="Toggle menu"
       >
         <span
-          className={`block h-0.5 w-6 bg-[#9F9B96] transition-all duration-300 ${
+          className={`block h-[2px] w-12 bg-[#9F9B96] transition-all duration-300 mb-1 ${
             isOpen ? "rotate-45 translate-y-1.5" : ""
           }`}
         />
         <span
-          className={`block h-0.5 w-6 bg-[#9F9B96] transition-all duration-300 my-1.5 ${
-            isOpen ? "opacity-0" : "opacity-100"
-          }`}
-        />
-        <span
-          className={`block h-0.5 w-6 bg-[#9F9B96] transition-all duration-300 ${
+          className={`block h-[2px] w-18 bg-[#9F9B96] transition-all duration-300 ${
             isOpen ? "-rotate-45 -translate-y-1.5" : ""
           }`}
         />
@@ -64,10 +59,7 @@ export default function BurgerMenu({ scrollToSection }: BurgerMenuProps) {
         }`}
       >
         {/* Background Gradient */}
-        <div
-          className="absolute inset-0 bg-gradient-to-b from-black via-black to-[#0100F4]"
-          onClick={toggleMenu}
-        />
+        <div className="absolute inset-0 bg-[#1F1F23]" onClick={toggleMenu} />
 
         {/* Menu Content */}
         <div
@@ -76,16 +68,17 @@ export default function BurgerMenu({ scrollToSection }: BurgerMenuProps) {
           }`}
         >
           {/* Navigation Links */}
-          <nav className="flex flex-col space-y-6 mt-20">
+          <nav className="flex flex-col mt-20">
             {sections.map((section) => (
               <button
                 key={section.id}
                 onClick={() => handleNavClick(section.id)}
-                className="group text-left"
+                className="group relative text-left overflow-hidden" // добавил overflow-hidden, чтобы фон не выходил
               >
-                <span className="text-[56px] md:text-[72px] font-bold uppercase tracking-tight text-white opacity-80 group-hover:opacity-100 group-hover:text-[#0100F4] transition-all duration-300">
+                <span className="relative z-10 text-[56px] md:text-[72px] font-bold uppercase tracking-tight text-[#9F9B96] opacity-80 group-hover:opacity-100 transition-all duration-500 group-hover:text-white">
                   {section.label}
                 </span>
+                <span className="absolute left-0 bottom-0 w-full h-1/2 bg-[#0100F4] origin-left scale-x-0 transition-transform duration-500 ease-out group-hover:scale-x-100"></span>
               </button>
             ))}
           </nav>
@@ -100,10 +93,10 @@ export default function BurgerMenu({ scrollToSection }: BurgerMenuProps) {
                 className="group relative overflow-hidden py-2"
                 onClick={() => setIsOpen(false)}
               >
-                <span className="relative z-10 text-white text-2xl font-medium opacity-80 group-hover:opacity-100 transition-opacity duration-300">
+                <span className="relative z-10 text-[#9F9B96] text-2xl font-medium opacity-80 group-hover:opacity-100 transition-opacity duration-300 group-hover:text-white">
                   LinkedIn
                 </span>
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#0100F4] group-hover:w-full transition-all duration-300" />
+                <span className="absolute left-0 bottom-0 w-full h-1/2 bg-[#0100F4] origin-left scale-x-0 transition-transform duration-300 ease-out group-hover:scale-x-100"></span>
               </Link>
 
               <Link
@@ -111,10 +104,10 @@ export default function BurgerMenu({ scrollToSection }: BurgerMenuProps) {
                 className="group relative overflow-hidden py-2"
                 onClick={() => setIsOpen(false)}
               >
-                <span className="relative z-10 text-white text-2xl font-medium opacity-80 group-hover:opacity-100 transition-opacity duration-300">
+                <span className="relative z-10 text-[#9F9B96] text-2xl font-medium opacity-80 group-hover:opacity-100 transition-opacity duration-300 group-hover:text-white">
                   Email
                 </span>
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#0100F4] group-hover:w-full transition-all duration-300" />
+                <span className="absolute left-0 bottom-0 w-full h-1/2 bg-[#0100F4] origin-left scale-x-0 transition-transform duration-300 ease-out group-hover:scale-x-100 "></span>
               </Link>
 
               <Link
@@ -124,10 +117,10 @@ export default function BurgerMenu({ scrollToSection }: BurgerMenuProps) {
                 className="group relative overflow-hidden py-2"
                 onClick={() => setIsOpen(false)}
               >
-                <span className="relative z-10 text-white text-2xl font-medium opacity-80 group-hover:opacity-100 transition-opacity duration-300">
+                <span className="relative z-10 text-[#9F9B96] text-2xl font-medium opacity-80 group-hover:opacity-100 transition-opacity duration-300 group-hover:text-white">
                   AppStore
                 </span>
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#0100F4] group-hover:w-full transition-all duration-300" />
+                <span className="absolute left-0 bottom-0 w-full h-1/2 bg-[#0100F4] origin-left scale-x-0 transition-transform duration-300 ease-out group-hover:scale-x-100"></span>
               </Link>
             </div>
 

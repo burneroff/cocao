@@ -205,27 +205,27 @@ export default function Values() {
             style={{
               backgroundColor: value.bgColor,
               left: "-33.333333vw",
-              width: "100vw",
+              width: "150vw",
             }}
           />
 
           {/* Контент поверх фона */}
-          <div className="relative z-10 w-full h-full flex items-center justify-end">
+          <div className="relative z-10 h-full flex items-center justify-end">
             {/* Внутренняя обертка для блока с картинкой и заголовком */}
-            <div className="flex justify-end flex-col lg:flex-row items-center lg:items-start gap-6 md:gap-8 lg:gap-[15px]">
+            <div className="flex flex-col w-full 2xl:w-[910px] 2xl:flex-row items-center md:items-start 2xl:items-start gap-6 md:gap-8 2xl:gap-[15px]">
               {/* Картинка с адаптивными размерами */}
-              <div className="relative h-[250px] w-[280px] sm:h-[300px] sm:w-[320px] md:h-[350px] md:w-[380px] lg:h-[400px] lg:w-[420px] xl:h-[468px] xl:w-[450px] shrink-0">
+              <div className="relative h-[250px] w-[280px] sm:h-[300px] sm:w-[320px] md:h-[350px] md:w-[380px] lg:h-[400px] lg:w-[420px] xl:h-[468px] xl:w-[450px] 2xl:h-[468px] 2xl:w-[450px] shrink-0">
                 <Image
                   src={value.image}
                   alt={value.title}
                   fill
                   className="object-contain"
-                  sizes="(max-width: 640px) 280px, (max-width: 768px) 320px, (max-width: 1024px) 380px, (max-width: 1280px) 420px, 450px"
+                  sizes="(max-width: 640px) 280px, (max-width: 768px) 320px, (max-width: 1024px) 380px, (max-width: 1280px) 420px, (max-width: 1536px) 450px, 450px"
                 />
 
                 {/* Подзаголовок с подчеркиванием - абсолютно позиционирован */}
                 <div
-                  className="absolute text-white hidden lg:block"
+                  className="absolute text-white hidden 2xl:block"
                   style={{
                     left: "300px",
                     top: "120px",
@@ -255,11 +255,10 @@ export default function Values() {
                 </div>
               </div>
 
-              {/* Контент справа от картинки */}
-              <div className="flex flex-col lg:flex-row items-center lg:items-start gap-4 md:gap-6 lg:gap-[15px] w-full lg:w-auto">
+              <div className="flex flex-col 2xl:flex-row items-center md:items-start 2xl:items-start gap-4 md:gap-6 2xl:gap-[15px] w-full 2xl:w-auto">
                 {/* Заголовок - всегда показываем на мобильных, на десктопе справа от картинки */}
                 <h2
-                  className="text-white text-center lg:text-left"
+                  className="text-white text-center 2xl:text-left px-6"
                   style={{
                     fontWeight: 400,
                     fontStyle: "normal",
@@ -269,7 +268,7 @@ export default function Values() {
                     textAlign: "justify",
                     textAlignLast: "justify",
                     textTransform: "uppercase",
-                    width: "100%",
+                    width: "100vw",
                     maxWidth: "445px",
                     marginTop: "5px",
                     display: "block",
@@ -277,8 +276,8 @@ export default function Values() {
                   dangerouslySetInnerHTML={{ __html: value.title }}
                 />
 
-                {/* Подзаголовок для мобильных устройств (скрыт на десктопе) */}
-                <div className="lg:hidden w-full max-w-2xl mx-auto mt-4 md:mt-6">
+                {/* Подзаголовок для устройств меньше 1400px (скрыт на десктопе 1400+) */}
+                <div className="2xl:hidden w-full max-w-2xl mx-auto px-6 mt-4 md:mt-6">
                   <p
                     className="text-white text-justify"
                     style={{

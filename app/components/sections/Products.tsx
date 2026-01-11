@@ -51,7 +51,7 @@ export default function Products() {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col justify-end px-16 py-16 pt-50 pb-50 sm:pt-100 sm:pb-100 relative">
+    <div className="min-h-screen flex flex-col justify-end px-4 py-4 sm:px-16 sm:py-16 pt-50 pb-50 sm:pt-100 sm:pb-100 relative">
       <div className="w-full max-w-[909px]">
         <table className="w-full table-fixed border-collapse">
           <tbody>

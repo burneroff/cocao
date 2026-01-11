@@ -98,7 +98,7 @@ export const FloatingNav = ({ className }: { className?: string }) => {
             rel="noopener noreferrer"
             className="group relative px-2 py-2 overflow-hidden"
           >
-            <span className="relative z-10 transition-colors text-[#9F9B96] font-medium text-[clamp(16px,1.5vw,24px)] hover:text-white">
+            <span className="relative z-10 transition-colors text-[#9F9B96] font-medium text-[clamp(16px,1.5vw,24px)] group-hover:text-white">
               LinkedIn
             </span>
             <span className="absolute inset-0 top-1/2 h-1/2 bg-[#0100F4] origin-left scale-x-0 transition-transform duration-300 ease-out group-hover:scale-x-100"></span>
@@ -108,7 +108,7 @@ export const FloatingNav = ({ className }: { className?: string }) => {
             href="mailto:"
             className="group relative px-2 py-2 overflow-hidden"
           >
-            <span className="relative z-10 transition-colors text-[#9F9B96] font-medium text-[clamp(16px,1.5vw,24px)] hover:text-white">
+            <span className="relative z-10 transition-colors text-[#9F9B96] font-medium text-[clamp(16px,1.5vw,24px)] group-hover:text-white">
               Email
             </span>
             <span className="absolute inset-0 top-1/2 h-1/2 bg-[#0100F4] origin-left scale-x-0 transition-transform duration-300 ease-out group-hover:scale-x-100"></span>
@@ -120,7 +120,7 @@ export const FloatingNav = ({ className }: { className?: string }) => {
             rel="noopener noreferrer"
             className="group relative px-2 py-2 overflow-hidden"
           >
-            <span className="relative z-10 transition-colors text-[#9F9B96] font-medium text-[clamp(16px,1.5vw,24px)] hover:text-white">
+            <span className="relative z-10 transition-colors text-[#9F9B96] font-medium text-[clamp(16px,1.5vw,24px)] group-hover:text-white">
               AppStore
             </span>
             <span className="absolute inset-0 top-1/2 h-1/2 bg-[#0100F4] origin-left scale-x-0 transition-transform duration-300 ease-out group-hover:scale-x-100"></span>

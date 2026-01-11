@@ -52,7 +52,7 @@ export default function Products() {
 
   return (
     <div className="min-h-screen flex flex-col justify-end px-4 py-4 sm:px-16 sm:py-16 pt-50 pb-50 sm:pt-100 sm:pb-100 relative">
-      <div className="w-full max-w-[909px]">
+      <div className=" max-w-[909px] flex" style={{ alignSelf: "flex-end" }}>
         <table className="w-full table-fixed border-collapse">
           <tbody>
             {tableRows.map((row, rowIndex) => (
@@ -128,7 +128,10 @@ export default function Products() {
           </tbody>
         </table>
       </div>
-      <div className="w-full h-[240px] sm:h-[388px] relative">
+      <div
+        className="max-w-[909px] w-full h-[240px] sm:h-[388px] relative"
+        style={{ alignSelf: "flex-end" }}
+      >
         {/* Frame products 3 */}
         <div className="absolute bottom-0 w-[120px] h-[120px] md:w-[150px] md:h-[150px] lg:w-[184px] lg:h-[184px]">
           <Image

@@ -39,12 +39,12 @@ export default function BurgerMenu({ scrollToSection }: BurgerMenuProps) {
         aria-label="Toggle menu"
       >
         <span
-          className={`block h-[2px] w-12 bg-[#9F9B96] transition-all duration-300 mb-1 ${
+          className={`block h-[2px] w-12 bg-[#35353C] transition-all duration-300 mb-1 ${
             isOpen ? "rotate-45 translate-y-1.5" : ""
           }`}
         />
         <span
-          className={`block h-[2px] w-18 bg-[#9F9B96] transition-all duration-300 ${
+          className={`block h-[2px] w-18 bg-[#35353C] transition-all duration-300 ${
             isOpen ? "-rotate-45 -translate-y-1.5" : ""
           }`}
         />

@@ -262,14 +262,14 @@ export default function Values() {
                   style={{
                     fontWeight: 400,
                     fontStyle: "normal",
-                    fontSize: "clamp(28px, 5vw, 40px)",
+                    fontSize: "clamp(28px, 5vw, 36px)",
                     lineHeight: "clamp(32px, 5.5vw, 45px)",
                     letterSpacing: "0%",
                     textAlign: "justify",
                     textAlignLast: "justify",
                     textTransform: "uppercase",
                     width: "100vw",
-                    maxWidth: "445px",
+                    maxWidth: "455px",
                     marginTop: "5px",
                     display: "block",
                   }}

@@ -85,7 +85,9 @@ export default function Team() {
           </div>
         </div>
       </div>
-      <AnimatedTestimonials testimonials={testimonials} />
+      <div className="2xl:ml-50">
+        <AnimatedTestimonials testimonials={testimonials} />
+      </div>
       {/* ВТОРАЯ РАМКА */}
       <div className="relative mt-24 mb-24 md:mt-32 md:mb-32 flex justify-center">
         <div className="relative w-[120px] h-[120px] md:w-[150px] md:h-[150px] lg:w-[184px] lg:h-[184px]">

@@ -25,7 +25,7 @@ export default function Contacts() {
   };
 
   return (
-    <section className="relative w-full sm:min-h-screen flex justify-center px-4 sm:px-16 lg:px-16 py-16">
+    <section className="relative w-full sm:min-h-[60vh] flex justify-center px-4 sm:px-16 md:px-32 2xl:px-62 py-16">
       <div className="w-full max-w-[910px] flex flex-col justify-center">
         {/* EMAIL */}
         <div className="flex flex-col mb-10">

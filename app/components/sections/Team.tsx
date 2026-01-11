@@ -62,9 +62,9 @@ const testimonials = [
 ];
 export default function Team() {
   return (
-    <section className="relative w-full overflow-x-hidden px-4 md:px-8 lg:px-16 py-8 md:py-12 lg:py-16">
+    <section className="relative w-ful overflow-x-hidden px-4 md:px-8 lg:px-16 py-8 md:py-12 lg:py-16">
       {/* FRAME + CROSSES BLOCK */}
-      <div className="relative mt-12 md:mt-24 lg:mt-[180px] mb-16 md:mb-32 lg:mb-[300px] flex justify-end">
+      <div className="relative mt-24 mb-24 md:mt-24 md:mb-36 flex justify-end">
         <div className="relative w-[120px] h-[120px] md:w-[150px] md:h-[150px] lg:w-[184px] lg:h-[184px]">
           <Image
             src="/frames/frame_team_1.png"
@@ -87,7 +87,7 @@ export default function Team() {
       </div>
       <AnimatedTestimonials testimonials={testimonials} />
       {/* ВТОРАЯ РАМКА */}
-      <div className="relative mt-12 md:mt-24 lg:mt-[180px] mb-8 md:mb-16 lg:mb-[300px] flex justify-center">
+      <div className="relative mt-24 mb-24 md:mt-32 md:mb-32 flex justify-center">
         <div className="relative w-[120px] h-[120px] md:w-[150px] md:h-[150px] lg:w-[184px] lg:h-[184px]">
           <Image
             src="/frames/frame_team_2.png"

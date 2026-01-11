@@ -75,7 +75,7 @@ export default function BurgerMenu({ scrollToSection }: BurgerMenuProps) {
                 onClick={() => handleNavClick(section.id)}
                 className="group relative text-left overflow-hidden" // добавил overflow-hidden, чтобы фон не выходил
               >
-                <span className="relative z-10 text-[56px] md:text-[72px] font-bold uppercase tracking-tight text-[#9F9B96] opacity-80 group-hover:opacity-100 transition-all duration-500 group-hover:text-white">
+                <span className="relative z-10 text-[56px] md:text-[72px] font-bold uppercase tracking-tight text-[#9F9B96] group-hover:opacity-100 transition-all duration-500 group-hover:text-white">
                   {section.label}
                 </span>
                 <span className="absolute left-0 bottom-0 w-full h-1/2 bg-[#0100F4] origin-left scale-x-0 transition-transform duration-500 ease-out group-hover:scale-x-100"></span>

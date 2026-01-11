@@ -33,7 +33,7 @@ const valuesData: ValueSection[] = [
     bgColor: "#FBC500",
   },
   {
-    title: "OWNERSHIP & INTEGRITY",
+    title: "OWNERSHIP &<br/> INTEGRITY",
     subtitle:
       "We take responsibility for our actions and results. Freedom comes with accountability, and integrity defines how we work. We learn from mistakes, act with honesty, and earn trust through consistency.",
     image: "/values/value_4.png",
@@ -219,13 +219,13 @@ export default function Values() {
                   src={value.image}
                   alt={value.title}
                   fill
-                  className="object-contain"
+                  className="object-contain ml-[10px] 2xl:ml-[50px] "
                   sizes="(max-width: 640px) 280px, (max-width: 768px) 320px, (max-width: 1024px) 380px, (max-width: 1280px) 420px, (max-width: 1536px) 450px, 450px"
                 />
 
                 {/* Подзаголовок с подчеркиванием - абсолютно позиционирован */}
                 <div
-                  className="absolute text-white hidden 2xl:block"
+                  className="absolute text-white hidden 2xl:block  2xl:ml-[30px]"
                   style={{
                     left: "300px",
                     top: "120px",
@@ -258,7 +258,7 @@ export default function Values() {
               <div className="flex flex-col 2xl:flex-row items-center md:items-start 2xl:items-start gap-4 md:gap-6 2xl:gap-[15px] w-full 2xl:w-auto">
                 {/* Заголовок - всегда показываем на мобильных, на десктопе справа от картинки */}
                 <h2
-                  className="text-white text-center 2xl:text-left px-6"
+                  className="text-white text-center 2xl:text-left px-4  2xl:ml-[30px]"
                   style={{
                     fontWeight: 400,
                     fontStyle: "normal",
@@ -269,7 +269,7 @@ export default function Values() {
                     textAlignLast: "justify",
                     textTransform: "uppercase",
                     width: "100vw",
-                    maxWidth: "455px",
+                    maxWidth: "465px",
                     marginTop: "5px",
                     display: "block",
                   }}
@@ -277,9 +277,9 @@ export default function Values() {
                 />
 
                 {/* Подзаголовок для устройств меньше 1400px (скрыт на десктопе 1400+) */}
-                <div className="2xl:hidden w-full max-w-2xl mx-auto px-6 mt-4 md:mt-6">
+                <div className="2xl:hidden w-full max-w-2xl mx-auto px-4 mt-4 md:mt-6">
                   <p
-                    className="text-white text-justify"
+                    className="text-white text-justify "
                     style={{
                       fontWeight: 500,
                       fontStyle: "normal",

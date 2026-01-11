@@ -202,7 +202,11 @@ export default function NavigationSection() {
       )}
 
       {/* Right Content - адаптивная ширина для мобилок и десктопа */}
-      <div className={`flex-1 ${isMobile ? "w-full" : "-ml-[33.333333%]"}`}>
+      <div
+        className={`flex-1 ${
+          isMobile ? "w-full" : "-ml-[33.333333%]"
+        }  overflow-hidden`}
+      >
         {sections.map((section) => {
           const SectionComponent = section.component;
           const sectionData = sections.find((s) => s.id === section.id);

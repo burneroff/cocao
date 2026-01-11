@@ -47,9 +47,9 @@ export const AnimatedTestimonials = ({
 
   return (
     <div className="mx-auto max-w-sm px-4 py-20 font-sans antialiased md:max-w-4xl md:px-8 lg:px-12">
-      <div className="relative grid grid-cols-1 gap-20 xl:grid-cols-2">
+      <div className="relative grid grid-cols-1 gap-10 md:gap-20 xl:grid-cols-2">
         <div>
-          <div className="relative h-100 w-full max-w-sm">
+          <div className="relative h-80 md:h-100 w-full max-w-sm">
             <AnimatePresence>
               {testimonials.map((testimonial, index) => (
                 <motion.div
@@ -99,8 +99,8 @@ export const AnimatedTestimonials = ({
                     <Image
                       src={testimonial.src}
                       alt={testimonial.name}
-                      width={500}
-                      height={500}
+                      width={600}
+                      height={600}
                       draggable={false}
                       className={`h-full w-full rounded-3xl object-cover object-center transition-all duration-300 ${
                         // Активная картинка цветная только при наведении

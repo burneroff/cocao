@@ -60,10 +60,8 @@ export default function Values() {
         (entries) => {
           entries.forEach((entry) => {
             if (entry.isIntersecting && entry.intersectionRatio >= 0.7) {
-              // Отмечаем секцию как просмотренную
               viewedSectionsRef.current.add(index);
 
-              // Обновляем текущую секцию
               setCurrentSection((prev) => {
                 if (index !== prev && !isScrollingRef.current) {
                   return index;
@@ -71,7 +69,6 @@ export default function Values() {
                 return prev;
               });
 
-              // Если видна последняя секция и все секции просмотрены
               if (index === 3 && viewedSectionsRef.current.size === 4) {
                 setAllSectionsViewed(true);
               }
@@ -200,7 +197,7 @@ export default function Values() {
           ref={(el) => {
             sectionRefs.current[index] = el;
           }}
-          className="h-screen flex flex-col items-center justify-center px-20 py-16 relative"
+          className="h-screen flex flex-col items-center justify-center px-4 md:px-8 lg:px-12 xl:px-20 py-8 md:py-12 lg:py-16 relative"
         >
           {/* Фон на всю ширину экрана */}
           <div
@@ -213,22 +210,22 @@ export default function Values() {
           />
 
           {/* Контент поверх фона */}
-          <div className="relative z-10 w-full h-full flex items-center justify-start px-45 py-16">
+          <div className="relative z-10 w-full h-full flex items-center justify-end">
             {/* Внутренняя обертка для блока с картинкой и заголовком */}
-            <div className="flex items-start gap-[15px]">
-              {/* Картинка */}
-              <div className="relative h-[468px] w-[450px] shrink-0">
+            <div className="flex justify-end flex-col lg:flex-row items-center lg:items-start gap-6 md:gap-8 lg:gap-[15px]">
+              {/* Картинка с адаптивными размерами */}
+              <div className="relative h-[250px] w-[280px] sm:h-[300px] sm:w-[320px] md:h-[350px] md:w-[380px] lg:h-[400px] lg:w-[420px] xl:h-[468px] xl:w-[450px] shrink-0">
                 <Image
                   src={value.image}
                   alt={value.title}
-                  width={450}
-                  height={468}
-                  className="w-full h-full object-contain"
+                  fill
+                  className="object-contain"
+                  sizes="(max-width: 640px) 280px, (max-width: 768px) 320px, (max-width: 1024px) 380px, (max-width: 1280px) 420px, 450px"
                 />
 
                 {/* Подзаголовок с подчеркиванием - абсолютно позиционирован */}
                 <div
-                  className="absolute text-white"
+                  className="absolute text-white hidden lg:block"
                   style={{
                     left: "300px",
                     top: "120px",
@@ -258,24 +255,55 @@ export default function Values() {
                 </div>
               </div>
 
-              {/* Заголовок справа от картинки */}
-              <h2
-                className="text-white"
-                style={{
-                  fontWeight: 400,
-                  fontStyle: "normal",
-                  fontSize: "40px",
-                  lineHeight: "45px",
-                  letterSpacing: "0%",
-                  textAlign: "justify",
-                  textAlignLast: "justify",
-                  textTransform: "uppercase",
-                  width: "445px",
-                  marginTop: "5px",
-                  display: "block",
-                }}
-                dangerouslySetInnerHTML={{ __html: value.title }}
-              />
+              {/* Контент справа от картинки */}
+              <div className="flex flex-col lg:flex-row items-center lg:items-start gap-4 md:gap-6 lg:gap-[15px] w-full lg:w-auto">
+                {/* Заголовок - всегда показываем на мобильных, на десктопе справа от картинки */}
+                <h2
+                  className="text-white text-center lg:text-left"
+                  style={{
+                    fontWeight: 400,
+                    fontStyle: "normal",
+                    fontSize: "clamp(28px, 5vw, 40px)",
+                    lineHeight: "clamp(32px, 5.5vw, 45px)",
+                    letterSpacing: "0%",
+                    textAlign: "justify",
+                    textAlignLast: "justify",
+                    textTransform: "uppercase",
+                    width: "100%",
+                    maxWidth: "445px",
+                    marginTop: "5px",
+                    display: "block",
+                  }}
+                  dangerouslySetInnerHTML={{ __html: value.title }}
+                />
+
+                {/* Подзаголовок для мобильных устройств (скрыт на десктопе) */}
+                <div className="lg:hidden w-full max-w-2xl mx-auto mt-4 md:mt-6">
+                  <p
+                    className="text-white text-justify"
+                    style={{
+                      fontWeight: 500,
+                      fontStyle: "normal",
+                      fontSize: "clamp(16px, 3vw, 20px)",
+                      lineHeight: "clamp(24px, 4vw, 32px)",
+                      letterSpacing: "0%",
+                    }}
+                  >
+                    <span
+                      className="inline"
+                      style={{
+                        background: `${value.bgColor}`,
+                        backgroundSize: "100% 15px",
+                        backgroundRepeat: "no-repeat",
+                        backgroundPosition: "0 bottom",
+                        paddingBottom: "2px",
+                      }}
+                    >
+                      {value.subtitle}
+                    </span>
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>

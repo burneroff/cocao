@@ -5,14 +5,19 @@ import { useEffect, useState, useRef } from "react";
 export default function LoadingScreen() {
   const [progress, setProgress] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
-  const startTimeRef = useRef<number>(Date.now());
+  const startTimeRef = useRef<number>(0);
+  const rafRef = useRef<number | null>(null);
+  const finishTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const loadedCountRef = useRef(0);
+  const totalRef = useRef(0);
+  const displayProgressRef = useRef(0);
+  const lastUpdateRef = useRef(0);
   const minDuration = 3000; // Минимум 3 секунды
   const maxDuration = 5000; // Максимум 5 секунд
 
   useEffect(() => {
     const resources: (HTMLImageElement | HTMLVideoElement)[] = [];
-    let loadedCount = 0;
-    let allResourcesLoaded = false;
+    loadedCountRef.current = 0;
 
     // Создаем элементы для предзагрузки
     const video = document.createElement("video");
@@ -59,47 +64,54 @@ export default function LoadingScreen() {
       resources.push(img);
     });
 
-    const total = resources.length;
-    let animationFrameId: number;
-    let finishTimeout: NodeJS.Timeout | null = null;
+    totalRef.current = resources.length;
 
     const updateProgress = () => {
-      loadedCount++;
+      loadedCountRef.current += 1;
     };
 
-    const checkFinish = () => {
-      const elapsed = Date.now() - startTimeRef.current;
-      const realProgress = Math.min((loadedCount / total) * 100, 100);
-      
-      // Если прошло меньше минимума, показываем плавную анимацию
+    const tick = (now: number) => {
+      if (!startTimeRef.current) {
+        startTimeRef.current = now;
+      }
+
+      const elapsed = now - startTimeRef.current;
+      const total = totalRef.current || 1;
+      const loadedRatio = Math.min(loadedCountRef.current / total, 1);
+
+      let targetProgress = 0;
       if (elapsed < minDuration) {
-        const timeProgress = (elapsed / minDuration) * 100;
-        const displayProgress = Math.min(timeProgress, realProgress);
-        setProgress(Math.round(displayProgress));
-        animationFrameId = requestAnimationFrame(checkFinish);
-      } 
-      // Если между минимумом и максимумом, показываем реальный прогресс
-      else if (elapsed < maxDuration) {
-        setProgress(Math.round(realProgress));
-        // Если все загружено и прошло больше минимума, завершаем
-        if (loadedCount === total) {
-          setProgress(100);
-          if (finishTimeout) clearTimeout(finishTimeout);
-          finishTimeout = setTimeout(() => {
-            setIsLoading(false);
-          }, 300);
-        } else {
-          animationFrameId = requestAnimationFrame(checkFinish);
-        }
-      } 
-      // Если прошло больше максимума или все загружено
-      else {
-        setProgress(100);
-        if (finishTimeout) clearTimeout(finishTimeout);
-        finishTimeout = setTimeout(() => {
+        const timeProgress = (elapsed / minDuration) * 90;
+        targetProgress = Math.min(timeProgress, loadedRatio * 100);
+      } else if (elapsed < maxDuration) {
+        targetProgress = Math.min(loadedRatio * 100, 99);
+      } else {
+        targetProgress = 100;
+      }
+
+      if (loadedRatio === 1 && elapsed >= minDuration) {
+        targetProgress = 100;
+      }
+
+      const current = displayProgressRef.current;
+      const eased = current + (targetProgress - current) * 0.15;
+      displayProgressRef.current = eased;
+
+      if (now - lastUpdateRef.current >= 33) {
+        lastUpdateRef.current = now;
+        const displayValue = Math.max(0, Math.min(100, Math.round(eased)));
+        setProgress((prev) => (prev === displayValue ? prev : displayValue));
+      }
+
+      if (loadedRatio === 1 && elapsed >= minDuration) {
+        if (finishTimeoutRef.current) clearTimeout(finishTimeoutRef.current);
+        finishTimeoutRef.current = setTimeout(() => {
           setIsLoading(false);
         }, 300);
+        return;
       }
+
+      rafRef.current = requestAnimationFrame(tick);
     };
 
     // Обработчики для видео
@@ -116,16 +128,12 @@ export default function LoadingScreen() {
 
     // Начинаем загрузку и анимацию
     video.load();
-    startTimeRef.current = Date.now();
-    checkFinish();
+    startTimeRef.current = 0;
+    rafRef.current = requestAnimationFrame(tick);
 
     return () => {
-      if (animationFrameId) {
-        cancelAnimationFrame(animationFrameId);
-      }
-      if (finishTimeout) {
-        clearTimeout(finishTimeout);
-      }
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      if (finishTimeoutRef.current) clearTimeout(finishTimeoutRef.current);
       resources.forEach((resource) => {
         if (resource instanceof Image) {
           resource.removeEventListener("load", updateProgress);

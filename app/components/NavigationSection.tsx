@@ -399,7 +399,7 @@ export default function NavigationSection() {
   };
 
   return (
-    <div className="relative flex">
+    <div data-navigation className="relative flex">
       {/* Left Navigation - скрываем на мобилках */}
       {!isMobile && (
         <div className="sticky top-0 h-screen w-1/3 px-8 py-8 z-20 pointer-events-none shrink-0 hidden md:block">

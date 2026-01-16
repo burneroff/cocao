@@ -8,7 +8,193 @@ import Values from "./sections/Values";
 import Team from "./sections/Team";
 import Contacts from "./sections/Contacts";
 
-const sections = [
+// Компонент-обертка для секций с анимацией появления
+const SectionWrapper = ({
+  sectionId,
+  sectionRefs,
+  isMobile,
+  bgColor,
+  children,
+}: {
+  sectionId: string;
+  sectionRefs: React.MutableRefObject<{ [key: string]: HTMLDivElement | null }>;
+  isMobile: boolean;
+  bgColor: string;
+  children: React.ReactNode;
+}) => {
+  const [isVisible, setIsVisible] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setIsVisible(true);
+          }
+        });
+      },
+      { threshold: 0.2 }
+    );
+
+    if (wrapperRef.current) {
+      observer.observe(wrapperRef.current);
+    }
+
+    return () => {
+      if (wrapperRef.current) {
+        observer.unobserve(wrapperRef.current);
+      }
+    };
+  }, []);
+
+  // Определяем стиль фона: для mission используем градиент, для остальных - обычный bgColor
+  const backgroundStyle = 
+    sectionId === "mission"
+      ? { 
+          background: "linear-gradient(to bottom, #000000 60%, #dadada 60%)",
+          width: isMobile ? "100%" : "100vw"
+        }
+      : { width: isMobile ? "100%" : "100vw" };
+
+  return (
+    <div
+      ref={(el) => {
+        sectionRefs.current[sectionId] = el;
+        wrapperRef.current = el;
+      }}
+      id={sectionId}
+      className={`relative z-10 ${sectionId === "mission" ? "" : bgColor} transition-opacity duration-1000 ${
+        isVisible ? "opacity-100" : "opacity-0"
+      }`}
+      style={backgroundStyle}
+    >
+      <div className={isMobile ? "" : "pl-[33.333333%]"}>{children}</div>
+    </div>
+  );
+};
+
+// Тип для секции навигации
+type SectionItem = {
+  id: string;
+  label: string;
+  component: React.ComponentType;
+  bgColor: string;
+  textColor: string;
+};
+
+// Компонент для навигационных пунктов с анимацией
+const NavItems = ({
+  sections,
+  activeSection,
+  hoveredId,
+  setHoveredId,
+  scrollToSection,
+}: {
+  sections: SectionItem[];
+  activeSection: string;
+  hoveredId: string | null;
+  setHoveredId: (id: string | null) => void;
+  scrollToSection: (id: string) => void;
+}) => {
+  const [visibleItems, setVisibleItems] = useState<Set<string>>(new Set());
+  const navRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            // Анимируем каждый пункт с задержкой
+            sections.forEach((section, index) => {
+              setTimeout(() => {
+                setVisibleItems((prev) => new Set(prev).add(section.id));
+              }, index * 100);
+            });
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    if (navRef.current) {
+      observer.observe(navRef.current);
+    }
+
+    return () => {
+      if (navRef.current) {
+        observer.unobserve(navRef.current);
+      }
+    };
+  }, []);
+
+  return (
+    <div ref={navRef} className="flex h-full flex-col justify-center gap-0 pointer-events-auto mt-5">
+      {sections.map((section, index) => {
+        const isVisible = visibleItems.has(section.id);
+        return (
+          <button
+            key={section.id}
+            onClick={() => scrollToSection(section.id)}
+            onMouseEnter={() => {
+              if (activeSection !== section.id) {
+                setHoveredId(section.id);
+              }
+            }}
+            onMouseLeave={() => setHoveredId(null)}
+            style={{
+              lineHeight: "clamp(60px, 8vw, 100px)",
+              color:
+                activeSection === section.id || hoveredId === section.id
+                  ? "#0100F4"
+                  : "#9F9B96",
+
+              backgroundImage: "none",
+
+              transition: "color 0.5s ease-in-out",
+            }}
+            className="flex items-center gap-0 text-left text-[clamp(48px,6vw,100px)] font-semibold uppercase"
+          >
+            <span
+              className={`inline-block transition-all duration-500 ease-in-out ${
+                activeSection === section.id || hoveredId === section.id
+                  ? "opacity-100 translate-x-0 text-[#0100F4] w-auto"
+                  : "opacity-0 -translate-x-4 w-0 overflow-hidden"
+              }`}
+            >
+              ›
+            </span>
+
+            <span
+              style={{
+                transform: isVisible ? "translateX(0)" : "translateX(100px)",
+                opacity: isVisible ? 1 : 0,
+                transition: `transform 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) ${index * 0.1}s, opacity 0.6s ease-out ${index * 0.1}s`,
+              }}
+            >
+              {section.label}
+            </span>
+          </button>
+        );
+      })}
+    </div>
+  );
+};
+
+// Функция для получения цвета фона секции
+const getSectionBgColor = (sectionId: string): string => {
+  const colorMap: { [key: string]: string } = {
+    us: "#000000",
+    mission: "#000000", // Верхняя часть градиента черная
+    products: "#dadada",
+    values: "#000000",
+    team: "#dadada",
+    contacts: "#dadada",
+  };
+  return colorMap[sectionId] || "#000000";
+};
+
+const sections: SectionItem[] = [
   {
     id: "us",
     label: "US",
@@ -34,7 +220,7 @@ const sections = [
     id: "values",
     label: "Values",
     component: Values,
-    bgColor: "bg-[red]",
+    bgColor: "bg-black",
     textColor: "text-black",
   },
   {
@@ -73,6 +259,73 @@ export default function NavigationSection() {
 
     return () => {
       window.removeEventListener("resize", checkMobile);
+    };
+  }, []);
+
+  // Отслеживание скролла и изменение фона заранее
+  useEffect(() => {
+    const updateBackgroundColor = () => {
+      const scrollY = window.scrollY;
+      const viewportHeight = window.innerHeight;
+      const previewDistance = 300; // Расстояние заранее, на котором меняем фон
+      
+      // Определяем следующую секцию на основе позиции скролла
+      let targetSectionId = sections[0].id;
+      
+      for (let i = 0; i < sections.length; i++) {
+        const section = sections[i];
+        const element = sectionRefs.current[section.id];
+        
+        if (element) {
+          const rect = element.getBoundingClientRect();
+          // getBoundingClientRect возвращает позицию относительно viewport
+          const sectionTop = rect.top + scrollY; // Позиция относительно документа
+          const sectionBottom = sectionTop + rect.height;
+          const currentViewportBottom = scrollY + viewportHeight;
+          
+          // Если мы еще не дошли до секции, но она близко (в пределах previewDistance)
+          if (sectionTop > currentViewportBottom && sectionTop <= currentViewportBottom + previewDistance) {
+            targetSectionId = section.id;
+            break;
+          }
+          
+          // Если мы в секции
+          if (scrollY >= sectionTop && scrollY < sectionBottom) {
+            // Если мы в конце секции (близко к концу), берем следующую
+            const distanceToBottom = sectionBottom - currentViewportBottom;
+            if (distanceToBottom < previewDistance) {
+              const nextIndex = i + 1;
+              if (nextIndex < sections.length) {
+                targetSectionId = sections[nextIndex].id;
+              } else {
+                targetSectionId = section.id;
+              }
+            } else {
+              targetSectionId = section.id;
+            }
+            break;
+          }
+        }
+      }
+      
+      // Меняем фон body заранее (кроме values, так как Values сам управляет своим цветом)
+      if (targetSectionId !== "values") {
+        const bgColor = getSectionBgColor(targetSectionId);
+        document.documentElement.style.setProperty('--background', bgColor);
+        document.body.style.background = bgColor;
+      }
+    };
+
+    // Обновляем при скролле
+    window.addEventListener('scroll', updateBackgroundColor, { passive: true });
+    // Обновляем при изменении размера окна
+    window.addEventListener('resize', updateBackgroundColor, { passive: true });
+    // Обновляем сразу
+    updateBackgroundColor();
+
+    return () => {
+      window.removeEventListener('scroll', updateBackgroundColor);
+      window.removeEventListener('resize', updateBackgroundColor);
     };
   }, []);
 
@@ -137,6 +390,8 @@ export default function NavigationSection() {
 
     const element = sectionRefs.current[id];
     if (element) {
+      // Отправляем событие перед программной прокруткой, чтобы Values знал об этом
+      window.dispatchEvent(new CustomEvent('programmatic-scroll-start'));
       element.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   };
@@ -146,58 +401,13 @@ export default function NavigationSection() {
       {/* Left Navigation - скрываем на мобилках */}
       {!isMobile && (
         <div className="sticky top-0 h-screen w-1/3 px-8 py-8 z-20 pointer-events-none shrink-0 hidden md:block">
-          <div className="flex h-full flex-col justify-center gap-0 pointer-events-auto mt-5">
-            {sections.map((section) => (
-              <button
-                key={section.id}
-                onClick={() => scrollToSection(section.id)}
-                onMouseEnter={() => {
-                  if (activeSection !== section.id) {
-                    setHoveredId(section.id);
-                  }
-                }}
-                onMouseLeave={() => setHoveredId(null)}
-                style={{
-                  lineHeight: "clamp(60px, 8vw, 100px)",
-                  color:
-                    activeSection === section.id
-                      ? "#0100F4"
-                      : hoveredId === section.id
-                      ? "#ffffff"
-                      : "#9F9B96",
-
-                  backgroundImage:
-                    activeSection !== section.id
-                      ? "linear-gradient(to bottom, transparent 0%, transparent 50%, #0100F4 50%, #0100F4 100%)"
-                      : "none",
-
-                  backgroundSize:
-                    hoveredId === section.id && activeSection !== section.id
-                      ? "100% 95px"
-                      : "0% 95px",
-
-                  backgroundRepeat: "no-repeat",
-                  backgroundPosition: "0 bottom",
-
-                  transition:
-                    "background-size 0.5s ease-in-out, color 0.5s ease-in-out",
-                }}
-                className="flex items-center gap-0 text-left text-[clamp(48px,6vw,100px)] font-semibold uppercase"
-              >
-                <span
-                  className={`inline-block transition-all duration-500 ease-in-out ${
-                    activeSection === section.id
-                      ? "opacity-100 translate-x-0 text-[#0100F4] w-auto"
-                      : "opacity-0 -translate-x-4 w-0 overflow-hidden"
-                  }`}
-                >
-                  ›
-                </span>
-
-                <span>{section.label}</span>
-              </button>
-            ))}
-          </div>
+          <NavItems
+            sections={sections}
+            activeSection={activeSection}
+            hoveredId={hoveredId}
+            setHoveredId={setHoveredId}
+            scrollToSection={scrollToSection}
+          />
         </div>
       )}
 
@@ -211,19 +421,15 @@ export default function NavigationSection() {
           const SectionComponent = section.component;
           const sectionData = sections.find((s) => s.id === section.id);
           return (
-            <div
+            <SectionWrapper
               key={section.id}
-              ref={(el) => {
-                sectionRefs.current[section.id] = el;
-              }}
-              id={section.id}
-              className={`relative z-10 ${sectionData?.bgColor || "bg-white"}`}
-              style={{ width: isMobile ? "100%" : "100vw" }}
+              sectionId={section.id}
+              sectionRefs={sectionRefs}
+              isMobile={isMobile}
+              bgColor={sectionData?.bgColor || "bg-white"}
             >
-              <div className={isMobile ? "" : "ml-[33.333333%]"}>
-                <SectionComponent />
-              </div>
-            </div>
+              <SectionComponent />
+            </SectionWrapper>
           );
         })}
       </div>

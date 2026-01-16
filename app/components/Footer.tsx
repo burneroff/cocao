@@ -13,6 +13,7 @@ export default function Footer() {
         justify-between
       "
       style={{
+        backgroundColor: "#DADADA",
         backgroundImage: `
           linear-gradient(to bottom, rgba(218,218,218,1), rgba(218,218,218,0)),
           url(/footer.png)
@@ -50,7 +51,7 @@ export default function Footer() {
             href="#"
             className="group relative text-base overflow-hidden"
           >
-            <span className="relative z-10 text-[#35353C] transition-colors group-hover:text-white">
+            <span className="relative z-10 text-[#35353C] transition-colors">
               {label}
             </span>
             <span className="absolute inset-0 top-1/2 h-1/2 bg-[#0100F4] origin-left scale-x-0 transition-transform duration-300 ease-out group-hover:scale-x-100" />

@@ -1,9 +1,54 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { Cross } from "../icons/Cross";
 
 export default function US() {
+  const [isVisible, setIsVisible] = useState(false);
+  const [spansAnimated, setSpansAnimated] = useState(false);
+  const sectionRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setIsVisible(true);
+          }
+        });
+      },
+      { threshold: 0.2 }
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => {
+      if (sectionRef.current) {
+        observer.unobserve(sectionRef.current);
+      }
+    };
+  }, []);
+
+  // Запускаем анимацию span через 1.5 секунды после появления блока
+  useEffect(() => {
+    if (isVisible) {
+      const timer = setTimeout(() => {
+        setSpansAnimated(true);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [isVisible]);
+
   return (
-    <div className="min-h-[100vh] md:min-h-[150vh] flex items-start justify-end px-4 py-4 md:px-16 md:py-16 relative">
+    <div
+      ref={sectionRef}
+      className={`min-h-[100vh] md:min-h-[150vh] flex items-start justify-end px-4 py-4 md:px-16 md:py-16 relative transition-opacity duration-1000 ${
+        isVisible ? "opacity-100" : "opacity-0"
+      }`}
+    >
       <div className="flex justify-end flex-col">
         <div
           className="text-[#CDCDCD] font-normal leading-normal md:leading-[70px] tracking-[0%] text-justify w-full max-w-full md:max-w-[910px]"
@@ -14,48 +59,47 @@ export default function US() {
         >
           <p className="mb-4 md:mb-8">
             We're a product team developing and growing mobile{" "}
-            <span
-              className="inline"
-              style={{
-                background:
-                  "linear-gradient(to bottom, transparent 0%, transparent 50%, #0100F4 50%, #0100F4 100%)",
-                backgroundSize: "100% clamp(20px, 4vw, 35px)",
-                backgroundRepeat: "no-repeat",
-                backgroundPosition: "0 bottom",
-              }}
-            >
-              apps in Health & Wellness, Entertainment, and Utilities
+            <span className="inline relative">
+              <span className="relative z-10">
+                apps in Health & Wellness, Entertainment, and Utilities
+              </span>
+              <span
+                className="absolute inset-0 top-1/2 h-1/2 bg-[#0100F4] origin-left transition-transform duration-800 ease-out"
+                style={{
+                  transform: spansAnimated ? "scaleX(1)" : "scaleX(0)",
+                }}
+              />
             </span>{" "}
             categories. Our focus is not just on launching new products, but on
             building sustainable growth models, creating long-lasting projects,
             and turning{" "}
-            <span
-              className="inline"
-              style={{
-                background:
-                  "linear-gradient(to bottom, transparent 0%, transparent 50%, #0100F4 50%, #0100F4 100%)",
-                backgroundSize: "100% clamp(20px, 4vw, 35px)",
-                backgroundRepeat: "no-repeat",
-                backgroundPosition: "0 bottom",
-              }}
-            >
-              ideas into clear, useful digital experiences.
+            <span className="inline relative">
+              <span className="relative z-10">
+                ideas into clear, useful digital experiences.
+              </span>
+              <span
+                className="absolute inset-0 top-1/2 h-1/2 bg-[#0100F4] origin-left transition-transform duration-800 ease-out"
+                style={{
+                  transform: spansAnimated ? "scaleX(1)" : "scaleX(0)",
+                  transitionDelay: "0.1s",
+                }}
+              />
             </span>
           </p>
           <p>
             Our team is distributed across several countries, but we share the
             same DNA – curio
-            <span
-              className="inline"
-              style={{
-                background:
-                  "linear-gradient(to bottom, transparent 0%, transparent 50%, #0100F4 50%, #0100F4 100%)",
-                backgroundSize: "100% clamp(20px, 4vw, 35px)",
-                backgroundRepeat: "no-repeat",
-                backgroundPosition: "0 bottom",
-              }}
-            >
-              sity, creativity, and
+            <span className="inline relative">
+              <span className="relative z-10">
+                sity, creativity, and
+              </span>
+              <span
+                className="absolute inset-0 top-1/2 h-1/2 bg-[#0100F4] origin-left transition-transform duration-800 ease-out"
+                style={{
+                  transform: spansAnimated ? "scaleX(1)" : "scaleX(0)",
+                  transitionDelay: "0.2s",
+                }}
+              />
             </span>{" "}
             the drive to build products people genuinely love to use.
           </p>

@@ -1,30 +1,101 @@
+"use client";
+
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { Cross } from "../icons/Cross";
 
 export default function Mission() {
-  const highlightStyle = {
-    background:
-      "linear-gradient(to bottom, transparent 0%, transparent 50%, #0100F4 50%, #0100F4 100%)",
-    backgroundSize: "100% 35px",
-    backgroundRepeat: "no-repeat",
-    backgroundPosition: "0 bottom",
-  };
+  const [isVisible, setIsVisible] = useState(false);
+  const [spansAnimated, setSpansAnimated] = useState(false);
+  const [animatedValues, setAnimatedValues] = useState({ value1: 0, value2: 0, value3: 0 });
+  const sectionRef = useRef<HTMLDivElement>(null);
 
-  // Responsive стили для подсветки
-  const responsiveHighlightStyle = {
-    ...highlightStyle,
-    backgroundSize: "100% 25px",
-    "@media (min-width: 768px)": {
-      backgroundSize: "100% 35px",
-    },
-  };
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setIsVisible(true);
+          }
+        });
+      },
+      { threshold: 0.2 }
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => {
+      if (sectionRef.current) {
+        observer.unobserve(sectionRef.current);
+      }
+    };
+  }, []);
+
+  // Запускаем анимацию span через 1.5 секунды после появления блока
+  useEffect(() => {
+    if (isVisible) {
+      const timer = setTimeout(() => {
+        setSpansAnimated(true);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [isVisible]);
+
+  // Анимация чисел от 0 до целевых значений
+  useEffect(() => {
+    if (isVisible) {
+      const duration = 2000; // 2 секунды
+      const startTime = Date.now();
+      const targetValues = { value1: 30, value2: 28, value3: 1.7 };
+
+      const animate = () => {
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        
+        // Easing function для плавной анимации
+        const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
+
+        const easedProgress = easeOutCubic(progress);
+
+        setAnimatedValues({
+          value1: Math.floor(targetValues.value1 * easedProgress),
+          value2: Math.floor(targetValues.value2 * easedProgress * 100) / 100,
+          value3: Math.floor(targetValues.value3 * easedProgress * 100) / 100,
+        });
+
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        } else {
+          // Убеждаемся, что финальные значения точные
+          setAnimatedValues({
+            value1: targetValues.value1,
+            value2: targetValues.value2,
+            value3: targetValues.value3,
+          });
+        }
+      };
+
+      // Запускаем анимацию через небольшую задержку после появления блока
+      const timer = setTimeout(() => {
+        animate();
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [isVisible]);
 
   return (
-    <div className=" h-[80vh] md:h-[120vh] flex items-start justify-end px-4 py-8 md:px-16 md:py-16 relative">
-      <div className="flex justify-end flex-col ">
+    <div
+      ref={sectionRef}
+      className={`h-[80vh] md:h-[120vh] flex items-start justify-end px-4 py-8 md:px-16 md:py-16 relative transition-opacity duration-1000 ${
+        isVisible ? "opacity-100" : "opacity-0"
+      }`}
+    >
+      <div className="flex justify-end flex-col bg-black ">
         {/* Текст с адаптивным размером */}
         <div
-          className="text-[#3F3E3D] font-normal leading-[35px] md:leading-[50px] lg:leading-[70px] tracking-[0%] text-justify"
+          className="text-[#CDCDCD] font-normal leading-[35px] md:leading-[50px] lg:leading-[70px] tracking-[0%] text-justify"
           style={{
             fontFamily: "var(--font-neue-regrade), Neue Regrade, sans-serif",
             maxWidth: "909px",
@@ -35,25 +106,59 @@ export default function Mission() {
         >
           <p>
             We create mobile{" "}
-            <span className="inline" style={responsiveHighlightStyle}>
-              products
+            <span className="inline relative">
+              <span className="relative z-10">products</span>
+              <span
+                className="absolute inset-0 top-1/2 h-1/2 bg-[#0100F4] origin-left transition-transform duration-800 ease-out"
+                style={{
+                  transform: spansAnimated ? "scaleX(1)" : "scaleX(0)",
+                }}
+              />
             </span>{" "}
             that make life simpler,{" "}
-            <span className="inline" style={responsiveHighlightStyle}>
-              more engaging,
+            <span className="inline relative">
+              <span className="relative z-10">more engaging,</span>
+              <span
+                className="absolute inset-0 top-1/2 h-1/2 bg-[#0100F4] origin-left transition-transform duration-800 ease-out"
+                style={{
+                  transform: spansAnimated ? "scaleX(1)" : "scaleX(0)",
+                  transitionDelay: "0.05s",
+                }}
+              />
             </span>{" "}
             and{" "}
-            <span className="inline" style={responsiveHighlightStyle}>
-              more mindful.
+            <span className="inline relative">
+              <span className="relative z-10">more mindful.</span>
+              <span
+                className="absolute inset-0 top-1/2 h-1/2 bg-[#0100F4] origin-left transition-transform duration-800 ease-out"
+                style={{
+                  transform: spansAnimated ? "scaleX(1)" : "scaleX(0)",
+                  transitionDelay: "0.1s",
+                }}
+              />
             </span>{" "}
-            In every project, we combine creativity, data, and attention to
-            detail to deliver not just an app – but a{" "}
-            <span className="inline" style={responsiveHighlightStyle}>
-              clear, inspiring,
+            In every project, we combine creativity, data, and attention to detail
+            to deliver not just an app – but a{" "}
+            <span className="inline relative">
+              <span className="relative z-10">clear, inspiring,</span>
+              <span
+                className="absolute inset-0 top-1/2 h-1/2 bg-[#0100F4] origin-left transition-transform duration-800 ease-out"
+                style={{
+                  transform: spansAnimated ? "scaleX(1)" : "scaleX(0)",
+                  transitionDelay: "0.15s",
+                }}
+              />
             </span>{" "}
             and{" "}
-            <span className="inline" style={responsiveHighlightStyle}>
-              genuinely useful
+            <span className="inline relative">
+              <span className="relative z-10">genuinely useful</span>
+              <span
+                className="absolute inset-0 top-1/2 h-1/2 bg-[#0100F4] origin-left transition-transform duration-800 ease-out"
+                style={{
+                  transform: spansAnimated ? "scaleX(1)" : "scaleX(0)",
+                  transitionDelay: "0.2s",
+                }}
+              />
             </span>{" "}
             digital experience.
           </p>
@@ -61,21 +166,40 @@ export default function Mission() {
 
         {/* 3 блока под текстом - адаптивные отступы */}
         <div className="flex flex-row gap-8 md:gap-12 lg:gap-[180px] mt-12 md:mt-[100px]">
-          {[1, 2, 3].map((index) => (
-            <div key={index} className="flex flex-col items-left">
-              <div className="text-[40px] md:text-[55px] lg:text-[65px] text-[#3F3E3D] font-bold leading-[45px] md:leading-[60px] lg:leading-[70px] mb-2 md:mb-4">
-                22+
-              </div>
-              <div className="text-[20px] md:text-[30px] lg:text-[40px] text-[#3F3E3D] font-normal leading-[30px] md:leading-[45px] lg:leading-[70px] text-left">
-                Text
-              </div>
+          {/* Блок 1: 30+ Products */}
+          <div className="flex flex-col items-left">
+            <div className="text-[48px] md:text-[64px] text-[#CDCDCD] font-normal md:font-medium leading-[40px] md:leading-[100%] tracking-[0%] uppercase mb-2 md:mb-4">
+              {animatedValues.value1}+
             </div>
-          ))}
+            <div className="text-[12px] md:text-[25px] text-[#CDCDCD] font-normal md:font-medium leading-[18px] md:leading-[35px] tracking-[0%] text-left">
+              Products
+            </div>
+          </div>
+          
+          {/* Блок 2: 28m+ Installs Worldwide */}
+          <div className="flex flex-col items-left">
+            <div className="text-[48px] md:text-[64px] text-[#CDCDCD] font-normal md:font-medium leading-[40px] md:leading-[100%] tracking-[0%] uppercase mb-2 md:mb-4">
+              {Math.floor(animatedValues.value2)}m+
+            </div>
+            <div className="text-[12px] md:text-[25px] text-[#CDCDCD] font-normal md:font-medium leading-[18px] md:leading-[35px] tracking-[0%] text-left">
+              Installs Worldwide
+            </div>
+          </div>
+          
+          {/* Блок 3: 1.7m+ Monthly Active Users */}
+          <div className="flex flex-col items-left">
+            <div className="text-[48px] md:text-[64px] text-[#CDCDCD] font-normal md:font-medium leading-[40px] md:leading-[100%] tracking-[0%] uppercase mb-2 md:mb-4">
+              {animatedValues.value3.toFixed(1)}m+
+            </div>
+            <div className="text-[12px] md:text-[25px] text-[#CDCDCD] font-normal md:font-medium leading-[18px] md:leading-[35px] tracking-[0%] text-left">
+              Monthly Active Users
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Картинка по центру - адаптивное позиционирование */}
-      <div className="absolute left-1/2 bottom-[100px] md:bottom-[0px] -translate-x-1/2 translate-y-0 md:-translate-y-1/2 w-[120px] h-[120px] md:w-[150px] md:h-[150px] lg:w-[184px] lg:h-[184px]">
+      {/* Картинка по центру правой части секции - адаптивное позиционирование */}
+      <div className="absolute left-1/2 bottom-[100px] md:bottom-[0px] -translate-x-1/2 translate-y-0 md:-translate-y-1/2 md:ml-[115px] w-[120px] h-[120px] md:w-[150px] md:h-[150px] lg:w-[184px] lg:h-[184px]">
         <Image
           src="/frames/frame_mission.png"
           alt="Frame Mission"
@@ -87,12 +211,12 @@ export default function Mission() {
 
         {/* Первый Cross - адаптивные отступы */}
         <div className="absolute left-[-30px] md:left-[-45px] lg:left-[-60px] bottom-[-30px] md:bottom-[-40px] lg:bottom-[-50px] w-6 h-6 md:w-8 md:h-8">
-          <Cross color="#3F3E3D" />
+          <Cross color="#000000" />
         </div>
 
         {/* Второй Cross - адаптивные отступы */}
         <div className="absolute right-[-30px] md:right-[-45px] lg:right-[-60px] bottom-[-30px] md:bottom-[-40px] lg:bottom-[-50px] w-6 h-6 md:w-8 md:h-8">
-          <Cross color="#3F3E3D" />
+          <Cross color="#000000" />
         </div>
       </div>
     </div>

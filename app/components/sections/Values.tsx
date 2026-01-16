@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 
 interface ValueSection {
   title: string;
@@ -45,185 +45,250 @@ export default function Values() {
   const [currentSection, setCurrentSection] = useState(0);
   const [allSectionsViewed, setAllSectionsViewed] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const isScrollingRef = useRef(false);
   const viewedSectionsRef = useRef<Set<number>>(new Set([0]));
-  const hasScrolledToSectionRef = useRef(false);
+  const isActiveRef = useRef(false);
+  const isAnimatingRef = useRef(false);
   const isProgrammaticScrollRef = useRef(false);
+  const currentIndexRef = useRef(0);
+  const allViewedRef = useRef(false);
+  const programmaticTargetRef = useRef<string | null>(null);
+  const programmaticFallbackRef = useRef<number | null>(null);
+  const scrollEndTimeoutRef = useRef<number | null>(null);
+  const wheelAccumulatorRef = useRef(0);
+  const touchAccumulatorRef = useRef(0);
+  const lastTouchYRef = useRef<number | null>(null);
+  const snapRafRef = useRef<number | null>(null);
+  const lastIntentRef = useRef(0);
 
-  useEffect(() => {
-    viewedSectionsRef.current.add(currentSection);
+  const snapToTopIfNeeded = (behavior: ScrollBehavior = "smooth") => {
+    if (snapRafRef.current) {
+      window.cancelAnimationFrame(snapRafRef.current);
+    }
+
+    snapRafRef.current = window.requestAnimationFrame(() => {
+      const rect = containerRef.current?.getBoundingClientRect();
+      if (!rect) return;
+
+      const windowHeight = window.innerHeight;
+      const isPartiallyVisible = rect.bottom > 0 && rect.top < windowHeight;
+      const isPinned = rect.top <= 0 && rect.bottom >= windowHeight;
+
+      if (isPartiallyVisible && !isPinned) {
+        const elementTop = rect.top + window.scrollY;
+        window.scrollTo({ top: elementTop, behavior });
+      }
+    });
+  };
+
+  const markViewed = (index: number) => {
+    viewedSectionsRef.current.add(index);
     if (viewedSectionsRef.current.size === valuesData.length) {
       setAllSectionsViewed(true);
     }
+  };
+
+  useLayoutEffect(() => {
+    markViewed(currentSection);
+    currentIndexRef.current = currentSection;
+    allViewedRef.current = allSectionsViewed;
+    wheelAccumulatorRef.current = 0;
+    touchAccumulatorRef.current = 0;
   }, [currentSection]);
 
-  // Отслеживание программной прокрутки через навигацию
-  useEffect(() => {
-    const handleProgrammaticScroll = () => {
-      isProgrammaticScrollRef.current = true;
-      setTimeout(() => {
-        isProgrammaticScrollRef.current = false;
-      }, 1500); // Длительность достаточная для smooth scroll
-    };
+  useLayoutEffect(() => {
+    allViewedRef.current = allSectionsViewed;
+  }, [allSectionsViewed]);
 
-    // Слушаем событие программной прокрутки
-    window.addEventListener('programmatic-scroll-start', handleProgrammaticScroll);
-
-    return () => {
-      window.removeEventListener('programmatic-scroll-start', handleProgrammaticScroll);
-    };
-  }, []);
-
-  // Отслеживаем видимость секции и прокручиваем к началу при входе
-  useEffect(() => {
-    if (!containerRef.current) return;
-
+  useLayoutEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting && entry.intersectionRatio > 0.1) {
-            // Прокручиваем к началу секции плавно только при первом входе
-            // Но не если идет программная прокрутка из навигации
-            if (!hasScrolledToSectionRef.current && !isProgrammaticScrollRef.current) {
-              hasScrolledToSectionRef.current = true;
-              setTimeout(() => {
-                if (containerRef.current && !isProgrammaticScrollRef.current) {
-                  const elementTop = containerRef.current.getBoundingClientRect().top + window.scrollY;
-                  window.scrollTo({
-                    top: elementTop,
-                    behavior: "smooth"
-                  });
-                }
-              }, 100);
-            }
-          } else if (!entry.isIntersecting) {
-            hasScrolledToSectionRef.current = false;
+          const isVisible = entry.isIntersecting && entry.intersectionRatio > 0.55;
+          isActiveRef.current = isVisible;
+
+          const isExitingUp = currentIndexRef.current === 0 && lastIntentRef.current < 0;
+          const isExitingDown =
+            currentIndexRef.current === valuesData.length - 1 &&
+            allViewedRef.current &&
+            lastIntentRef.current > 0;
+
+          if (isVisible && !isProgrammaticScrollRef.current && !isExitingUp && !isExitingDown) {
+            snapToTopIfNeeded();
           }
         });
       },
       {
-        threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
-        rootMargin: "-10% 0px -10% 0px",
+        threshold: [0.25, 0.4, 0.55, 0.7, 0.85, 1],
+        rootMargin: "0px",
       }
     );
 
-    observer.observe(containerRef.current);
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
+  useLayoutEffect(() => {
+    const endProgrammaticScroll = () => {
+      const targetId = programmaticTargetRef.current;
+      isProgrammaticScrollRef.current = false;
+      programmaticTargetRef.current = null;
+      if (targetId === "values") {
+        snapToTopIfNeeded();
+      }
+    };
+
+    const handleProgrammaticScroll = (event: Event) => {
+      const customEvent = event as CustomEvent<{ targetId?: string }>;
+      isProgrammaticScrollRef.current = true;
+      programmaticTargetRef.current = customEvent.detail?.targetId ?? null;
+      isAnimatingRef.current = false;
+      wheelAccumulatorRef.current = 0;
+      touchAccumulatorRef.current = 0;
+
+      if (programmaticFallbackRef.current) {
+        window.clearTimeout(programmaticFallbackRef.current);
+      }
+      programmaticFallbackRef.current = window.setTimeout(endProgrammaticScroll, 2500);
+    };
+
+    const handleScroll = () => {
+      if (!isProgrammaticScrollRef.current) return;
+      if (scrollEndTimeoutRef.current) {
+        window.clearTimeout(scrollEndTimeoutRef.current);
+      }
+      scrollEndTimeoutRef.current = window.setTimeout(endProgrammaticScroll, 120);
+    };
+
+    window.addEventListener("programmatic-scroll-start", handleProgrammaticScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
 
     return () => {
-      observer.disconnect();
+      window.removeEventListener("programmatic-scroll-start", handleProgrammaticScroll);
+      window.removeEventListener("scroll", handleScroll);
+      if (scrollEndTimeoutRef.current) {
+        window.clearTimeout(scrollEndTimeoutRef.current);
+      }
+      if (programmaticFallbackRef.current) {
+        window.clearTimeout(programmaticFallbackRef.current);
+      }
+      if (snapRafRef.current) {
+        window.cancelAnimationFrame(snapRafRef.current);
+      }
     };
   }, []);
 
-  // Обработчик скролла для плавного переключения между значениями
-  useEffect(() => {
-    const handleWheel = (e: WheelEvent) => {
-      // Если идет программная прокрутка из навигации, не блокируем её
-      if (isProgrammaticScrollRef.current) {
-        return;
-      }
+  useLayoutEffect(() => {
+    const canExitUp = (deltaY: number) => currentSection === 0 && deltaY < 0;
+    const canExitDown = (deltaY: number) =>
+      currentSection === valuesData.length - 1 && allSectionsViewed && deltaY > 0;
 
-      if (isScrollingRef.current) {
-        e.preventDefault();
-        return;
-      }
+    const handleIntent = (deltaY: number, event: Event, source: "wheel" | "touch") => {
+      lastIntentRef.current = deltaY;
+      if (!isActiveRef.current) return;
+      if (isProgrammaticScrollRef.current) return;
 
-      const containerRect = containerRef.current?.getBoundingClientRect();
-      if (!containerRect) return;
+      const rect = containerRef.current?.getBoundingClientRect();
+      if (!rect) return;
 
-      const containerTop = containerRect.top;
-      const containerBottom = containerRect.bottom;
       const windowHeight = window.innerHeight;
-      const scrollY = window.scrollY;
-      const elementTop = containerRect.top + scrollY;
-      const isPartiallyVisible = containerBottom > 0 && containerTop < windowHeight;
-      const isPinned = containerTop <= 0 && containerBottom >= windowHeight;
+      const isPinned = rect.top <= 2 && rect.bottom >= windowHeight - 2;
+      const isPartiallyVisible = rect.bottom > 0 && rect.top < windowHeight;
 
-      if (!isPartiallyVisible) {
-        return;
-      }
+      if (!isPartiallyVisible) return;
 
-      // Если секция видна, но еще не зафиксирована в вьюпорте — плавно доводим до верха
       if (!isPinned) {
-        // Если первый элемент и скролл вверх - разрешаем выход
-        if (currentSection === 0 && e.deltaY < 0) {
-          return;
-        }
-        // Если последний элемент, все просмотрены и скролл вниз - разрешаем выход
-        if (currentSection === valuesData.length - 1 && allSectionsViewed && e.deltaY > 0) {
-          return;
-        }
-
-        if (!isProgrammaticScrollRef.current) {
-          e.preventDefault();
-          isScrollingRef.current = true;
-
-          window.scrollTo({
-            top: elementTop,
-            behavior: "smooth",
-          });
-
-          setTimeout(() => {
-            isScrollingRef.current = false;
-          }, 800);
+        if (!canExitUp(deltaY) && !canExitDown(deltaY)) {
+          event.preventDefault();
+          snapToTopIfNeeded();
         }
         return;
       }
 
-      // Скролл вниз
-      if (e.deltaY > 0) {
-        // Если последний элемент и все просмотрены - разрешаем выход
-        if (currentSection === valuesData.length - 1 && allSectionsViewed) {
-          return;
-        }
-        
-        if (currentSection < valuesData.length - 1) {
-          e.preventDefault();
-          isScrollingRef.current = true;
-          const nextSection = currentSection + 1;
+      const accumulator = source === "wheel" ? wheelAccumulatorRef : touchAccumulatorRef;
+      const threshold = source === "wheel" ? 70 : 55;
+      accumulator.current += deltaY;
 
-          setCurrentSection(nextSection);
-          setTimeout(() => {
-            isScrollingRef.current = false;
-          }, 600);
-        } else if (currentSection === valuesData.length - 1) {
-          if (!allSectionsViewed) {
-            e.preventDefault();
-          }
-        }
+      if (Math.abs(accumulator.current) < threshold) {
+        event.preventDefault();
+        return;
       }
-      // Скролл вверх
-      else if (e.deltaY < 0) {
-        // Если первый элемент - разрешаем выход
-        if (currentSection === 0) {
+
+      const effectiveDelta = accumulator.current;
+      accumulator.current = 0;
+
+      if (effectiveDelta > 0) {
+        if (canExitDown(effectiveDelta)) return;
+        if (currentSection < valuesData.length - 1) {
+          event.preventDefault();
+          isAnimatingRef.current = true;
+          setCurrentSection((prev) => Math.min(prev + 1, valuesData.length - 1));
+          window.setTimeout(() => {
+            isAnimatingRef.current = false;
+          }, 600);
           return;
         }
-        
+        if (!allSectionsViewed) {
+          event.preventDefault();
+        }
+      } else if (effectiveDelta < 0) {
+        if (canExitUp(effectiveDelta)) return;
         if (currentSection > 0) {
-          e.preventDefault();
-          isScrollingRef.current = true;
-          const prevSection = currentSection - 1;
-
-          setCurrentSection(prevSection);
-
-          setTimeout(() => {
-            isScrollingRef.current = false;
+          event.preventDefault();
+          isAnimatingRef.current = true;
+          setCurrentSection((prev) => Math.max(prev - 1, 0));
+          window.setTimeout(() => {
+            isAnimatingRef.current = false;
           }, 600);
         }
       }
     };
 
+    const handleWheel = (e: WheelEvent) => handleIntent(e.deltaY, e, "wheel");
+
+    const handleTouchStart = (e: TouchEvent) => {
+      if (e.touches.length !== 1) return;
+      lastTouchYRef.current = e.touches[0].clientY;
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (e.touches.length !== 1) return;
+      if (lastTouchYRef.current === null) {
+        lastTouchYRef.current = e.touches[0].clientY;
+        return;
+      }
+
+      const currentY = e.touches[0].clientY;
+      const deltaY = lastTouchYRef.current - currentY;
+      lastTouchYRef.current = currentY;
+      handleIntent(deltaY, e, "touch");
+    };
+
+    const handleTouchEnd = () => {
+      lastTouchYRef.current = null;
+      touchAccumulatorRef.current = 0;
+    };
+
     window.addEventListener("wheel", handleWheel, { passive: false });
+    window.addEventListener("touchstart", handleTouchStart, { passive: true });
+    window.addEventListener("touchmove", handleTouchMove, { passive: false });
+    window.addEventListener("touchend", handleTouchEnd, { passive: true });
 
     return () => {
       window.removeEventListener("wheel", handleWheel);
+      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("touchmove", handleTouchMove);
+      window.removeEventListener("touchend", handleTouchEnd);
     };
   }, [currentSection, allSectionsViewed]);
 
   const currentValue = valuesData[currentSection];
 
   return (
-    <div 
-      ref={containerRef} 
+    <div
+      ref={containerRef}
       className="relative h-screen flex flex-col items-center justify-center px-4 md:px-8 lg:px-12 xl:px-20 py-8 md:py-12 lg:py-16"
     >
       {/* Фон на всю ширину экрана с плавным переходом */}
@@ -246,10 +311,11 @@ export default function Values() {
             {valuesData.map((value, index) => (
               <div
                 key={index}
-                className={`absolute inset-0 transition-opacity ease-in-out ${
-                  index === currentSection ? "opacity-100" : "opacity-0"
+                className={`absolute inset-0 transition-all duration-700 ease-out ${
+                  index === currentSection
+                    ? "opacity-100 translate-y-0 scale-100 blur-0"
+                    : "opacity-0 translate-y-4 scale-[0.98] blur-sm"
                 }`}
-                style={{ transitionDuration: "600ms" }}
               >
                 <Image
                   src={value.image}
@@ -280,10 +346,11 @@ export default function Values() {
               {valuesData.map((value, index) => (
                 <p
                   key={index}
-                  className={`transition-opacity ease-in-out ${
-                    index === currentSection ? "opacity-100" : "opacity-0 absolute inset-0"
+                  className={`transition-all duration-700 ease-out ${
+                    index === currentSection
+                      ? "opacity-100 translate-y-0 blur-0"
+                      : "opacity-0 -translate-y-2 blur-sm absolute inset-0"
                   }`}
-                  style={{ transitionDuration: "600ms" }}
                 >
                   <span
                     className="inline"
@@ -306,8 +373,10 @@ export default function Values() {
             {valuesData.map((value, index) => (
               <h2
                 key={index}
-                className={`text-white text-center 2xl:text-left px-4 2xl:ml-[30px] transition-opacity ease-in-out ${
-                  index === currentSection ? "opacity-100" : "opacity-0 absolute"
+                className={`text-white text-center 2xl:text-left px-4 2xl:ml-[30px] transition-all duration-700 ease-out ${
+                  index === currentSection
+                    ? "opacity-100 translate-y-0 blur-0"
+                    : "opacity-0 translate-y-2 blur-sm absolute"
                 }`}
                 style={{
                   fontWeight: 400,
@@ -322,7 +391,6 @@ export default function Values() {
                   maxWidth: "490px",
                   marginTop: "5px",
                   display: "block",
-                  transitionDuration: "600ms",
                 }}
                 dangerouslySetInnerHTML={{ __html: value.title }}
               />
@@ -333,8 +401,10 @@ export default function Values() {
               {valuesData.map((value, index) => (
                 <p
                   key={index}
-                  className={`text-white text-justify transition-opacity ease-in-out ${
-                    index === currentSection ? "opacity-100" : "opacity-0 absolute inset-0"
+                  className={`text-white text-justify transition-all duration-700 ease-out ${
+                    index === currentSection
+                      ? "opacity-100 translate-y-0 blur-0"
+                      : "opacity-0 -translate-y-2 blur-sm absolute inset-0"
                   }`}
                   style={{
                     fontWeight: 500,
@@ -342,7 +412,6 @@ export default function Values() {
                     fontSize: "clamp(16px, 3vw, 20px)",
                     lineHeight: "clamp(24px, 4vw, 32px)",
                     letterSpacing: "0%",
-                    transitionDuration: "600ms",
                   }}
                 >
                   <span

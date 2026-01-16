@@ -391,7 +391,9 @@ export default function NavigationSection() {
     const element = sectionRefs.current[id];
     if (element) {
       // Отправляем событие перед программной прокруткой, чтобы Values знал об этом
-      window.dispatchEvent(new CustomEvent('programmatic-scroll-start'));
+      window.dispatchEvent(
+        new CustomEvent("programmatic-scroll-start", { detail: { targetId: id } })
+      );
       element.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   };

@@ -50,6 +50,13 @@ export default function Values() {
   const hasScrolledToSectionRef = useRef(false);
   const isProgrammaticScrollRef = useRef(false);
 
+  useEffect(() => {
+    viewedSectionsRef.current.add(currentSection);
+    if (viewedSectionsRef.current.size === valuesData.length) {
+      setAllSectionsViewed(true);
+    }
+  }, [currentSection]);
+
   // Отслеживание программной прокрутки через навигацию
   useEffect(() => {
     const handleProgrammaticScroll = () => {
@@ -126,50 +133,40 @@ export default function Values() {
       const containerTop = containerRect.top;
       const containerBottom = containerRect.bottom;
       const windowHeight = window.innerHeight;
-      const containerHeight = containerRect.height;
       const scrollY = window.scrollY;
       const elementTop = containerRect.top + scrollY;
+      const isPartiallyVisible = containerBottom > 0 && containerTop < windowHeight;
+      const isPinned = containerTop <= 0 && containerBottom >= windowHeight;
 
-      // Проверяем, полностью ли секция видна и по центру
-      const isFullyVisible = containerTop >= 0 && containerBottom <= windowHeight;
-      const isCentered = Math.abs(containerTop) < 50 && Math.abs(containerBottom - windowHeight) < 50;
+      if (!isPartiallyVisible) {
+        return;
+      }
 
-      // Если секция частично видна, но не полностью или не по центру - прокручиваем к началу
-      // Но только если не идет программная прокрутка
-      if (!isFullyVisible || !isCentered) {
-        // Проверяем, находится ли секция в видимой области (хотя бы частично)
-        const isPartiallyVisible = containerBottom > 0 && containerTop < windowHeight;
-        
-        if (isPartiallyVisible) {
-          // Если первый элемент и скролл вверх - разрешаем выход
-          if (currentSection === 0 && e.deltaY < 0) {
-            return;
-          }
-          // Если последний элемент, все просмотрены и скролл вниз - разрешаем выход
-          if (currentSection === valuesData.length - 1 && allSectionsViewed && e.deltaY > 0) {
-            return;
-          }
-          
-          // Прокручиваем к началу секции, чтобы она была полностью видна
-          // Но только если не идет программная прокрутка
-          if (!isProgrammaticScrollRef.current) {
-            e.preventDefault();
-            isScrollingRef.current = true;
-            
-            window.scrollTo({
-              top: elementTop,
-              behavior: "smooth"
-            });
-            
-            setTimeout(() => {
-              isScrollingRef.current = false;
-            }, 800);
-          }
-          return;
-        } else {
-          // Если секция не видна вообще, не обрабатываем
+      // Если секция видна, но еще не зафиксирована в вьюпорте — плавно доводим до верха
+      if (!isPinned) {
+        // Если первый элемент и скролл вверх - разрешаем выход
+        if (currentSection === 0 && e.deltaY < 0) {
           return;
         }
+        // Если последний элемент, все просмотрены и скролл вниз - разрешаем выход
+        if (currentSection === valuesData.length - 1 && allSectionsViewed && e.deltaY > 0) {
+          return;
+        }
+
+        if (!isProgrammaticScrollRef.current) {
+          e.preventDefault();
+          isScrollingRef.current = true;
+
+          window.scrollTo({
+            top: elementTop,
+            behavior: "smooth",
+          });
+
+          setTimeout(() => {
+            isScrollingRef.current = false;
+          }, 800);
+        }
+        return;
       }
 
       // Скролл вниз
@@ -185,13 +182,6 @@ export default function Values() {
           const nextSection = currentSection + 1;
 
           setCurrentSection(nextSection);
-          viewedSectionsRef.current.add(nextSection);
-
-          // Проверяем, все ли секции просмотрены
-          if (nextSection === valuesData.length - 1 && viewedSectionsRef.current.size === valuesData.length) {
-            setAllSectionsViewed(true);
-          }
-
           setTimeout(() => {
             isScrollingRef.current = false;
           }, 600);

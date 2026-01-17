@@ -12,15 +12,12 @@ export default function LoadingScreen() {
   const totalRef = useRef(0);
   const displayProgressRef = useRef(0);
   const lastUpdateRef = useRef(0);
-  const allResourcesLoadedRef = useRef(false);
-  const contentReadyRef = useRef(false);
-  const minDuration = 2500; // Минимум 2.5 секунды для красивой анимации
+  const minDuration = 3000; // Минимум 3 секунды
   const maxDuration = 5000; // Максимум 5 секунд
 
   useEffect(() => {
     const resources: (HTMLImageElement | HTMLVideoElement)[] = [];
     loadedCountRef.current = 0;
-    allResourcesLoadedRef.current = false;
 
     // Создаем элементы для предзагрузки
     const video = document.createElement("video");
@@ -71,50 +68,6 @@ export default function LoadingScreen() {
 
     const updateProgress = () => {
       loadedCountRef.current += 1;
-      if (loadedCountRef.current >= totalRef.current) {
-        allResourcesLoadedRef.current = true;
-      }
-    };
-
-    // Проверка готовности контента
-    const checkContentReady = (): boolean => {
-      // Проверяем, что документ полностью загружен
-      if (document.readyState !== "complete") {
-        return false;
-      }
-
-      // Проверяем наличие ключевых элементов
-      const hasHero = document.querySelector('[data-hero]') !== null;
-      const hasNavigation = document.querySelector('[data-navigation]') !== null;
-      
-      // Если элементы есть - контент готов
-      return hasHero || hasNavigation;
-    };
-
-    const tryFinish = () => {
-      // Если ресурсы загружены И контент готов И прошло минимум времени
-      const elapsed = performance.now() - startTimeRef.current;
-      const resourcesReady = allResourcesLoadedRef.current;
-      const contentReady = checkContentReady();
-      
-      if (resourcesReady && contentReady && elapsed >= minDuration) {
-        if (finishTimeoutRef.current) clearTimeout(finishTimeoutRef.current);
-        finishTimeoutRef.current = setTimeout(() => {
-          setIsLoading(false);
-        }, 400);
-        return true;
-      }
-      
-      // Если прошло максимальное время - завершаем в любом случае
-      if (elapsed >= maxDuration) {
-        if (finishTimeoutRef.current) clearTimeout(finishTimeoutRef.current);
-        finishTimeoutRef.current = setTimeout(() => {
-          setIsLoading(false);
-        }, 400);
-        return true;
-      }
-      
-      return false;
     };
 
     const tick = (now: number) => {
@@ -125,44 +78,62 @@ export default function LoadingScreen() {
       const elapsed = now - startTimeRef.current;
       const total = totalRef.current || 1;
       const loadedRatio = Math.min(loadedCountRef.current / total, 1);
-      const resourcesReady = allResourcesLoadedRef.current;
-      const contentReady = checkContentReady();
 
       let targetProgress = 0;
       
-      // Если ресурсы загружены ИЛИ прошло минимум времени - прогресс идет к 100%
-      if (resourcesReady || elapsed >= minDuration) {
-        // Если ресурсы загружены - показываем 100%
-        if (resourcesReady) {
-          targetProgress = 100;
-        } 
-        // Если ресурсы не загружены, но прошло минимум времени - показываем 95-99%
-        else if (elapsed >= minDuration) {
-          targetProgress = Math.min(95 + (elapsed - minDuration) / (maxDuration - minDuration) * 4, 99);
-        }
-      } 
-      // До минимума - плавный рост прогресса на основе времени и загрузки
+      // Если прошло максимальное время - обязательно 100%
+      if (elapsed >= maxDuration) {
+        targetProgress = 100;
+      }
+      // Если все ресурсы загружены и прошло минимум времени - тоже 100%
+      else if (loadedRatio === 1 && elapsed >= minDuration) {
+        targetProgress = 100;
+      }
+      // До минимума времени - плавный рост
+      else if (elapsed < minDuration) {
+        const timeProgress = (elapsed / minDuration) * 90;
+        targetProgress = Math.min(timeProgress, loadedRatio * 100);
+      }
+      // Между минимумом и максимумом - растет до 100% если загружено все, иначе по времени
       else {
-        const timeProgress = (elapsed / minDuration) * 85;
-        const loadProgress = loadedRatio * 90;
-        targetProgress = Math.min(Math.max(timeProgress, loadProgress), 90);
+        const timeProgress = minDuration + (elapsed - minDuration) / (maxDuration - minDuration) * 10;
+        targetProgress = Math.min(timeProgress, Math.min(loadedRatio * 100, 100));
       }
 
-      // Плавная интерполяция для красивой анимации
+      // Гарантируем, что targetProgress не больше 100%
+      targetProgress = Math.min(targetProgress, 100);
+
       const current = displayProgressRef.current;
-      const diff = targetProgress - current;
-      const eased = current + diff * 0.12; // Плавное сглаживание
+      const eased = current + (targetProgress - current) * 0.15;
       displayProgressRef.current = eased;
 
-      // Обновляем UI не чаще 30fps для оптимизации на мобилках
       if (now - lastUpdateRef.current >= 33) {
         lastUpdateRef.current = now;
         const displayValue = Math.max(0, Math.min(100, Math.round(eased)));
-        setProgress((prev) => (prev === displayValue ? prev : displayValue));
+        setProgress((prev) => {
+          const newValue = prev === displayValue ? prev : displayValue;
+          return newValue;
+        });
       }
 
-      // Пытаемся завершить, если все готово
-      if (tryFinish()) {
+      // Проверяем, можно ли завершить загрузку
+      const currentProgress = Math.round(displayProgressRef.current);
+      const canFinish = 
+        (loadedRatio === 1 && elapsed >= minDuration && currentProgress >= 100) ||
+        (elapsed >= maxDuration && currentProgress >= 100);
+
+      if (canFinish && currentProgress >= 100) {
+        // Гарантируем, что прогресс точно 100% перед скрытием
+        if (displayProgressRef.current < 100) {
+          setProgress(100);
+          displayProgressRef.current = 100;
+        }
+        
+        if (finishTimeoutRef.current) clearTimeout(finishTimeoutRef.current);
+        // Даем время, чтобы пользователь увидел 100%
+        finishTimeoutRef.current = setTimeout(() => {
+          setIsLoading(false);
+        }, 500);
         return;
       }
 
@@ -186,18 +157,9 @@ export default function LoadingScreen() {
     startTimeRef.current = 0;
     rafRef.current = requestAnimationFrame(tick);
 
-    // Дополнительная проверка готовности контента через интервал
-    const contentCheckInterval = setInterval(() => {
-      if (checkContentReady()) {
-        contentReadyRef.current = true;
-        clearInterval(contentCheckInterval);
-      }
-    }, 100);
-
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
       if (finishTimeoutRef.current) clearTimeout(finishTimeoutRef.current);
-      clearInterval(contentCheckInterval);
       resources.forEach((resource) => {
         if (resource instanceof Image) {
           resource.removeEventListener("load", updateProgress);
@@ -216,7 +178,7 @@ export default function LoadingScreen() {
   return (
     <div
       data-loading-screen
-      className={`fixed inset-0 z-[9999] flex items-center justify-center bg-black transition-opacity duration-500 ease-out ${
+      className={`fixed inset-0 z-[9999] flex items-center justify-center bg-black transition-opacity duration-300 ${
         isLoading ? "opacity-100" : "opacity-0 pointer-events-none"
       }`}
     >

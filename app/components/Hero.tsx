@@ -7,7 +7,7 @@ interface HeroProps {
 export default function Hero({ isLoaded = false }: HeroProps) {
 
   return (
-    <section data-hero className="relative h-screen w-screen overflow-hidden font-sans bg-black">
+    <section className="relative h-screen w-screen overflow-hidden font-sans bg-black">
       {/* Черный фон до появления видео */}
       <div
         className={`absolute inset-0 bg-black transition-opacity duration-800 ${

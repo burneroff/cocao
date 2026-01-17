@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { Cross } from "../icons/Cross";
 
 const team = [
@@ -59,8 +59,12 @@ export default function Team() {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const [startX, setStartX] = useState(0);
-  const [scrollLeft, setScrollLeft] = useState(0);
+  const startXRef = useRef(0);
+  const scrollLeftRef = useRef(0);
+  const lastXRef = useRef(0);
+  const lastTimeRef = useRef(0);
+  const velocityRef = useRef(0);
+  const momentumRafRef = useRef<number | null>(null);
 
   // Предотвращаем drag изображений
   const handleImageDragStart = (e: React.DragEvent) => {
@@ -68,79 +72,83 @@ export default function Team() {
     return false;
   };
 
-  // Обработчики для мыши (десктоп)
-  const handleMouseDown = (e: React.MouseEvent) => {
-    if (!scrollContainerRef.current) return;
-    // Предотвращаем выделение текста и drag изображений
-    e.preventDefault();
-    setIsDragging(true);
-    setStartX(e.pageX - scrollContainerRef.current.offsetLeft);
-    setScrollLeft(scrollContainerRef.current.scrollLeft);
-  };
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging || !scrollContainerRef.current) return;
-    e.preventDefault();
-    const x = e.pageX - scrollContainerRef.current.offsetLeft;
-    const walk = (x - startX) * 1.5; // Скорость скролла (сделана более плавной)
-    scrollContainerRef.current.scrollLeft = scrollLeft - walk;
-  };
-
-  const handleMouseUp = () => {
-    setIsDragging(false);
-  };
-
-  const handleMouseLeave = () => {
-    setIsDragging(false);
-  };
-
-  // Обработчики для тач-событий (мобильные)
-  const handleTouchStart = (e: React.TouchEvent) => {
-    if (!scrollContainerRef.current) return;
-    setIsDragging(true);
-    setStartX(e.touches[0].pageX - scrollContainerRef.current.offsetLeft);
-    setScrollLeft(scrollContainerRef.current.scrollLeft);
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (!isDragging || !scrollContainerRef.current) return;
-    const x = e.touches[0].pageX - scrollContainerRef.current.offsetLeft;
-    const walk = (x - startX) * 1.5; // Скорость скролла (сделана более плавной)
-    scrollContainerRef.current.scrollLeft = scrollLeft - walk;
-  };
-
-  const handleTouchEnd = () => {
-    setIsDragging(false);
-  };
-
-  // Глобальные обработчики для плавного перетаскивания
-  useEffect(() => {
-    const handleGlobalMouseMove = (e: MouseEvent) => {
-      if (!isDragging || !scrollContainerRef.current) return;
-      e.preventDefault();
-      const x = e.pageX - scrollContainerRef.current.offsetLeft;
-      const walk = (x - startX) * 1.5; // Скорость скролла (сделана более плавной)
-      scrollContainerRef.current.scrollLeft = scrollLeft - walk;
-    };
-
-    const handleGlobalMouseUp = () => {
-      setIsDragging(false);
-    };
-
-    if (isDragging) {
-      document.addEventListener("mousemove", handleGlobalMouseMove);
-      document.addEventListener("mouseup", handleGlobalMouseUp);
-      document.body.style.cursor = "grabbing";
-      document.body.style.userSelect = "none";
+  const stopMomentum = () => {
+    if (momentumRafRef.current) {
+      cancelAnimationFrame(momentumRafRef.current);
+      momentumRafRef.current = null;
     }
+  };
 
-    return () => {
-      document.removeEventListener("mousemove", handleGlobalMouseMove);
-      document.removeEventListener("mouseup", handleGlobalMouseUp);
-      document.body.style.cursor = "";
-      document.body.style.userSelect = "";
+  const startMomentum = () => {
+    if (!scrollContainerRef.current) return;
+    stopMomentum();
+
+    const step = () => {
+      const container = scrollContainerRef.current;
+      if (!container) return;
+
+      const velocity = velocityRef.current;
+      if (Math.abs(velocity) < 0.02) {
+        velocityRef.current = 0;
+        return;
+      }
+
+      container.scrollLeft -= velocity * 30;
+      velocityRef.current *= 0.9;
+      momentumRafRef.current = requestAnimationFrame(step);
     };
-  }, [isDragging, startX, scrollLeft]);
+
+    momentumRafRef.current = requestAnimationFrame(step);
+  };
+
+  const handlePointerDown = (e: React.PointerEvent) => {
+    if (!scrollContainerRef.current) return;
+    if (e.button !== 0 && e.pointerType === "mouse") return;
+
+    e.currentTarget.setPointerCapture(e.pointerId);
+    stopMomentum();
+    setIsDragging(true);
+
+    startXRef.current = e.clientX;
+    scrollLeftRef.current = scrollContainerRef.current.scrollLeft;
+    lastXRef.current = e.clientX;
+    lastTimeRef.current = performance.now();
+    velocityRef.current = 0;
+  };
+
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (!isDragging || !scrollContainerRef.current) return;
+    e.preventDefault();
+
+    const currentX = e.clientX;
+    const deltaX = currentX - startXRef.current;
+    scrollContainerRef.current.scrollLeft = scrollLeftRef.current - deltaX * 1.6;
+
+    const now = performance.now();
+    const dt = Math.max(1, now - lastTimeRef.current);
+    velocityRef.current = ((currentX - lastXRef.current) / dt) * 1.6;
+    lastXRef.current = currentX;
+    lastTimeRef.current = now;
+  };
+
+  const handlePointerUp = (e: React.PointerEvent) => {
+    if (!scrollContainerRef.current) return;
+    e.currentTarget.releasePointerCapture(e.pointerId);
+    setIsDragging(false);
+    startMomentum();
+  };
+
+  const handlePointerCancel = () => {
+    setIsDragging(false);
+    startMomentum();
+  };
+
+  const handleWheel = (e: React.WheelEvent) => {
+    if (!scrollContainerRef.current) return;
+    if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
+    e.preventDefault();
+    scrollContainerRef.current.scrollLeft += e.deltaY * 1.5;
+  };
 
   return (
     <section className="relative w-full overflow-x-hidden px-4 md:px-8 lg:px-16 py-8 md:py-12 lg:py-16">
@@ -239,16 +247,17 @@ export default function Team() {
           className={`w-full overflow-x-auto overflow-y-visible scrollbar-hide select-none ${
             isDragging ? "cursor-grabbing" : "cursor-grab"
           }`}
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseLeave}
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onPointerCancel={handlePointerCancel}
+          onWheel={handleWheel}
           style={{
             WebkitOverflowScrolling: "touch",
             scrollBehavior: "smooth",
+            scrollSnapType: "x mandatory",
+            overscrollBehaviorX: "contain",
+            touchAction: "pan-y",
           }}
         >
           <div className="flex gap-6 md:gap-8 px-4 md:px-8 lg:px-16 pb-8" style={{ width: 'max-content' }}>
@@ -262,10 +271,11 @@ export default function Team() {
                   onMouseLeave={() => setActiveIndex(null)}
                   className={`relative transition-all duration-500 ease-in-out shrink-0 select-none
                     ${isActive ? "scale-105 z-10" : ""}
-                    ${isDragging ? "cursor-grabbing" : "cursor-grab"}
                     w-[280px] md:w-[320px] lg:w-[340px]
                   `}
                   style={{
+                    scrollSnapAlign: "start",
+                    scrollSnapStop: "always",
                     userSelect: "none",
                     WebkitUserSelect: "none",
                     pointerEvents: isDragging ? "none" : "auto",

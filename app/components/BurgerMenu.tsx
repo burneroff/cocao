@@ -206,12 +206,10 @@ export default function BurgerMenu({ scrollToSection, onMenuToggle }: BurgerMenu
                     </span>
                   </div>
 
-                  {/* Underline - всегда видна, но активная более заметна */}
+                  {/* Underline - всегда видна с цветом текста, не выделяется синим */}
                   <div
-                    className={`absolute left-0 bottom-0 h-px transition-all duration-500 ${
-                      isActive ? "h-[2px] bg-[#0100F4] w-full" : "w-full opacity-50"
-                    }`}
-                    style={!isActive ? { backgroundColor: textColor } : {}}
+                    className="absolute left-0 bottom-0 h-px w-full opacity-50 transition-all duration-500"
+                    style={{ backgroundColor: textColor }}
                   />
                 </button>
               );

@@ -10,42 +10,29 @@ export default function Home() {
   const [isNavLoaded, setIsNavLoaded] = useState(false);
 
   useEffect(() => {
-    // Проверяем, когда LoadingScreen исчезнет
-    const checkLoading = () => {
-      const loadingScreen = document.querySelector('[data-loading-screen]');
-      if (!loadingScreen) {
-        setIsLoaded(true);
-        return true;
-      }
-      // Проверяем, есть ли класс opacity-0 или pointer-events-none
-      const hasHiddenClass = loadingScreen.classList.contains('opacity-0') || 
-                            loadingScreen.classList.contains('pointer-events-none');
-      if (hasHiddenClass) {
-        setIsLoaded(true);
-        return true;
-      }
-      return false;
+    const handleLoadingComplete = () => {
+      setIsLoaded(true);
     };
 
-    // Проверяем сразу
-    if (checkLoading()) return;
+    window.addEventListener("loading-complete", handleLoadingComplete);
 
-    // Проверяем периодически
-    const interval = setInterval(() => {
-      if (checkLoading()) {
-        clearInterval(interval);
-      }
-    }, 100);
+    const loadingScreen = document.querySelector("[data-loading-screen]");
+    const isHidden =
+      !loadingScreen ||
+      loadingScreen.classList.contains("opacity-0") ||
+      loadingScreen.classList.contains("pointer-events-none");
 
-    // Также устанавливаем таймаут на случай, если проверка не сработает
-    const timeout = setTimeout(() => {
+    if (isHidden) {
       setIsLoaded(true);
-      clearInterval(interval);
-    }, 5000);
+    }
+
+    const fallback = setTimeout(() => {
+      setIsLoaded(true);
+    }, 7000);
 
     return () => {
-      clearInterval(interval);
-      clearTimeout(timeout);
+      window.removeEventListener("loading-complete", handleLoadingComplete);
+      clearTimeout(fallback);
     };
   }, []);
 

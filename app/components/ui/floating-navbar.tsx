@@ -36,7 +36,13 @@ export const FloatingNav = ({
       window.dispatchEvent(
         new CustomEvent("programmatic-scroll-start", { detail: { targetId: id } })
       );
-      element.scrollIntoView({ behavior: "smooth", block: "start" });
+      if (isMobile && (id === "us" || id === "mission" || id === "products")) {
+        const elementTop = element.getBoundingClientRect().top + window.scrollY;
+        const offsetTop = Math.max(0, elementTop - 100);
+        window.scrollTo({ top: offsetTop, behavior: "smooth" });
+      } else {
+        element.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
     }
   };
 
@@ -163,7 +169,7 @@ export const FloatingNav = ({
         }}
         className={cn(
           "flex max-w-full w-full fixed top-0 left-0 right-0 mx-auto",
-          " z-[5000] px-0 md:px-4 py-4 items-end justify-between",
+          " z-5000 px-0 md:px-4 py-4 items-end justify-between",
           "transition-colors duration-500 ease-in-out",
           isMobile ? `${currentBgColor} h-[109px]` : "",
           className

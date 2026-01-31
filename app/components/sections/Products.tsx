@@ -161,40 +161,40 @@ export default function Products() {
       frameImage?: string;
     }>
   > = [
-    [
-      { type: "text", content: "PDF Converter", secondText: productSecondText["PDF Converter"] },
-      { type: "empty" },
-      { type: "text", content: "Zipper", secondText: productSecondText["Zipper"] },
-    ],
-    [
-      { type: "frame", frameImage: "/frames/frame_products_1.png" },
-      { type: "text", content: "Call Recorder", secondText: productSecondText["Call Recorder"] },
-      { type: "text", content: "FAX", secondText: productSecondText["FAX"] },
-    ],
-    [
-      { type: "text", content: "Sense", secondText: productSecondText["Sense"] },
-      { type: "text", content: "AI Calorie Counter", secondText: productSecondText["AI Calorie Counter"] },
-      { type: "empty" },
-    ],
-    [
-      { type: "text", content: "NookAI", secondText: productSecondText["NookAI"] },
-      { type: "empty" },
-      { type: "frame", frameImage: "/frames/frame_products_2.png" },
-    ],
-    [
-      { type: "empty" },
-      { type: "text", content: "Fleeky", secondText: productSecondText["Fleeky"] },
-      { type: "text", content: "VEON", secondText: productSecondText["VEON"] },
-    ],
-    [
-      { type: "text", content: "Plant ID & Care", secondText: productSecondText["Plant ID & Care"] },
-      { type: "empty" },
-      { type: "empty" },
-    ],
-  ];
+      [
+        { type: "text", content: "PDF Converter", secondText: productSecondText["PDF Converter"] },
+        { type: "empty" },
+        { type: "text", content: "Zipper", secondText: productSecondText["Zipper"] },
+      ],
+      [
+        { type: "frame", frameImage: "/frames/frame_products_1.png" },
+        { type: "text", content: "Call Recorder", secondText: productSecondText["Call Recorder"] },
+        { type: "text", content: "FAX", secondText: productSecondText["FAX"] },
+      ],
+      [
+        { type: "text", content: "Sense", secondText: productSecondText["Sense"] },
+        { type: "text", content: "AI Calorie Counter", secondText: productSecondText["AI Calorie Counter"] },
+        { type: "empty" },
+      ],
+      [
+        { type: "text", content: "NookAI", secondText: productSecondText["NookAI"] },
+        { type: "empty" },
+        { type: "frame", frameImage: "/frames/frame_products_2.png" },
+      ],
+      [
+        { type: "empty" },
+        { type: "text", content: "Fleeky", secondText: productSecondText["Fleeky"] },
+        { type: "text", content: "VEON", secondText: productSecondText["VEON"] },
+      ],
+      [
+        { type: "text", content: "Plant ID & Care", secondText: productSecondText["Plant ID & Care"] },
+        { type: "empty" },
+        { type: "empty" },
+      ],
+    ];
 
   return (
-    <div className="min-h-screen flex flex-col justify-end px-4 py-4 sm:px-16 sm:py-16 pt-50 pb-50 sm:pt-100 sm:pb-100 relative">
+    <div className="min-h-screen flex flex-col justify-end px-4 py-4 sm:px-16 sm:py-16  pb-50 sm:pt-100 sm:pb-100 relative">
       {/* Элемент, следующий за курсором - только на компьютере */}
       {isHoveringProduct && cursorPosition && (
         <div
@@ -275,9 +275,8 @@ export default function Products() {
                                 // Обычный текст без secondText
                                 return (
                                   <div
-                                    className={`text-[#3F3E3D] px-2 z-10 transition-opacity duration-300 text-center ${
-                                      isHovered ? "opacity-0" : "opacity-100"
-                                    } font-normal text-sm leading-[26px] md:font-medium md:text-[25px] md:leading-[35px]`}
+                                    className={`text-[#3F3E3D] px-2 z-10 transition-opacity duration-300 text-center ${isHovered ? "opacity-0" : "opacity-100"
+                                      } font-normal text-sm leading-[26px] md:font-medium md:text-[25px] md:leading-[35px]`}
                                   >
                                     {item.content}
                                   </div>
@@ -289,33 +288,30 @@ export default function Products() {
                                 <div className="relative w-full h-full flex items-center justify-center overflow-hidden">
                                   {/* Content текст */}
                                   <div
-                                    className={`absolute text-[#3F3E3D] px-2 z-10 transition-all duration-200 ease-in-out font-normal text-sm leading-[26px] md:font-medium md:text-[25px] md:leading-[35px] text-center ${
-                                      isHovered || showSecond 
-                                        ? "opacity-0 -translate-y-full" 
-                                        : "opacity-100 translate-y-0"
-                                    }`}
+                                    className={`absolute text-[#3F3E3D] px-2 z-10 transition-all duration-200 ease-in-out font-normal text-sm leading-[26px] md:font-medium md:text-[25px] md:leading-[35px] text-center ${isHovered || showSecond
+                                      ? "opacity-0 -translate-y-full"
+                                      : "opacity-100 translate-y-0"
+                                      }`}
                                   >
                                     {item.content}
                                   </div>
 
                                   {/* SecondText - Mobile */}
                                   <div
-                                    className={`absolute text-[#3F3E3D] px-2 z-10 transition-all duration-200 ease-in-out font-normal text-sm leading-[26px] whitespace-pre-line text-center md:hidden ${
-                                      isHovered || !showSecond 
-                                        ? "opacity-0 translate-y-full" 
-                                        : "opacity-100 translate-y-0"
-                                    }`}
+                                    className={`absolute text-[#3F3E3D] px-2 z-10 transition-all duration-200 ease-in-out font-normal text-sm leading-[26px] whitespace-pre-line text-center md:hidden ${isHovered || !showSecond
+                                      ? "opacity-0 translate-y-full"
+                                      : "opacity-100 translate-y-0"
+                                      }`}
                                   >
                                     {formatSecondTextMobile(item.secondText || "")}
                                   </div>
 
                                   {/* SecondText - Desktop */}
                                   <div
-                                    className={`absolute text-[#3F3E3D] px-2 z-10 transition-all duration-200 ease-in-out font-medium text-[25px] leading-[35px] whitespace-pre-line text-center hidden md:block ${
-                                      isHovered || !showSecond 
-                                        ? "opacity-0 translate-y-full" 
-                                        : "opacity-100 translate-y-0"
-                                    }`}
+                                    className={`absolute text-[#3F3E3D] px-2 z-10 transition-all duration-200 ease-in-out font-medium text-[25px] leading-[35px] whitespace-pre-line text-center hidden md:block ${isHovered || !showSecond
+                                      ? "opacity-0 translate-y-full"
+                                      : "opacity-100 translate-y-0"
+                                      }`}
                                   >
                                     {formatSecondText(item.secondText || "")}
                                   </div>
@@ -324,17 +320,17 @@ export default function Products() {
                             })()}
 
                             <div
-                              className={`absolute inset-0 transition-transform duration-500 ease-out ${
-                                hoveredIndex === index
-                                  ? "translate-y-0"
-                                  : "-translate-y-full"
-                              }`}
+                              className={`absolute inset-0 transition-transform duration-500 ease-out ${hoveredIndex === index
+                                ? "translate-y-0"
+                                : "-translate-y-full"
+                                }`}
                             >
                               <Image
                                 src={getProductImage(item.content || "")}
                                 alt={item.content || ""}
                                 fill
                                 className="object-cover"
+                                sizes="(max-width: 640px) 100vw, 303px"
                               />
                             </div>
                           </a>
@@ -377,6 +373,7 @@ export default function Products() {
             alt="Frame products 3"
             fill
             className="object-contain"
+            sizes="(max-width: 768px) 120px, (max-width: 1024px) 150px, 184px"
           />
 
           <div className="absolute top-[-60px] right-[-50px]">

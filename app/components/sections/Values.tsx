@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 interface ValueSection {
   title: string;
@@ -44,6 +44,7 @@ const valuesData: ValueSection[] = [
 export default function Values() {
   const [currentSection, setCurrentSection] = useState(0);
   const [allSectionsViewed, setAllSectionsViewed] = useState(false);
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const viewedSectionsRef = useRef<Set<number>>(new Set([0]));
   const isActiveRef = useRef(false);
@@ -59,6 +60,13 @@ export default function Values() {
   const lastTouchYRef = useRef<number | null>(null);
   const snapRafRef = useRef<number | null>(null);
   const lastIntentRef = useRef(0);
+
+  useEffect(() => {
+    const isTouch =
+      window.matchMedia("(hover: none)").matches ||
+      window.matchMedia("(pointer: coarse)").matches;
+    setIsTouchDevice(isTouch);
+  }, []);
 
   const snapToTopIfNeeded = (behavior: ScrollBehavior = "smooth") => {
     if (snapRafRef.current) {
@@ -88,18 +96,21 @@ export default function Values() {
   };
 
   useLayoutEffect(() => {
+    if (isTouchDevice) return;
     markViewed(currentSection);
     currentIndexRef.current = currentSection;
     allViewedRef.current = allSectionsViewed;
     wheelAccumulatorRef.current = 0;
     touchAccumulatorRef.current = 0;
-  }, [currentSection]);
+  }, [currentSection, allSectionsViewed, isTouchDevice]);
 
   useLayoutEffect(() => {
+    if (isTouchDevice) return;
     allViewedRef.current = allSectionsViewed;
-  }, [allSectionsViewed]);
+  }, [allSectionsViewed, isTouchDevice]);
 
   useLayoutEffect(() => {
+    if (isTouchDevice) return;
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -128,9 +139,10 @@ export default function Values() {
     }
 
     return () => observer.disconnect();
-  }, []);
+  }, [isTouchDevice]);
 
   useLayoutEffect(() => {
+    if (isTouchDevice) return;
     const endProgrammaticScroll = () => {
       const targetId = programmaticTargetRef.current;
       isProgrammaticScrollRef.current = false;
@@ -178,9 +190,10 @@ export default function Values() {
         window.cancelAnimationFrame(snapRafRef.current);
       }
     };
-  }, []);
+  }, [isTouchDevice]);
 
   useLayoutEffect(() => {
+    if (isTouchDevice) return;
     const canExitUp = (deltaY: number) => currentSection === 0 && deltaY < 0;
     const canExitDown = (deltaY: number) =>
       currentSection === valuesData.length - 1 && allSectionsViewed && deltaY > 0;
@@ -282,9 +295,42 @@ export default function Values() {
       window.removeEventListener("touchmove", handleTouchMove);
       window.removeEventListener("touchend", handleTouchEnd);
     };
-  }, [currentSection, allSectionsViewed]);
+  }, [currentSection, allSectionsViewed, isTouchDevice]);
 
   const currentValue = valuesData[currentSection];
+
+  if (isTouchDevice) {
+    return (
+      <div className="w-full">
+        {valuesData.map((value, index) => (
+          <section
+            key={index}
+            className="w-full px-4 py-12"
+            style={{ backgroundColor: value.bgColor }}
+          >
+            <div className="mx-auto flex max-w-[520px] flex-col items-center gap-6 text-white">
+              <div className="relative h-[260px] w-[280px] sm:h-[300px] sm:w-[320px]">
+                <Image
+                  src={value.image}
+                  alt={value.title}
+                  fill
+                  className="object-contain"
+                  sizes="(max-width: 640px) 280px, 320px"
+                />
+              </div>
+              <h2
+                className="text-center text-[clamp(24px,6vw,32px)] font-normal uppercase"
+                dangerouslySetInnerHTML={{ __html: value.title }}
+              />
+              <p className="text-justify text-[clamp(15px,4vw,18px)] leading-[clamp(22px,5vw,28px)]">
+                {value.subtitle}
+              </p>
+            </div>
+          </section>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div
@@ -311,11 +357,10 @@ export default function Values() {
             {valuesData.map((value, index) => (
               <div
                 key={index}
-                className={`absolute inset-0 transition-all duration-700 ease-out ${
-                  index === currentSection
+                className={`absolute inset-0 transition-all duration-700 ease-out ${index === currentSection
                     ? "opacity-100 translate-y-0 scale-100 blur-0"
                     : "opacity-0 translate-y-4 scale-[0.98] blur-sm"
-                }`}
+                  }`}
               >
                 <Image
                   src={value.image}
@@ -346,11 +391,10 @@ export default function Values() {
               {valuesData.map((value, index) => (
                 <p
                   key={index}
-                  className={`transition-all duration-700 ease-out ${
-                    index === currentSection
+                  className={`transition-all duration-700 ease-out ${index === currentSection
                       ? "opacity-100 translate-y-0 blur-0"
                       : "opacity-0 -translate-y-2 blur-sm absolute inset-0"
-                  }`}
+                    }`}
                 >
                   <span
                     className="inline"
@@ -373,11 +417,10 @@ export default function Values() {
             {valuesData.map((value, index) => (
               <h2
                 key={index}
-                className={`text-white text-center 2xl:text-left px-4 2xl:ml-[30px] transition-all duration-700 ease-out ${
-                  index === currentSection
+                className={`text-white text-center 2xl:text-left px-4 2xl:ml-[30px] transition-all duration-700 ease-out ${index === currentSection
                     ? "opacity-100 translate-y-0 blur-0"
                     : "opacity-0 translate-y-2 blur-sm absolute"
-                }`}
+                  }`}
                 style={{
                   fontWeight: 400,
                   fontStyle: "normal",
@@ -401,11 +444,10 @@ export default function Values() {
               {valuesData.map((value, index) => (
                 <p
                   key={index}
-                  className={`text-white text-justify transition-all duration-700 ease-out ${
-                    index === currentSection
+                  className={`text-white text-justify transition-all duration-700 ease-out ${index === currentSection
                       ? "opacity-100 translate-y-0 blur-0"
                       : "opacity-0 -translate-y-2 blur-sm absolute inset-0"
-                  }`}
+                    }`}
                   style={{
                     fontWeight: 500,
                     fontStyle: "normal",

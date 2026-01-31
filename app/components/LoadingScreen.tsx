@@ -1,32 +1,17 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function LoadingScreen() {
   const [progress, setProgress] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
-  const startTimeRef = useRef<number>(0);
   const rafRef = useRef<number | null>(null);
-  const finishTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const loadedCountRef = useRef(0);
-  const totalRef = useRef(0);
-  const displayProgressRef = useRef(0);
-  const lastUpdateRef = useRef(0);
-  const minDuration = 3000; // Минимум 3 секунды
-  const maxDuration = 5000; // Максимум 5 секунд
+  const isMountedRef = useRef(true);
+  const animationDuration = 5000; // 5 секунд плавной анимации
 
   useEffect(() => {
-    const resources: (HTMLImageElement | HTMLVideoElement)[] = [];
-    loadedCountRef.current = 0;
-
-    // Создаем элементы для предзагрузки
-    const video = document.createElement("video");
-    video.src = "/background-video.mp4";
-    video.preload = "auto";
-    resources.push(video);
-
-    // Предзагружаем все изображения из public
-    const imagePaths = [
+    isMountedRef.current = true;
+    const imageAssets = [
       "/frames/frame_mission.png",
       "/frames/frame_products_1.png",
       "/frames/frame_products_2.png",
@@ -38,6 +23,7 @@ export default function LoadingScreen() {
       "/products/Call Recorder.png",
       "/products/FAX.png",
       "/products/Fleeky-Wallpapers.png",
+      "/products/NookAI.png",
       "/products/PDF Converter.png",
       "/products/Plant ID & Care.png",
       "/products/Sense Meditation.png",
@@ -56,119 +42,87 @@ export default function LoadingScreen() {
       "/values/value_2.png",
       "/values/value_3.png",
       "/values/value_4.png",
+      "/footer.png",
+      "/logo.svg",
     ];
 
-    imagePaths.forEach((path) => {
-      const img = new Image();
-      img.src = path;
-      resources.push(img);
-    });
+    const videoAssets = ["/background-video.mp4"];
 
-    totalRef.current = resources.length;
+    const preloadImage = (src: string) =>
+      new Promise<void>((resolve) => {
+        const img = new Image();
+        const done = () => resolve();
+        img.addEventListener("load", done, { once: true });
+        img.addEventListener("error", done, { once: true });
+        img.src = src;
+      });
 
-    const updateProgress = () => {
-      loadedCountRef.current += 1;
-    };
+    const preloadVideo = (src: string) =>
+      new Promise<void>((resolve) => {
+        const video = document.createElement("video");
+        const done = () => resolve();
+        const timeout = window.setTimeout(done, 7000);
+        video.preload = "auto";
+        video.muted = true;
+        video.playsInline = true;
+        video.addEventListener(
+          "canplaythrough",
+          () => {
+            window.clearTimeout(timeout);
+            done();
+          },
+          { once: true }
+        );
+        video.addEventListener(
+          "error",
+          () => {
+            window.clearTimeout(timeout);
+            done();
+          },
+          { once: true }
+        );
+        video.src = src;
+        video.load();
+      });
 
-    const tick = (now: number) => {
-      if (!startTimeRef.current) {
-        startTimeRef.current = now;
-      }
+    const preloadAssets = Promise.allSettled([
+      ...imageAssets.map(preloadImage),
+      ...videoAssets.map(preloadVideo),
+    ]);
 
-      const elapsed = now - startTimeRef.current;
-      const total = totalRef.current || 1;
-      const loadedRatio = Math.min(loadedCountRef.current / total, 1);
+    const easeInOutCubic = (t: number) =>
+      t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 
-      let targetProgress = 0;
-      
-      // Если прошло максимальное время - обязательно 100%
-      if (elapsed >= maxDuration) {
-        targetProgress = 100;
-      }
-      // Если все ресурсы загружены и прошло минимум времени - тоже 100%
-      else if (loadedRatio === 1 && elapsed >= minDuration) {
-        targetProgress = 100;
-      }
-      // До минимума времени - плавный рост
-      else if (elapsed < minDuration) {
-        const timeProgress = (elapsed / minDuration) * 90;
-        targetProgress = Math.min(timeProgress, loadedRatio * 100);
-      }
-      // Между минимумом и максимумом - растет до 100% если загружено все, иначе по времени
-      else {
-        const timeProgress = minDuration + (elapsed - minDuration) / (maxDuration - minDuration) * 10;
-        targetProgress = Math.min(timeProgress, Math.min(loadedRatio * 100, 100));
-      }
+    const animateProgress = new Promise<void>((resolve) => {
+      const start = performance.now();
 
-      // Гарантируем, что targetProgress не больше 100%
-      targetProgress = Math.min(targetProgress, 100);
-
-      const current = displayProgressRef.current;
-      const eased = current + (targetProgress - current) * 0.15;
-      displayProgressRef.current = eased;
-
-      if (now - lastUpdateRef.current >= 33) {
-        lastUpdateRef.current = now;
-        const displayValue = Math.max(0, Math.min(100, Math.round(eased)));
-        setProgress((prev) => {
-          const newValue = prev === displayValue ? prev : displayValue;
-          return newValue;
-        });
-      }
-
-      // Проверяем, можно ли завершить загрузку
-      const currentProgress = Math.round(displayProgressRef.current);
-      const canFinish = 
-        (loadedRatio === 1 && elapsed >= minDuration && currentProgress >= 100) ||
-        (elapsed >= maxDuration && currentProgress >= 100);
-
-      if (canFinish && currentProgress >= 100) {
-        // Гарантируем, что прогресс точно 100% перед скрытием
-        if (displayProgressRef.current < 100) {
-          setProgress(100);
-          displayProgressRef.current = 100;
+      const tick = (now: number) => {
+        const elapsed = now - start;
+        const t = Math.min(elapsed / animationDuration, 1);
+        const eased = easeInOutCubic(t);
+        if (isMountedRef.current) {
+          setProgress(Math.round(eased * 100));
         }
-        
-        if (finishTimeoutRef.current) clearTimeout(finishTimeoutRef.current);
-        // Даем время, чтобы пользователь увидел 100%
-        finishTimeoutRef.current = setTimeout(() => {
-          setIsLoading(false);
-        }, 500);
-        return;
-      }
+        if (t < 1) {
+          rafRef.current = requestAnimationFrame(tick);
+        } else {
+          resolve();
+        }
+      };
 
       rafRef.current = requestAnimationFrame(tick);
-    };
-
-    // Обработчики для видео
-    video.addEventListener("loadeddata", updateProgress);
-    video.addEventListener("error", updateProgress);
-
-    // Обработчики для изображений
-    resources.forEach((resource) => {
-      if (resource instanceof Image) {
-        resource.addEventListener("load", updateProgress);
-        resource.addEventListener("error", updateProgress);
-      }
     });
 
-    // Начинаем загрузку и анимацию
-    video.load();
-    startTimeRef.current = 0;
-    rafRef.current = requestAnimationFrame(tick);
+    Promise.all([preloadAssets, animateProgress]).then(() => {
+      if (!isMountedRef.current) return;
+      setProgress(100);
+      setIsLoading(false);
+      window.dispatchEvent(new CustomEvent("loading-complete"));
+    });
 
     return () => {
+      isMountedRef.current = false;
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
-      if (finishTimeoutRef.current) clearTimeout(finishTimeoutRef.current);
-      resources.forEach((resource) => {
-        if (resource instanceof Image) {
-          resource.removeEventListener("load", updateProgress);
-          resource.removeEventListener("error", updateProgress);
-        } else if (resource instanceof HTMLVideoElement) {
-          resource.removeEventListener("loadeddata", updateProgress);
-          resource.removeEventListener("error", updateProgress);
-        }
-      });
     };
   }, []);
 
@@ -178,9 +132,8 @@ export default function LoadingScreen() {
   return (
     <div
       data-loading-screen
-      className={`fixed inset-0 z-[9999] flex items-center justify-center bg-black transition-opacity duration-300 ${
-        isLoading ? "opacity-100" : "opacity-0 pointer-events-none"
-      }`}
+      className={`fixed inset-0 z-9999 flex items-center justify-center bg-black transition-opacity duration-300 ${isLoading ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
     >
       <div className="flex flex-col items-center gap-8">
         {/* Логотип с анимацией */}

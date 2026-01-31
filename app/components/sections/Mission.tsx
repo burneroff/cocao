@@ -53,7 +53,7 @@ export default function Mission() {
       const animate = () => {
         const elapsed = Date.now() - startTime;
         const progress = Math.min(elapsed / duration, 1);
-        
+
         // Easing function для плавной анимации
         const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
 
@@ -88,11 +88,10 @@ export default function Mission() {
   return (
     <div
       ref={sectionRef}
-      className={`h-[80vh] md:h-[120vh] flex items-start justify-end px-4 py-8 md:px-16 md:py-16 relative transition-opacity duration-1000 ${
-        isVisible ? "opacity-100" : "opacity-0"
-      }`}
+      className={`h-[80vh] md:h-[120vh] flex items-start justify-end px-4 py-8 md:px-16 md:py-16 relative transition-opacity duration-1000 ${isVisible ? "opacity-100" : "opacity-0"
+        }`}
     >
-      <div className="flex justify-end flex-col bg-black ">
+      <div className="flex justify-end flex-col bg-black mt-9">
         {/* Текст с адаптивным размером */}
         <div
           className="text-[#CDCDCD] font-normal leading-[35px] md:leading-[50px] lg:leading-[70px] tracking-[0%] text-justify"
@@ -175,7 +174,7 @@ export default function Mission() {
               Products
             </div>
           </div>
-          
+
           {/* Блок 2: 28m+ Installs Worldwide */}
           <div className="flex flex-col items-left">
             <div className="text-[36px] md:text-[64px] text-[#CDCDCD] font-normal md:font-medium leading-[40px] md:leading-[100%] tracking-[0%] uppercase mb-2 md:mb-4">
@@ -185,7 +184,7 @@ export default function Mission() {
               Installs Worldwide
             </div>
           </div>
-          
+
           {/* Блок 3: 1.7m+ Monthly Active Users */}
           <div className="flex flex-col items-left">
             <div className="text-[36px] md:text-[64px] text-[#CDCDCD] font-normal md:font-medium leading-[40px] md:leading-[100%] tracking-[0%] uppercase mb-2 md:mb-4">

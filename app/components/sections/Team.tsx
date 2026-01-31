@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useRef } from "react";
+import { useRef, useState } from "react";
 import { Cross } from "../icons/Cross";
 
 const team = [
@@ -60,94 +60,44 @@ export default function Team() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const startXRef = useRef(0);
+  const startYRef = useRef(0);
   const scrollLeftRef = useRef(0);
-  const lastXRef = useRef(0);
-  const lastTimeRef = useRef(0);
-  const velocityRef = useRef(0);
-  const momentumRafRef = useRef<number | null>(null);
-
-  // Предотвращаем drag изображений
   const handleImageDragStart = (e: React.DragEvent) => {
     e.preventDefault();
     return false;
   };
 
-  const stopMomentum = () => {
-    if (momentumRafRef.current) {
-      cancelAnimationFrame(momentumRafRef.current);
-      momentumRafRef.current = null;
-    }
-  };
-
-  const startMomentum = () => {
-    if (!scrollContainerRef.current) return;
-    stopMomentum();
-
-    const step = () => {
-      const container = scrollContainerRef.current;
-      if (!container) return;
-
-      const velocity = velocityRef.current;
-      if (Math.abs(velocity) < 0.02) {
-        velocityRef.current = 0;
-        return;
-      }
-
-      container.scrollLeft -= velocity * 30;
-      velocityRef.current *= 0.9;
-      momentumRafRef.current = requestAnimationFrame(step);
-    };
-
-    momentumRafRef.current = requestAnimationFrame(step);
-  };
-
   const handlePointerDown = (e: React.PointerEvent) => {
     if (!scrollContainerRef.current) return;
     if (e.button !== 0 && e.pointerType === "mouse") return;
-
     e.currentTarget.setPointerCapture(e.pointerId);
-    stopMomentum();
     setIsDragging(true);
-
     startXRef.current = e.clientX;
+    startYRef.current = e.clientY;
     scrollLeftRef.current = scrollContainerRef.current.scrollLeft;
-    lastXRef.current = e.clientX;
-    lastTimeRef.current = performance.now();
-    velocityRef.current = 0;
   };
 
   const handlePointerMove = (e: React.PointerEvent) => {
     if (!isDragging || !scrollContainerRef.current) return;
+    const deltaX = e.clientX - startXRef.current;
+    const deltaY = e.clientY - startYRef.current;
+
+    if (e.pointerType === "touch" && Math.abs(deltaY) > Math.abs(deltaX)) {
+      return;
+    }
+
     e.preventDefault();
-
-    const currentX = e.clientX;
-    const deltaX = currentX - startXRef.current;
-    scrollContainerRef.current.scrollLeft = scrollLeftRef.current - deltaX * 1.6;
-
-    const now = performance.now();
-    const dt = Math.max(1, now - lastTimeRef.current);
-    velocityRef.current = ((currentX - lastXRef.current) / dt) * 1.6;
-    lastXRef.current = currentX;
-    lastTimeRef.current = now;
+    scrollContainerRef.current.scrollLeft = scrollLeftRef.current - deltaX;
   };
 
   const handlePointerUp = (e: React.PointerEvent) => {
     if (!scrollContainerRef.current) return;
     e.currentTarget.releasePointerCapture(e.pointerId);
     setIsDragging(false);
-    startMomentum();
   };
 
   const handlePointerCancel = () => {
     setIsDragging(false);
-    startMomentum();
-  };
-
-  const handleWheel = (e: React.WheelEvent) => {
-    if (!scrollContainerRef.current) return;
-    if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
-    e.preventDefault();
-    scrollContainerRef.current.scrollLeft += e.deltaY * 1.5;
   };
 
   return (
@@ -165,14 +115,10 @@ export default function Team() {
             quality={100}
           />
 
-          {/* Crosses - скрыть на маленьких экранах */}
-          <div className="hidden lg:block absolute left-[-354px] top-[-50px]">
+          <div className="absolute left-[-50px] top-[-50px]">
             <Cross color="#35353C" />
           </div>
-          <div className="hidden lg:block absolute left-[-354px] bottom-[-50px]">
-            <Cross color="#35353C" />
-          </div>
-          <div className="hidden lg:block absolute left-[-50px] bottom-[-50px]">
+          <div className="absolute left-[-50px] bottom-[-50px]">
             <Cross color="#35353C" />
           </div>
         </div>
@@ -216,10 +162,9 @@ export default function Team() {
               <div className="mt-6 h-[70px] overflow-hidden w-[350px]">
                 <div
                   className={`transition-all duration-300
-                    ${
-                      isActive
-                        ? "opacity-100 translate-y-0"
-                        : "opacity-0 translate-y-2"
+                    ${isActive
+                      ? "opacity-100 translate-y-0"
+                      : "opacity-0 translate-y-2"
                     }
                   `}
                 >
@@ -246,14 +191,13 @@ export default function Team() {
       <div className="team-small-screen">
         <div
           ref={scrollContainerRef}
-          className={`w-full overflow-x-auto overflow-y-visible scrollbar-hide select-none ${
-            isDragging ? "cursor-grabbing" : "cursor-grab"
-          }`}
+          className={`w-full overflow-x-auto overflow-y-visible scrollbar-hide ${isDragging ? "cursor-grabbing" : "cursor-grab"
+            }`}
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
           onPointerCancel={handlePointerCancel}
-          onWheel={handleWheel}
+          onPointerLeave={handlePointerCancel}
           style={{
             WebkitOverflowScrolling: "touch",
             scrollBehavior: "smooth",
@@ -262,7 +206,7 @@ export default function Team() {
             touchAction: "pan-y",
           }}
         >
-          <div className="flex gap-6 md:gap-8 px-4 md:px-8 lg:px-16 pb-8" style={{ width: 'max-content' }}>
+          <div className="flex mt-10 gap-6 md:gap-8 px-4 md:px-8 lg:px-16 pb-8" style={{ width: 'max-content' }}>
             {team.map((member, index) => {
               const isActive = activeIndex === index;
 
@@ -280,7 +224,6 @@ export default function Team() {
                     scrollSnapStop: "always",
                     userSelect: "none",
                     WebkitUserSelect: "none",
-                    pointerEvents: isDragging ? "none" : "auto",
                   }}
                 >
                   {/* IMAGE - ВСЕГДА ЦВЕТНАЯ */}
@@ -296,7 +239,7 @@ export default function Team() {
                         objectPosition: `calc(50% + ${member.offset}px) 50%`,
                         userSelect: "none",
                         WebkitUserSelect: "none",
-                      } as React.CSSProperties}
+                      }}
                       sizes="(max-width: 768px) 280px, (max-width: 1024px) 320px, 340px"
                       quality={100}
                     />
@@ -338,10 +281,10 @@ export default function Team() {
           />
 
           {/* Crosses - скрыть на маленьких экранах */}
-          <div className="hidden lg:block absolute right-[-50px] bottom-[-50px]">
+          <div className="absolute left-[-50px] top-[-50px] sm:right-[-50px] sm:bottom-[-50px]">
             <Cross color="#35353C" />
           </div>
-          <div className="hidden lg:block absolute left-[-50px] bottom-[-50px]">
+          <div className="absolute left-[-50px] bottom-[-50px]">
             <Cross color="#35353C" />
           </div>
         </div>

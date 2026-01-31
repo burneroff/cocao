@@ -55,6 +55,7 @@ export default function Hero({ isLoaded = false }: HeroProps) {
         loop
         muted
         playsInline
+        preload="auto"
         className={`absolute left-0 top-0 h-full w-full object-cover scale-y-[-1] transition-opacity duration-800 ${isLoaded ? "opacity-100" : "opacity-0"
           }`}
         style={{

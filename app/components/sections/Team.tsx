@@ -148,7 +148,7 @@ export default function Team() {
 
       {/* SWIPER КАРУСЕЛЬ ДЛЯ ЭКРАНОВ < 1540px */}
       <div className="team-small-screen">
-        <div className="mt-20 mb-18 md:px-8 lg:px-16">
+        <div className="mt-20 mb-18">
           <Swiper
             modules={[FreeMode]}
             freeMode={true}

@@ -55,7 +55,7 @@ export default function Footer() {
             href={item.href}
             target={item.external ? "_blank" : undefined}
             rel={item.external ? "noreferrer" : undefined}
-            className="group relative text-base overflow-hidden"
+            className="group relative text-base overflow-hidden 2xl:ml-19"
           >
             <span className="relative z-10 text-[#35353C] transition-colors">
               {item.label}

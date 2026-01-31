@@ -106,59 +106,37 @@ export default function Mission() {
         >
           <p className="mb-4 md:mb-8">
             We create mobile{" "}
-            <span className="inline relative">
-              <span className="relative z-10">products</span>
-              <span
-                className="absolute inset-0 top-1/2 h-1/2 bg-[#0100F4] origin-left transition-transform duration-800 ease-out"
-                style={{
-                  transform: spansAnimated ? "scaleX(1)" : "scaleX(0)",
-                }}
-              />
+            <span className={`text-highlight ${spansAnimated ? "animated" : ""}`}>
+              <span>products</span>
             </span>{" "}
             that make life simpler,{" "}
-            <span className="inline relative">
-              <span className="relative z-10">more engaging,</span>
-              <span
-                className="absolute inset-0 top-1/2 h-1/2 bg-[#0100F4] origin-left transition-transform duration-800 ease-out"
-                style={{
-                  transform: spansAnimated ? "scaleX(1)" : "scaleX(0)",
-                  transitionDelay: "0.05s",
-                }}
-              />
+            <span
+              className={`text-highlight ${spansAnimated ? "animated" : ""}`}
+              style={{ transitionDelay: spansAnimated ? "0.05s" : "0s" }}
+            >
+              <span>more engaging,</span>
             </span>{" "}
             and{" "}
-            <span className="inline relative">
-              <span className="relative z-10">more mindful.</span>
-              <span
-                className="absolute inset-0 top-1/2 h-1/2 bg-[#0100F4] origin-left transition-transform duration-800 ease-out"
-                style={{
-                  transform: spansAnimated ? "scaleX(1)" : "scaleX(0)",
-                  transitionDelay: "0.1s",
-                }}
-              />
+            <span
+              className={`text-highlight ${spansAnimated ? "animated" : ""}`}
+              style={{ transitionDelay: spansAnimated ? "0.1s" : "0s" }}
+            >
+              <span>more mindful.</span>
             </span>{" "}
             In every project, we combine creativity, data, and attention to
             detail to deliver not just an app – but a{" "}
-            <span className="inline relative">
-              <span className="relative z-10">clear, inspiring,</span>
-              <span
-                className="absolute inset-0 top-1/2 h-1/2 bg-[#0100F4] origin-left transition-transform duration-800 ease-out"
-                style={{
-                  transform: spansAnimated ? "scaleX(1)" : "scaleX(0)",
-                  transitionDelay: "0.15s",
-                }}
-              />
+            <span
+              className={`text-highlight ${spansAnimated ? "animated" : ""}`}
+              style={{ transitionDelay: spansAnimated ? "0.15s" : "0s" }}
+            >
+              <span>clear, inspiring,</span>
             </span>{" "}
             and{" "}
-            <span className="inline relative">
-              <span className="relative z-10">genuinely useful</span>
-              <span
-                className="absolute inset-0 top-1/2 h-1/2 bg-[#0100F4] origin-left transition-transform duration-800 ease-out"
-                style={{
-                  transform: spansAnimated ? "scaleX(1)" : "scaleX(0)",
-                  transitionDelay: "0.2s",
-                }}
-              />
+            <span
+              className={`text-highlight ${spansAnimated ? "animated" : ""}`}
+              style={{ transitionDelay: spansAnimated ? "0.2s" : "0s" }}
+            >
+              <span>genuinely useful</span>
             </span>{" "}
             digital experience.
           </p>

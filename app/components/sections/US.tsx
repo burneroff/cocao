@@ -58,47 +58,33 @@ export default function US() {
         >
           <p className="mb-4 md:mb-8">
             We're a product team developing and growing mobile{" "}
-            <span className="inline relative">
-              <span className="relative z-10">
+            <span className={`text-highlight ${spansAnimated ? "animated" : ""}`}>
+              <span>
                 apps in Health & Wellness, Entertainment, and Utilities
               </span>
-              <span
-                className="absolute inset-0 top-1/2 h-1/2 bg-[#0100F4] origin-left transition-transform duration-800 ease-out"
-                style={{
-                  transform: spansAnimated ? "scaleX(1)" : "scaleX(0)",
-                }}
-              />
             </span>{" "}
             categories. Our focus is not just on launching new products, but on
             building sustainable growth models, creating long-lasting projects,
             and turning{" "}
-            <span className="inline relative">
-              <span className="relative z-10">
+            <span
+              className={`text-highlight ${spansAnimated ? "animated" : ""}`}
+              style={{ transitionDelay: spansAnimated ? "0.1s" : "0s" }}
+            >
+              <span>
                 ideas into clear, useful digital experiences.
               </span>
-              <span
-                className="absolute inset-0 top-1/2 h-1/2 bg-[#0100F4] origin-left transition-transform duration-800 ease-out"
-                style={{
-                  transform: spansAnimated ? "scaleX(1)" : "scaleX(0)",
-                  transitionDelay: "0.1s",
-                }}
-              />
             </span>
           </p>
           <p>
             Our team is distributed across several countries, but we share the
             same DNA – curio
-            <span className="inline relative">
-              <span className="relative z-10">
+            <span
+              className={`text-highlight ${spansAnimated ? "animated" : ""}`}
+              style={{ transitionDelay: spansAnimated ? "0.2s" : "0s" }}
+            >
+              <span>
                 sity, creativity, and
               </span>
-              <span
-                className="absolute inset-0 top-1/2 h-1/2 bg-[#0100F4] origin-left transition-transform duration-800 ease-out"
-                style={{
-                  transform: spansAnimated ? "scaleX(1)" : "scaleX(0)",
-                  transitionDelay: "0.2s",
-                }}
-              />
             </span>{" "}
             the drive to build products people genuinely love to use.
           </p>

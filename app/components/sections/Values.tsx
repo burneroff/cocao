@@ -189,6 +189,10 @@ export default function Values() {
       lastIntentRef.current = deltaY;
       if (!isActiveRef.current) return;
       if (isProgrammaticScrollRef.current) return;
+      if (isAnimatingRef.current) {
+        event.preventDefault();
+        return;
+      }
 
       const rect = containerRef.current?.getBoundingClientRect();
       if (!rect) return;
@@ -227,7 +231,7 @@ export default function Values() {
           setCurrentSection((prev) => Math.min(prev + 1, valuesData.length - 1));
           window.setTimeout(() => {
             isAnimatingRef.current = false;
-          }, 600);
+          }, 250);
           return;
         }
         if (!allSectionsViewed) {
@@ -241,7 +245,7 @@ export default function Values() {
           setCurrentSection((prev) => Math.max(prev - 1, 0));
           window.setTimeout(() => {
             isAnimatingRef.current = false;
-          }, 600);
+          }, 250);
         }
       }
     };

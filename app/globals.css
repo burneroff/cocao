@@ -129,3 +129,26 @@ img {
 .team-swiper .swiper-pagination {
   display: none !important;
 }
+
+/* Надежное выделение текста для US и Mission секций */
+.text-highlight {
+  position: relative;
+  display: inline;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  background-image: linear-gradient(to bottom, transparent 0%, transparent 50%, transparent 50%, transparent 100%);
+  background-size: 0% 100%;
+  background-repeat: no-repeat;
+  background-position: left bottom;
+  transition: background-size 0.8s ease-out;
+}
+
+.text-highlight.animated {
+  background-image: linear-gradient(to bottom, transparent 0%, transparent 50%, #0100F4 50%, #0100F4 100%);
+  background-size: 100% 100%;
+}
+
+.text-highlight > span {
+  position: relative;
+  z-index: 1;
+}

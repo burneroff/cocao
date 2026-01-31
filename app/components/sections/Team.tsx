@@ -1,8 +1,12 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState } from "react";
 import { Cross } from "../icons/Cross";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { FreeMode } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/free-mode";
 
 const team = [
   {
@@ -57,155 +61,6 @@ const team = [
 
 export default function Team() {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const isDraggingRef = useRef(false);
-  const startXRef = useRef(0);
-  const scrollLeftRef = useRef(0);
-  const startYRef = useRef(0);
-  const startScrollTopRef = useRef(0);
-
-  // Получаем ширину карточки с учетом gap
-  const getCardWidth = useCallback(() => {
-    if (typeof window === "undefined") return 304;
-
-    const width = window.innerWidth;
-    if (width < 768) return 304; // 280px + 24px gap
-    if (width < 1024) return 352; // 320px + 32px gap
-    return 372; // 340px + 32px gap
-  }, []);
-
-  // Функция для привязки к ближайшей карточке
-  const snapToNearestCard = useCallback(() => {
-    if (!scrollContainerRef.current) return;
-
-    const container = scrollContainerRef.current;
-    const scrollLeft = container.scrollLeft;
-    const cardWidth = getCardWidth();
-    const snappedPosition = Math.round(scrollLeft / cardWidth) * cardWidth;
-
-    container.scrollTo({
-      left: snappedPosition,
-      behavior: 'smooth'
-    });
-  }, [getCardWidth]);
-
-  // Обработчики для мыши
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    if (!scrollContainerRef.current) return;
-
-    isDraggingRef.current = true;
-    startXRef.current = e.pageX - scrollContainerRef.current.offsetLeft;
-    startYRef.current = e.pageY;
-    scrollLeftRef.current = scrollContainerRef.current.scrollLeft;
-    startScrollTopRef.current = window.pageYOffset || document.documentElement.scrollTop;
-
-    // Добавляем класс для изменения курсора
-    scrollContainerRef.current.style.cursor = 'grabbing';
-    scrollContainerRef.current.style.userSelect = 'none';
-
-    e.preventDefault();
-  }, []);
-
-  const handleMouseMove = useCallback((e: MouseEvent) => {
-    if (!isDraggingRef.current || !scrollContainerRef.current) return;
-
-    const x = e.pageX - scrollContainerRef.current.offsetLeft;
-    const deltaX = x - startXRef.current;
-
-    // Проверяем, горизонтальное ли это движение
-    const deltaY = Math.abs(e.pageY - startYRef.current);
-
-    // Если движение в основном горизонтальное, скроллим контейнер
-    if (Math.abs(deltaX) > deltaY) {
-      e.preventDefault();
-      const walk = deltaX * 1.5;
-      scrollContainerRef.current.scrollLeft = scrollLeftRef.current - walk;
-    } else {
-      // Если движение вертикальное, скроллим страницу
-      const scrollTop = startScrollTopRef.current + (startYRef.current - e.pageY);
-      window.scrollTo(0, scrollTop);
-    }
-  }, []);
-
-  const handleMouseUp = useCallback(() => {
-    if (isDraggingRef.current && scrollContainerRef.current) {
-      scrollContainerRef.current.style.cursor = 'grab';
-      scrollContainerRef.current.style.userSelect = 'auto';
-
-      // Проверяем, было ли движение
-      if (Math.abs(scrollContainerRef.current.scrollLeft - scrollLeftRef.current) > 5) {
-        snapToNearestCard();
-      }
-    }
-
-    isDraggingRef.current = false;
-  }, [snapToNearestCard]);
-
-  // Обработчики для тач-устройств
-  const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    if (!scrollContainerRef.current) return;
-    const touch = e.touches[0];
-    startXRef.current = touch.pageX - scrollContainerRef.current.offsetLeft;
-    startYRef.current = touch.pageY;
-    scrollLeftRef.current = scrollContainerRef.current.scrollLeft;
-    startScrollTopRef.current = window.pageYOffset || document.documentElement.scrollTop;
-  }, []);
-
-  const handleTouchMove = useCallback((e: React.TouchEvent) => {
-    if (!scrollContainerRef.current) return;
-    const touch = e.touches[0];
-    const x = touch.pageX - scrollContainerRef.current.offsetLeft;
-    const deltaX = x - startXRef.current;
-    const deltaY = Math.abs(touch.pageY - startYRef.current);
-
-    // Если движение в основном горизонтальное, скроллим контейнер
-    if (Math.abs(deltaX) > deltaY) {
-      e.preventDefault();
-      const walk = deltaX * 1.5;
-      scrollContainerRef.current.scrollLeft = scrollLeftRef.current - walk;
-    } else {
-      // Если движение вертикальное, скроллим страницу
-      const scrollTop = startScrollTopRef.current + (startYRef.current - touch.pageY);
-      window.scrollTo(0, scrollTop);
-    }
-  }, []);
-
-  const handleTouchEnd = useCallback(() => {
-    snapToNearestCard();
-  }, [snapToNearestCard]);
-
-  // Добавляем обработчики событий мыши
-  useEffect(() => {
-    const container = scrollContainerRef.current;
-    if (!container) return;
-
-    const handleMouseMoveGlobal = (e: MouseEvent) => handleMouseMove(e);
-    const handleMouseUpGlobal = () => handleMouseUp();
-
-    document.addEventListener('mousemove', handleMouseMoveGlobal);
-    document.addEventListener('mouseup', handleMouseUpGlobal);
-
-    return () => {
-      document.removeEventListener('mousemove', handleMouseMoveGlobal);
-      document.removeEventListener('mouseup', handleMouseUpGlobal);
-    };
-  }, [handleMouseMove, handleMouseUp]);
-
-  // Предотвращаем drag изображений
-  const preventImageDrag = (e: React.DragEvent) => {
-    e.preventDefault();
-    return false;
-  };
-
-  // Стили для скрытия скроллбара
-  const scrollbarHideStyles = {
-    WebkitOverflowScrolling: 'touch' as const,
-    scrollbarWidth: 'none' as const,
-    msOverflowStyle: 'none' as const,
-    '&::-webkit-scrollbar': {
-      display: 'none',
-    },
-  };
 
   return (
     <section className="relative w-full overflow-x-hidden px-4 md:px-8 lg:px-16 py-6 md:py-12 lg:py-16">
@@ -219,7 +74,6 @@ export default function Team() {
             height={184}
             className="w-full h-full object-contain"
             priority
-            quality={100}
           />
 
           <div className="absolute left-[-50px] top-[-50px]">
@@ -260,7 +114,7 @@ export default function Team() {
                       : `calc(50% + ${member.offset}px) 50%`,
                   }}
                   sizes="(min-width: 1540px) 1000px, 140px"
-                  quality={100}
+
                 />
               </div>
 
@@ -292,69 +146,74 @@ export default function Team() {
         })}
       </div>
 
-      {/* ГОРИЗОНТАЛЬНЫЙ СКРОЛЛ ДЛЯ ЭКРАНОВ < 1540px */}
+      {/* SWIPER КАРУСЕЛЬ ДЛЯ ЭКРАНОВ < 1540px */}
       <div className="team-small-screen">
-        <div
-          ref={scrollContainerRef}
-          className="w-full overflow-x-auto overflow-y-visible cursor-grab active:cursor-grabbing"
-          onMouseDown={handleMouseDown}
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
-          style={{
-            ...scrollbarHideStyles,
-            scrollSnapType: 'x mandatory',
-            overscrollBehavior: 'contain',
-            WebkitOverflowScrolling: 'touch',
-          }}
-        >
-          <div className="flex mt-20 mb-18 gap-6 md:gap-8 px-4 md:px-8 lg:px-16 pb-8 min-w-max">
+        <div className="mt-20 mb-18 md:px-8 lg:px-16">
+          <Swiper
+            modules={[FreeMode]}
+            freeMode={true}
+            spaceBetween={24}
+            slidesPerView="auto"
+            breakpoints={{
+              0: {
+                spaceBetween: 24,
+              },
+              768: {
+                spaceBetween: 32,
+              },
+              1024: {
+                spaceBetween: 32,
+              },
+            }}
+            className="team-swiper"
+            style={{
+              paddingBottom: "32px",
+            }}
+          >
             {team.map((member, index) => (
-              <div
+              <SwiperSlide
                 key={member.name}
-                className="relative shrink-0 select-none w-[280px] md:w-[320px] lg:w-[340px]"
-                style={{
-                  scrollSnapAlign: 'start',
-                  scrollSnapStop: 'always',
-                }}
-                onMouseEnter={() => setActiveIndex(index)}
-                onMouseLeave={() => setActiveIndex(null)}
+                className="team-swiper-slide mt-10"
               >
-                {/* IMAGE */}
-                <div className="relative w-full h-[400px] md:h-[450px] lg:h-[500px] overflow-hidden">
-                  <Image
-                    src={member.image}
-                    alt={member.name}
-                    fill
-                    className="object-cover"
-                    draggable={false}
-                    onDragStart={preventImageDrag}
-                    style={{
-                      objectPosition: `calc(50% + ${member.offset}px) 50%`,
-                    }}
-                    sizes="(max-width: 768px) 280px, (max-width: 1024px) 320px, 340px"
-                    quality={100}
-                  />
-                </div>
+                <div
+                  className="relative select-none w-[280px] md:w-[320px] lg:w-[340px]"
+                  onMouseEnter={() => setActiveIndex(index)}
+                  onMouseLeave={() => setActiveIndex(null)}
+                >
+                  {/* IMAGE */}
+                  <div className="relative w-full h-[400px] md:h-[450px] lg:h-[500px] overflow-hidden">
+                    <Image
+                      src={member.image}
+                      alt={member.name}
+                      fill
+                      className="object-cover"
+                      draggable={false}
+                      style={{
+                        objectPosition: `calc(50% + ${member.offset}px) 50%`,
+                      }}
+                      sizes="(max-width: 768px) 280px, (max-width: 1024px) 320px, 340px"
+                    />
+                  </div>
 
-                {/* TEXT */}
-                <div className="mt-6">
-                  <p
-                    className="text-xl md:text-2xl lg:text-[25px] leading-[30px] md:leading-[35px] font-medium mb-2"
-                    style={{ color: "#3F3E3D" }}
-                  >
-                    {member.position}
-                  </p>
-                  <p
-                    className="text-base md:text-lg lg:text-[16px] leading-[24px] md:leading-[25px] font-normal"
-                    style={{ color: "#3F3E3D" }}
-                  >
-                    {member.name}
-                  </p>
+                  {/* TEXT */}
+                  <div className="mt-6">
+                    <p
+                      className="text-xl md:text-2xl lg:text-[25px] leading-[30px] md:leading-[35px] font-medium mb-2"
+                      style={{ color: "#3F3E3D" }}
+                    >
+                      {member.position}
+                    </p>
+                    <p
+                      className="text-base md:text-lg lg:text-[16px] leading-[24px] md:leading-[25px] font-normal"
+                      style={{ color: "#3F3E3D" }}
+                    >
+                      {member.name}
+                    </p>
+                  </div>
                 </div>
-              </div>
+              </SwiperSlide>
             ))}
-          </div>
+          </Swiper>
         </div>
       </div>
 
@@ -367,7 +226,7 @@ export default function Team() {
             width={184}
             height={184}
             className="w-full h-full object-contain"
-            quality={100}
+
           />
 
           <div className="absolute left-[-50px] top-[-50px] sm:right-[-50px] sm:bottom-[-50px]">

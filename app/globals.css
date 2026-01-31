@@ -76,3 +76,42 @@ img {
   user-drag: none;
   pointer-events: none;
 }
+
+/* Swiper styles for Team section - изолируем только для team-swiper */
+.team-swiper {
+  width: 100%;
+  overflow: visible;
+}
+
+.team-swiper .swiper-wrapper {
+  display: flex;
+  align-items: stretch;
+}
+
+.team-swiper .swiper-slide {
+  height: auto;
+  display: flex;
+}
+
+.team-swiper-slide {
+  width: 280px !important;
+}
+
+@media (min-width: 768px) {
+  .team-swiper-slide {
+    width: 320px !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .team-swiper-slide {
+    width: 340px !important;
+  }
+}
+
+/* Скрываем стандартные элементы Swiper */
+.team-swiper .swiper-button-next,
+.team-swiper .swiper-button-prev,
+.team-swiper .swiper-pagination {
+  display: none !important;
+}

@@ -7,7 +7,7 @@ export default function LoadingScreen() {
   const [isLoading, setIsLoading] = useState(true);
   const rafRef = useRef<number | null>(null);
   const isMountedRef = useRef(true);
-  const animationDuration = 5000; // 5 секунд плавной анимации
+  const animationDuration = 4500; // 5 секунд плавной анимации
 
   useEffect(() => {
     isMountedRef.current = true;

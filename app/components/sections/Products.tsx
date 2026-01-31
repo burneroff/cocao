@@ -76,9 +76,24 @@ export default function Products() {
   const [cursorPosition, setCursorPosition] = useState<{ x: number; y: number } | null>(null);
   const [isHoveringProduct, setIsHoveringProduct] = useState(false);
   const [showSecondText, setShowSecondText] = useState<{ [key: number]: boolean }>({});
+  const [isDesktop, setIsDesktop] = useState(false);
   const currentGroupRef = useRef<number>(1);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const shouldResetAllRef = useRef<boolean>(false);
+
+  // Определение размера экрана (десктоп или мобильный)
+  useEffect(() => {
+    const checkIsDesktop = () => {
+      setIsDesktop(window.innerWidth >= 768); // md breakpoint в Tailwind
+    };
+
+    checkIsDesktop();
+    window.addEventListener("resize", checkIsDesktop);
+
+    return () => {
+      window.removeEventListener("resize", checkIsDesktop);
+    };
+  }, []);
 
   // Автоматическое переключение между content и secondText по группам
   useEffect(() => {
@@ -196,7 +211,7 @@ export default function Products() {
   return (
     <div className="min-h-screen flex flex-col justify-end px-4 py-4 sm:px-16 sm:py-16  pb-50 sm:pt-100 sm:pb-100 relative">
       {/* Элемент, следующий за курсором - только на компьютере */}
-      {isHoveringProduct && cursorPosition && (
+      {isDesktop && isHoveringProduct && cursorPosition && (
         <div
           className="hidden md:block fixed pointer-events-none z-50"
           style={{
@@ -241,18 +256,22 @@ export default function Products() {
                             href={item.content ? productLinks[item.content] || "#" : "#"}
                             target={item.content && productLinks[item.content] ? "_blank" : undefined}
                             rel={item.content && productLinks[item.content] ? "noopener noreferrer" : undefined}
-                            className="w-full h-full flex items-center justify-center cursor-pointer relative block"
+                            className="w-full h-full flex items-center justify-center cursor-pointer relative"
                             onMouseEnter={() => {
-                              setHoveredIndex(index);
-                              setIsHoveringProduct(true);
+                              if (isDesktop) {
+                                setHoveredIndex(index);
+                                setIsHoveringProduct(true);
+                              }
                             }}
                             onMouseLeave={() => {
-                              setHoveredIndex(null);
-                              setIsHoveringProduct(false);
-                              setCursorPosition(null);
+                              if (isDesktop) {
+                                setHoveredIndex(null);
+                                setIsHoveringProduct(false);
+                                setCursorPosition(null);
+                              }
                             }}
                             onMouseMove={(e) => {
-                              if (item.type === "text") {
+                              if (isDesktop && item.type === "text") {
                                 setCursorPosition({
                                   x: e.clientX,
                                   y: e.clientY,

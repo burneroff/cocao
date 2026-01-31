@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import { Cross } from "../icons/Cross";
 
 const team = [
@@ -58,47 +58,177 @@ const team = [
 export default function Team() {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  
+  // Состояния для карусели
   const [isDragging, setIsDragging] = useState(false);
-  const startXRef = useRef(0);
-  const startYRef = useRef(0);
-  const scrollLeftRef = useRef(0);
-  const handleImageDragStart = (e: React.DragEvent) => {
+  const touchStartX = useRef(0);
+  const touchStartY = useRef(0);
+  const touchStartScrollLeft = useRef(0);
+  const touchStartTime = useRef(0);
+  const isScrolling = useRef(false);
+  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Обработка начала касания
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    if (!scrollContainerRef.current) return;
+    
+    const touch = e.touches[0];
+    touchStartX.current = touch.clientX;
+    touchStartY.current = touch.clientY;
+    touchStartScrollLeft.current = scrollContainerRef.current.scrollLeft;
+    touchStartTime.current = Date.now();
+    setIsDragging(true);
+    isScrolling.current = false;
+  }, []);
+
+  // Обработка движения касания
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    if (!scrollContainerRef.current || !isDragging) return;
+    
+    const touch = e.touches[0];
+    const deltaX = touchStartX.current - touch.clientX;
+    const deltaY = touchStartY.current - touch.clientY;
+    const absDeltaX = Math.abs(deltaX);
+    const absDeltaY = Math.abs(deltaY);
+    
+    // Определяем, это горизонтальный или вертикальный скролл
+    // Используем порог 10px, чтобы избежать случайных срабатываний
+    if (absDeltaX < 10 && absDeltaY < 10) return;
+    
+    const isHorizontalScroll = absDeltaX > absDeltaY;
+    
+    if (isHorizontalScroll) {
+      // Блокируем вертикальный скролл только если это явно горизонтальный свайп
+      e.preventDefault();
+      e.stopPropagation();
+      scrollContainerRef.current.scrollLeft = touchStartScrollLeft.current + deltaX;
+      isScrolling.current = true;
+    } else if (absDeltaY > 20) {
+      // Если это явно вертикальный скролл (больше 20px), разрешаем его и отменяем горизонтальный
+      setIsDragging(false);
+      isScrolling.current = false;
+    }
+  }, [isDragging]);
+
+  // Обработка окончания касания
+  const handleTouchEnd = useCallback(() => {
+    if (!scrollContainerRef.current) return;
+    
+    setIsDragging(false);
+    
+    // Определяем, был ли быстрый свайп
+    const touchDuration = Date.now() - touchStartTime.current;
+    const isQuickSwipe = touchDuration < 300 && isScrolling.current;
+    
+    if (isQuickSwipe && scrollContainerRef.current) {
+      // Применяем инерцию для быстрого свайпа
+      const currentScrollLeft = scrollContainerRef.current.scrollLeft;
+      const scrollWidth = scrollContainerRef.current.scrollWidth;
+      const clientWidth = scrollContainerRef.current.clientWidth;
+      
+      // Вычисляем точную ширину элемента с учетом gap
+      // На мобильных: 280px + 24px (gap-6) = 304px
+      // На md: 320px + 32px (gap-8) = 352px
+      // На lg: 340px + 32px (gap-8) = 372px
+      const isMobile = clientWidth < 768;
+      const isTablet = clientWidth >= 768 && clientWidth < 1024;
+      const itemWidth = isMobile ? 304 : isTablet ? 352 : 372;
+      
+      // Находим ближайший элемент для snap
+      const targetIndex = Math.round(currentScrollLeft / itemWidth);
+      const targetScroll = Math.max(0, Math.min(targetIndex * itemWidth, scrollWidth - clientWidth));
+      
+      scrollContainerRef.current.scrollTo({
+        left: targetScroll,
+        behavior: "smooth",
+      });
+    }
+    
+    isScrolling.current = false;
+  }, []);
+
+  // Обработка мыши для десктопа
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    if (!scrollContainerRef.current) return;
+    if (e.button !== 0) return; // Только левая кнопка мыши
+    
+    touchStartX.current = e.clientX;
+    touchStartScrollLeft.current = scrollContainerRef.current.scrollLeft;
+    setIsDragging(true);
+    
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!scrollContainerRef.current) return;
+      const deltaX = touchStartX.current - e.clientX;
+      scrollContainerRef.current.scrollLeft = touchStartScrollLeft.current + deltaX;
+    };
+    
+    const handleMouseUp = () => {
+      setIsDragging(false);
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
+    };
+    
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
+  }, []);
+
+  // Предотвращение drag изображений
+  const handleImageDragStart = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     return false;
-  };
+  }, []);
 
-  const handlePointerDown = (e: React.PointerEvent) => {
-    if (!scrollContainerRef.current) return;
-    if (e.button !== 0 && e.pointerType === "mouse") return;
-    e.currentTarget.setPointerCapture(e.pointerId);
-    setIsDragging(true);
-    startXRef.current = e.clientX;
-    startYRef.current = e.clientY;
-    scrollLeftRef.current = scrollContainerRef.current.scrollLeft;
-  };
+  // Автоматический snap при скролле
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
 
-  const handlePointerMove = (e: React.PointerEvent) => {
-    if (!isDragging || !scrollContainerRef.current) return;
-    const deltaX = e.clientX - startXRef.current;
-    const deltaY = e.clientY - startYRef.current;
+    let scrollTimeout: NodeJS.Timeout | null = null;
 
-    if (e.pointerType === "touch" && Math.abs(deltaY) > Math.abs(deltaX)) {
-      return;
-    }
+    const handleScroll = () => {
+      // Очищаем предыдущий таймаут
+      if (scrollTimeout) {
+        clearTimeout(scrollTimeout);
+      }
 
-    e.preventDefault();
-    scrollContainerRef.current.scrollLeft = scrollLeftRef.current - deltaX;
-  };
+      // Устанавливаем новый таймаут для snap после окончания скролла
+      scrollTimeout = setTimeout(() => {
+        if (!container) return;
 
-  const handlePointerUp = (e: React.PointerEvent) => {
-    if (!scrollContainerRef.current) return;
-    e.currentTarget.releasePointerCapture(e.pointerId);
-    setIsDragging(false);
-  };
+        const scrollLeft = container.scrollLeft;
+        const clientWidth = container.clientWidth;
 
-  const handlePointerCancel = () => {
-    setIsDragging(false);
-  };
+        // Вычисляем точную ширину элемента с учетом gap
+        const isMobile = clientWidth < 768;
+        const isTablet = clientWidth >= 768 && clientWidth < 1024;
+        const itemWidth = isMobile ? 304 : isTablet ? 352 : 372;
+
+        // Находим ближайший элемент для snap
+        const targetIndex = Math.round(scrollLeft / itemWidth);
+        const targetScroll = targetIndex * itemWidth;
+
+        // Snap только если разница больше 20px
+        if (Math.abs(scrollLeft - targetScroll) > 20) {
+          container.scrollTo({
+            left: targetScroll,
+            behavior: "smooth",
+          });
+        }
+      }, 150);
+    };
+
+    container.addEventListener("scroll", handleScroll, { passive: true });
+
+    return () => {
+      container.removeEventListener("scroll", handleScroll);
+      if (scrollTimeout) {
+        clearTimeout(scrollTimeout);
+      }
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+    };
+  }, []);
 
   return (
     <section className="relative w-full overflow-x-hidden px-4 md:px-8 lg:px-16 py-6 md:py-12 lg:py-16">
@@ -191,22 +321,27 @@ export default function Team() {
       <div className="team-small-screen">
         <div
           ref={scrollContainerRef}
-          className={`w-full overflow-x-auto overflow-y-visible scrollbar-hide ${isDragging ? "cursor-grabbing" : "cursor-grab"
-            }`}
-          onPointerDown={handlePointerDown}
-          onPointerMove={handlePointerMove}
-          onPointerUp={handlePointerUp}
-          onPointerCancel={handlePointerCancel}
-          onPointerLeave={handlePointerCancel}
+          className={`w-full overflow-x-auto overflow-y-visible scrollbar-hide ${
+            isDragging ? "cursor-grabbing" : "cursor-grab"
+          }`}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          onMouseDown={handleMouseDown}
           style={{
             WebkitOverflowScrolling: "touch",
             scrollBehavior: "smooth",
             scrollSnapType: "x mandatory",
             overscrollBehaviorX: "contain",
-            touchAction: "pan-y",
+            touchAction: "pan-x pan-y pinch-zoom",
+            msOverflowStyle: "none",
+            scrollbarWidth: "none",
           }}
         >
-          <div className="flex mt-20 mb-18 gap-6 md:gap-8 px-4 md:px-8 lg:px-16 pb-8" style={{ width: 'max-content' }}>
+          <div
+            className="flex mt-20 mb-18 gap-6 md:gap-8 px-4 md:px-8 lg:px-16 pb-8"
+            style={{ width: "max-content" }}
+          >
             {team.map((member, index) => {
               const isActive = activeIndex === index;
 
@@ -224,6 +359,7 @@ export default function Team() {
                     scrollSnapStop: "always",
                     userSelect: "none",
                     WebkitUserSelect: "none",
+                    touchAction: "manipulation",
                   }}
                 >
                   {/* IMAGE - ВСЕГДА ЦВЕТНАЯ */}
@@ -239,6 +375,7 @@ export default function Team() {
                         objectPosition: `calc(50% + ${member.offset}px) 50%`,
                         userSelect: "none",
                         WebkitUserSelect: "none",
+                        pointerEvents: "none",
                       }}
                       sizes="(max-width: 768px) 280px, (max-width: 1024px) 320px, 340px"
                       quality={100}

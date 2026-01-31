@@ -118,38 +118,21 @@ export const FloatingNav = ({
     };
   }, []);
 
-  // Отслеживание направления скролла (только для десктопа)
+  // Отслеживание направления скролла (только для мобилок)
   useEffect(() => {
-    // На мобилках всегда показываем
-    if (isMobile) {
+    // На десктопе всегда показываем статично
+    if (!isMobile) {
       setVisible(true);
       return;
     }
 
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-
-      if (currentScrollY === 0) {
-        // В самом верху - показываем навигацию
-        setVisible(true);
-      } else if (currentScrollY > lastScrollY && currentScrollY > 50) {
-        // Скролл вниз больше 50px - скрываем
-        setVisible(false);
-      } else if (currentScrollY < lastScrollY) {
-        // Скролл вверх - показываем
-        setVisible(true);
-      }
-
-      setLastScrollY(currentScrollY);
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [lastScrollY, isMobile]);
+    // На мобилках всегда показываем
+    setVisible(true);
+  }, [isMobile]);
 
   // Определяем финальное состояние для анимации
-  // На мобилках всегда показываем, на десктопе - по логике скролла
-  const shouldShow = isLoaded && (isMobile || visible);
+  // На десктопе всегда показываем статично, на мобилках - по логике скролла
+  const shouldShow = isLoaded && (!isMobile || visible);
 
   return (
     <AnimatePresence mode="wait">
@@ -163,12 +146,13 @@ export const FloatingNav = ({
           opacity: shouldShow ? 1 : 0,
         }}
         transition={{
-          duration: 0.8,
+          duration: isMobile ? 0.8 : 0.5,
           delay: 0,
           ease: "easeInOut",
         }}
         className={cn(
-          "flex max-w-full w-full fixed top-0 left-0 right-0 mx-auto",
+          "flex max-w-full w-full mx-auto",
+          isMobile ? "fixed top-0 left-0 right-0" : "absolute top-0 left-0 right-0",
           " z-5000 px-0 md:px-4 py-4 items-end justify-between",
           "transition-colors duration-500 ease-in-out",
           isMobile ? `${currentBgColor} h-[109px]` : "",

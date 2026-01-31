@@ -61,65 +61,17 @@ export default function Team() {
   const isDraggingRef = useRef(false);
   const startXRef = useRef(0);
   const scrollLeftRef = useRef(0);
+  const startYRef = useRef(0);
+  const startScrollTopRef = useRef(0);
 
   // Получаем ширину карточки с учетом gap
-  const getCardWidth = () => {
+  const getCardWidth = useCallback(() => {
     if (typeof window === "undefined") return 304;
 
     const width = window.innerWidth;
     if (width < 768) return 304; // 280px + 24px gap
     if (width < 1024) return 352; // 320px + 32px gap
     return 372; // 340px + 32px gap
-  };
-
-  // Обработчики для мыши
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    if (!scrollContainerRef.current) return;
-    isDraggingRef.current = true;
-    startXRef.current = e.pageX - scrollContainerRef.current.offsetLeft;
-    scrollLeftRef.current = scrollContainerRef.current.scrollLeft;
-
-    // Добавляем класс для изменения курсора
-    scrollContainerRef.current.style.cursor = 'grabbing';
-    scrollContainerRef.current.style.userSelect = 'none';
-  }, []);
-
-  const handleMouseMove = useCallback((e: MouseEvent) => {
-    if (!isDraggingRef.current || !scrollContainerRef.current) return;
-    e.preventDefault();
-
-    const x = e.pageX - scrollContainerRef.current.offsetLeft;
-    const walk = (x - startXRef.current) * 1.5; // Умножаем для более плавного скролла
-    scrollContainerRef.current.scrollLeft = scrollLeftRef.current - walk;
-  }, []);
-
-  const handleMouseUp = useCallback(() => {
-    isDraggingRef.current = false;
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.style.cursor = 'grab';
-      scrollContainerRef.current.style.userSelect = 'auto';
-      snapToNearestCard();
-    }
-  }, []);
-
-  // Обработчики для тач-устройств
-  const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    if (!scrollContainerRef.current) return;
-    const touch = e.touches[0];
-    startXRef.current = touch.pageX - scrollContainerRef.current.offsetLeft;
-    scrollLeftRef.current = scrollContainerRef.current.scrollLeft;
-  }, []);
-
-  const handleTouchMove = useCallback((e: React.TouchEvent) => {
-    if (!scrollContainerRef.current) return;
-    const touch = e.touches[0];
-    const x = touch.pageX - scrollContainerRef.current.offsetLeft;
-    const walk = (x - startXRef.current) * 1.5;
-    scrollContainerRef.current.scrollLeft = scrollLeftRef.current - walk;
-  }, []);
-
-  const handleTouchEnd = useCallback(() => {
-    snapToNearestCard();
   }, []);
 
   // Функция для привязки к ближайшей карточке
@@ -135,7 +87,92 @@ export default function Team() {
       left: snappedPosition,
       behavior: 'smooth'
     });
+  }, [getCardWidth]);
+
+  // Обработчики для мыши
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    if (!scrollContainerRef.current) return;
+
+    isDraggingRef.current = true;
+    startXRef.current = e.pageX - scrollContainerRef.current.offsetLeft;
+    startYRef.current = e.pageY;
+    scrollLeftRef.current = scrollContainerRef.current.scrollLeft;
+    startScrollTopRef.current = window.pageYOffset || document.documentElement.scrollTop;
+
+    // Добавляем класс для изменения курсора
+    scrollContainerRef.current.style.cursor = 'grabbing';
+    scrollContainerRef.current.style.userSelect = 'none';
+
+    e.preventDefault();
   }, []);
+
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    if (!isDraggingRef.current || !scrollContainerRef.current) return;
+
+    const x = e.pageX - scrollContainerRef.current.offsetLeft;
+    const deltaX = x - startXRef.current;
+
+    // Проверяем, горизонтальное ли это движение
+    const deltaY = Math.abs(e.pageY - startYRef.current);
+
+    // Если движение в основном горизонтальное, скроллим контейнер
+    if (Math.abs(deltaX) > deltaY) {
+      e.preventDefault();
+      const walk = deltaX * 1.5;
+      scrollContainerRef.current.scrollLeft = scrollLeftRef.current - walk;
+    } else {
+      // Если движение вертикальное, скроллим страницу
+      const scrollTop = startScrollTopRef.current + (startYRef.current - e.pageY);
+      window.scrollTo(0, scrollTop);
+    }
+  }, []);
+
+  const handleMouseUp = useCallback(() => {
+    if (isDraggingRef.current && scrollContainerRef.current) {
+      scrollContainerRef.current.style.cursor = 'grab';
+      scrollContainerRef.current.style.userSelect = 'auto';
+
+      // Проверяем, было ли движение
+      if (Math.abs(scrollContainerRef.current.scrollLeft - scrollLeftRef.current) > 5) {
+        snapToNearestCard();
+      }
+    }
+
+    isDraggingRef.current = false;
+  }, [snapToNearestCard]);
+
+  // Обработчики для тач-устройств
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    if (!scrollContainerRef.current) return;
+    const touch = e.touches[0];
+    startXRef.current = touch.pageX - scrollContainerRef.current.offsetLeft;
+    startYRef.current = touch.pageY;
+    scrollLeftRef.current = scrollContainerRef.current.scrollLeft;
+    startScrollTopRef.current = window.pageYOffset || document.documentElement.scrollTop;
+  }, []);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    if (!scrollContainerRef.current) return;
+    const touch = e.touches[0];
+    const x = touch.pageX - scrollContainerRef.current.offsetLeft;
+    const deltaX = x - startXRef.current;
+    const deltaY = Math.abs(touch.pageY - startYRef.current);
+
+    // Если движение в основном горизонтальное, скроллим контейнер
+    if (Math.abs(deltaX) > deltaY) {
+      e.preventDefault();
+      const walk = deltaX * 1.5;
+      scrollContainerRef.current.scrollLeft = scrollLeftRef.current - walk;
+    } else {
+      // Если движение вертикальное, скроллим страницу
+      const scrollTop = startScrollTopRef.current + (startYRef.current - touch.pageY);
+      window.scrollTo(0, scrollTop);
+    }
+  }, []);
+
+  const handleTouchEnd = useCallback(() => {
+    snapToNearestCard();
+  }, [snapToNearestCard]);
 
   // Добавляем обработчики событий мыши
   useEffect(() => {
@@ -268,7 +305,7 @@ export default function Team() {
             ...scrollbarHideStyles,
             scrollSnapType: 'x mandatory',
             overscrollBehavior: 'contain',
-            touchAction: 'pan-x pinch-zoom',
+            WebkitOverflowScrolling: 'touch',
           }}
         >
           <div className="flex mt-20 mb-18 gap-6 md:gap-8 px-4 md:px-8 lg:px-16 pb-8 min-w-max">

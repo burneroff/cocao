@@ -289,7 +289,7 @@ export default function Products() {
                                 <div className="relative w-full h-full flex items-center justify-center overflow-hidden">
                                   {/* Content текст */}
                                   <div
-                                    className={`absolute text-[#3F3E3D] px-2 z-10 transition-all duration-500 ease-in-out font-normal text-sm leading-[26px] md:font-medium md:text-[25px] md:leading-[35px] text-center ${
+                                    className={`absolute text-[#3F3E3D] px-2 z-10 transition-all duration-200 ease-in-out font-normal text-sm leading-[26px] md:font-medium md:text-[25px] md:leading-[35px] text-center ${
                                       isHovered || showSecond 
                                         ? "opacity-0 -translate-y-full" 
                                         : "opacity-100 translate-y-0"
@@ -300,7 +300,7 @@ export default function Products() {
 
                                   {/* SecondText - Mobile */}
                                   <div
-                                    className={`absolute text-[#3F3E3D] px-2 z-10 transition-all duration-500 ease-in-out font-normal text-sm leading-[26px] whitespace-pre-line text-center md:hidden ${
+                                    className={`absolute text-[#3F3E3D] px-2 z-10 transition-all duration-200 ease-in-out font-normal text-sm leading-[26px] whitespace-pre-line text-center md:hidden ${
                                       isHovered || !showSecond 
                                         ? "opacity-0 translate-y-full" 
                                         : "opacity-100 translate-y-0"
@@ -311,7 +311,7 @@ export default function Products() {
 
                                   {/* SecondText - Desktop */}
                                   <div
-                                    className={`absolute text-[#3F3E3D] px-2 z-10 transition-all duration-500 ease-in-out font-medium text-[25px] leading-[35px] whitespace-pre-line text-center hidden md:block ${
+                                    className={`absolute text-[#3F3E3D] px-2 z-10 transition-all duration-200 ease-in-out font-medium text-[25px] leading-[35px] whitespace-pre-line text-center hidden md:block ${
                                       isHovered || !showSecond 
                                         ? "opacity-0 translate-y-full" 
                                         : "opacity-100 translate-y-0"

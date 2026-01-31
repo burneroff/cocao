@@ -7,6 +7,7 @@ import Products from "./sections/Products";
 import Values from "./sections/Values";
 import Team from "./sections/Team";
 import Contacts from "./sections/Contacts";
+import Footer from "./Footer";
 
 // Компонент-обертка для секций с анимацией появления
 const SectionWrapper = ({
@@ -129,7 +130,7 @@ const NavItems = ({
   }, []);
 
   return (
-    <div ref={navRef} className="flex h-full flex-col justify-center gap-0 pointer-events-auto mt-5">
+    <div ref={navRef} className="flex h-full flex-col justify-start gap-0 pointer-events-auto pt-10">
       {sections.map((section, index) => {
         const isVisible = visibleItems.has(section.id);
         return (
@@ -143,7 +144,7 @@ const NavItems = ({
             }}
             onMouseLeave={() => setHoveredId(null)}
             style={{
-              lineHeight: "clamp(60px, 8vw, 100px)",
+              lineHeight: "clamp(72px, 9vw, 120px)",
               color:
                 activeSection === section.id || hoveredId === section.id
                   ? "#0100F4"
@@ -402,7 +403,7 @@ export default function NavigationSection() {
     <div className="relative flex">
       {/* Left Navigation - скрываем на мобилках */}
       {!isMobile && (
-        <div className="sticky top-0 h-screen w-1/3 px-8 py-8 z-20 pointer-events-none shrink-0 hidden md:block">
+        <div className="sticky top-0 h-screen w-1/3 px-8 pt-6 pb-8 z-20 pointer-events-none shrink-0 hidden md:block">
           <NavItems
             sections={sections}
             activeSection={activeSection}
@@ -434,6 +435,7 @@ export default function NavigationSection() {
             </SectionWrapper>
           );
         })}
+        <Footer />
       </div>
     </div>
   );

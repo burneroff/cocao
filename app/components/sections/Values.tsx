@@ -289,7 +289,7 @@ export default function Values() {
   return (
     <div
       ref={containerRef}
-      className="relative h-screen flex flex-col items-center justify-center px-4 md:px-8 lg:px-12 xl:px-20 py-8 md:py-12 lg:py-16"
+      className="relative h-screen flex flex-col items-center justify-center px-4 md:px-8 lg:px-12 xl:px-20 py-8 md:py-12 lg:py-16 md:mr-10"
     >
       {/* Фон на всю ширину экрана с плавным переходом */}
       <div
@@ -321,7 +321,7 @@ export default function Values() {
                   src={value.image}
                   alt={value.title}
                   fill
-                  className="object-contain ml-[15px]"
+                  className="object-contain 2xl:ml-[60px]"
                   sizes="(max-width: 640px) 280px, (max-width: 768px) 320px, (max-width: 1024px) 380px, (max-width: 1280px) 420px, (max-width: 1536px) 450px, 450px"
                 />
               </div>
@@ -397,7 +397,7 @@ export default function Values() {
             ))}
 
             {/* Подзаголовок для устройств меньше 1400px (скрыт на десктопе 1400+) */}
-            <div className="2xl:hidden w-full max-w-2xl mx-auto px-4 mt-4 md:mt-6 relative">
+            <div className="2xl:hidden w-full px-0 mt-4 md:mt-6 relative sm:px-4" style={{ maxWidth: "490px" }}>
               {valuesData.map((value, index) => (
                 <p
                   key={index}

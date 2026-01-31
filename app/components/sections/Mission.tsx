@@ -168,30 +168,30 @@ export default function Mission() {
         <div className="flex flex-row gap-8 md:gap-12 lg:gap-[180px] mt-12 md:mt-[100px]">
           {/* Блок 1: 30+ Products */}
           <div className="flex flex-col items-left">
-            <div className="text-[48px] md:text-[64px] text-[#CDCDCD] font-normal md:font-medium leading-[40px] md:leading-[100%] tracking-[0%] uppercase mb-2 md:mb-4">
+            <div className="text-[36px] md:text-[64px] text-[#CDCDCD] font-normal md:font-medium leading-[40px] md:leading-[100%] tracking-[0%] uppercase mb-2 md:mb-4">
               {animatedValues.value1}+
             </div>
-            <div className="text-[12px] md:text-[25px] text-[#CDCDCD] font-normal md:font-medium leading-[18px] md:leading-[35px] tracking-[0%] text-left">
+            <div className="text-[14px] md:text-[25px] text-[#CDCDCD] font-normal md:font-medium leading-[18px] md:leading-[35px] tracking-[0%] text-left">
               Products
             </div>
           </div>
           
           {/* Блок 2: 28m+ Installs Worldwide */}
           <div className="flex flex-col items-left">
-            <div className="text-[48px] md:text-[64px] text-[#CDCDCD] font-normal md:font-medium leading-[40px] md:leading-[100%] tracking-[0%] uppercase mb-2 md:mb-4">
+            <div className="text-[36px] md:text-[64px] text-[#CDCDCD] font-normal md:font-medium leading-[40px] md:leading-[100%] tracking-[0%] uppercase mb-2 md:mb-4">
               {Math.floor(animatedValues.value2)}m+
             </div>
-            <div className="text-[12px] md:text-[25px] text-[#CDCDCD] font-normal md:font-medium leading-[18px] md:leading-[35px] tracking-[0%] text-left">
+            <div className="text-[14px] md:text-[25px] text-[#CDCDCD] font-normal md:font-medium leading-[18px] md:leading-[35px] tracking-[0%] text-left">
               Installs Worldwide
             </div>
           </div>
           
           {/* Блок 3: 1.7m+ Monthly Active Users */}
           <div className="flex flex-col items-left">
-            <div className="text-[48px] md:text-[64px] text-[#CDCDCD] font-normal md:font-medium leading-[40px] md:leading-[100%] tracking-[0%] uppercase mb-2 md:mb-4">
+            <div className="text-[36px] md:text-[64px] text-[#CDCDCD] font-normal md:font-medium leading-[40px] md:leading-[100%] tracking-[0%] uppercase mb-2 md:mb-4">
               {animatedValues.value3.toFixed(1)}m+
             </div>
-            <div className="text-[12px] md:text-[25px] text-[#CDCDCD] font-normal md:font-medium leading-[18px] md:leading-[35px] tracking-[0%] text-left">
+            <div className="text-[14px] md:text-[25px] text-[#CDCDCD] font-normal md:font-medium leading-[18px] md:leading-[35px] tracking-[0%] text-left">
               Monthly Active Users
             </div>
           </div>

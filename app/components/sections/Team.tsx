@@ -162,6 +162,7 @@ export default function Team() {
             height={184}
             className="w-full h-full object-contain"
             priority
+            quality={100}
           />
 
           {/* Crosses - скрыть на маленьких экранах */}
@@ -206,7 +207,8 @@ export default function Team() {
                       ? "50% 50%"
                       : `calc(50% + ${member.offset}px) 50%`,
                   }}
-                  sizes="(min-width: 1540px) 340px, 140px"
+                  sizes="(min-width: 1540px) 1000px, 140px"
+                  quality={100}
                 />
               </div>
 
@@ -296,6 +298,7 @@ export default function Team() {
                         WebkitUserSelect: "none",
                       } as React.CSSProperties}
                       sizes="(max-width: 768px) 280px, (max-width: 1024px) 320px, 340px"
+                      quality={100}
                     />
                   </div>
 
@@ -331,6 +334,7 @@ export default function Team() {
             width={184}
             height={184}
             className="w-full h-full object-contain"
+            quality={100}
           />
 
           {/* Crosses - скрыть на маленьких экранах */}

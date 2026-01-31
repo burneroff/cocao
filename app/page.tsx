@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Footer from "./components/Footer";
 import Hero from "./components/Hero";
 import NavigationSection from "./components/NavigationSection";
 import { FloatingNav } from "./components/ui/floating-navbar";
 
 export default function Home() {
   const [isLoaded, setIsLoaded] = useState(false);
+  const [isNavLoaded, setIsNavLoaded] = useState(false);
 
   useEffect(() => {
     // Проверяем, когда LoadingScreen исчезнет
@@ -49,12 +49,24 @@ export default function Home() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!isLoaded) {
+      setIsNavLoaded(false);
+      return;
+    }
+
+    const timeout = setTimeout(() => {
+      setIsNavLoaded(true);
+    }, 1500);
+
+    return () => clearTimeout(timeout);
+  }, [isLoaded]);
+
   return (
     <>
-      <FloatingNav isLoaded={isLoaded} />
+      <FloatingNav isLoaded={isNavLoaded} />
       <Hero isLoaded={isLoaded} />
       <NavigationSection />
-      <Footer />
     </>
   );
 }

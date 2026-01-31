@@ -1,11 +1,6 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
-import {
-  motion,
-  AnimatePresence,
-  useScroll,
-  useMotionValueEvent,
-} from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 import { cn } from "@/app/lib/utils";
 import Link from "next/link";
 import BurgerMenu from "../BurgerMenu";
@@ -19,14 +14,13 @@ const sections = [
   { id: "contacts", label: "Contacts", bgColor: "bg-[#dadada]" },
 ];
 
-export const FloatingNav = ({ 
+export const FloatingNav = ({
   className,
-  isLoaded = false 
-}: { 
+  isLoaded = false
+}: {
   className?: string;
   isLoaded?: boolean;
 }) => {
-  const { scrollYProgress } = useScroll();
   const [visible, setVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [activeSection, setActiveSection] = useState("us");
@@ -147,34 +141,6 @@ export const FloatingNav = ({
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY, isMobile]);
 
-  // Альтернативный вариант с useMotionValueEvent (более плавный, только для десктопа)
-  useMotionValueEvent(scrollYProgress, "change", (current) => {
-    // На мобилках всегда показываем
-    if (isMobile) {
-      setVisible(true);
-      return;
-    }
-
-    if (typeof current === "number") {
-      const previous = scrollYProgress.getPrevious() || 0;
-      const direction = current - previous;
-
-      // В самом верху страницы
-      if (current < 0.05) {
-        setVisible(true);
-      } else {
-        // Определяем направление скролла
-        if (direction < 0) {
-          // Скролл вверх
-          setVisible(true);
-        } else if (direction > 0 && current > 0.1) {
-          // Скролл вниз (только если не в самом верху)
-          setVisible(false);
-        }
-      }
-    }
-  });
-
   // Определяем финальное состояние для анимации
   // На мобилках всегда показываем, на десктопе - по логике скролла
   const shouldShow = isLoaded && (isMobile || visible);
@@ -184,10 +150,10 @@ export const FloatingNav = ({
       <motion.div
         initial={{
           opacity: 0,
-          y: -100,
+          y: isMobile ? -100 : 0,
         }}
         animate={{
-          y: shouldShow ? 0 : -100,
+          y: isMobile ? (shouldShow ? 0 : -100) : 0,
           opacity: shouldShow ? 1 : 0,
         }}
         transition={{
@@ -197,13 +163,13 @@ export const FloatingNav = ({
         }}
         className={cn(
           "flex max-w-full w-full fixed top-0 left-0 right-0 mx-auto",
-          " z-[5000] px-4 md:px-8 py-4 items-end justify-between",
+          " z-[5000] px-0 md:px-4 py-4 items-end justify-between",
           "transition-colors duration-500 ease-in-out",
           isMobile ? `${currentBgColor} h-[109px]` : "",
           className
         )}
       >
-        <div className="flex-1">
+        <div className="flex-1 pl-[16px]">
           {!isMenuOpen && (
             <>
               {/* Mobile: показываем активную секцию */}
@@ -274,7 +240,7 @@ export const FloatingNav = ({
         </nav>
 
         {/* Mobile Burger Menu */}
-        <div className="md:hidden">
+        <div className="md:hidden pr-[16px]">
           <BurgerMenu scrollToSection={scrollToSection} onMenuToggle={setIsMenuOpen} />
         </div>
       </motion.div>

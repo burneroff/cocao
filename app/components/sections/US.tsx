@@ -106,8 +106,7 @@ export default function US() {
         </div>
       </div>
 
-      {/* Картинка в правом углу - адаптивная */}
-      <div className="absolute right-4 md:right-[70px] bottom-[100px] md:bottom-[100px] w-[184px] h-[184px]">
+      <div className="absolute right-4 md:right-[70px] bottom-[100px] md:bottom-[270px] w-[184px] h-[184px]">
         <Image
           src="/frames/frame_US.png"
           alt="Frame US"

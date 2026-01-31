@@ -190,9 +190,9 @@ export default function VacanciesPage() {
                 className="flex w-full items-center gap-2 text-left text-[clamp(25px,2.6vw,40px)] font-semibold uppercase min-w-0"
               >
                 <span
-                  className={`inline-flex w-6 shrink-0 items-center justify-center transition-all duration-400 ease-in-out ${isActive
-                    ? "opacity-100 translate-x-0 text-[#0100F4]"
-                    : "opacity-0 -translate-x-2"
+                  className={`inline-flex w-6 shrink-0 items-center justify-center transition-opacity duration-100 ease-in-out ${isActive
+                    ? "opacity-100 text-[#0100F4]"
+                    : "opacity-0"
                     }`}
                 >
                   ›
@@ -213,9 +213,9 @@ export default function VacanciesPage() {
               {activeVacancy ? (
                 <motion.div
                   key={activeId}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
                   transition={{ duration: 0.25, ease: "easeInOut" }}
                   className="mx-auto w-full max-w-[860px]"
                 >

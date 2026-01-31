@@ -19,7 +19,7 @@ const team = [
     name: "Anna Marzan",
     position: "CEO",
     image: "/team/Anna Marzan.png",
-    offset: 25,
+    offset: 28,
   },
   {
     name: "Radzivon Bartoshyk",
@@ -31,7 +31,7 @@ const team = [
     name: "Krukau Yauheni",
     position: "Product Manager",
     image: "/team/Krukau Yauheni.png",
-    offset: 0,
+    offset: -3,
   },
   {
     name: "Anna Tsilind",
@@ -174,6 +174,7 @@ export default function Team() {
               <SwiperSlide
                 key={member.name}
                 className="team-swiper-slide mt-10"
+                style={{ width: "auto", height: "auto" }}
               >
                 <div
                   className="relative select-none w-[280px] md:w-[320px] lg:w-[340px]"
@@ -189,7 +190,8 @@ export default function Team() {
                       className="object-cover"
                       draggable={false}
                       style={{
-                        objectPosition: `calc(50% + ${member.offset}px) 50%`,
+                        objectPosition: "center center",
+                        objectFit: "cover",
                       }}
                       sizes="(max-width: 768px) 280px, (max-width: 1024px) 320px, 340px"
                       priority={true}

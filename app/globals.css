@@ -95,6 +95,8 @@ img {
 
 .team-swiper-slide {
   width: 280px !important;
+  display: flex !important;
+  align-items: stretch !important;
 }
 
 @media (min-width: 768px) {
@@ -107,6 +109,18 @@ img {
   .team-swiper-slide {
     width: 340px !important;
   }
+}
+
+/* Убеждаемся, что изображения в Swiper полностью заполняют контейнер */
+.team-swiper-slide > div {
+  width: 100%;
+  height: 100%;
+}
+
+.team-swiper-slide img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
 }
 
 /* Скрываем стандартные элементы Swiper */

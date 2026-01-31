@@ -79,7 +79,6 @@ export default function Products() {
   const [isDesktop, setIsDesktop] = useState(false);
   const currentGroupRef = useRef<number>(1);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const shouldResetAllRef = useRef<boolean>(false);
 
   // Определение размера экрана (десктоп или мобильный)
   useEffect(() => {
@@ -97,68 +96,54 @@ export default function Products() {
 
   // Автоматическое переключение между content и secondText по группам
   useEffect(() => {
-    const toggleTextForGroup = (groupNum: number) => {
-      // Если нужно сбросить все элементы (после группы 3)
-      if (shouldResetAllRef.current) {
-        setShowSecondText((prev) => {
-          const allTextIndices: number[] = [];
-          tableRows.forEach((row, rowIndex) => {
-            row.forEach((item, colIndex) => {
-              if (item.type === "text" && item.secondText && item.content) {
-                const index = rowIndex * 3 + colIndex;
-                allTextIndices.push(index);
-              }
-            });
-          });
-
-          const newState: { [key: number]: boolean } = {};
-          allTextIndices.forEach((idx) => {
-            newState[idx] = false; // Сбрасываем на content
-          });
-          return { ...prev, ...newState };
-        });
-        shouldResetAllRef.current = false;
-        currentGroupRef.current = 1;
-        return;
-      }
-
-      // Находим все индексы элементов с secondText для текущей группы
-      const textIndices: number[] = [];
+    // Функция для установки текста для конкретной группы
+    const setTextForGroup = (groupNum: number) => {
+      // Находим все индексы элементов с secondText для всех групп
+      const allTextIndices: { [key: number]: number } = {}; // index -> groupNum
       tableRows.forEach((row, rowIndex) => {
         row.forEach((item, colIndex) => {
           if (item.type === "text" && item.secondText && item.content) {
+            const index = rowIndex * 3 + colIndex;
             const productGroup = productGroups[item.content];
-            if (productGroup === groupNum) {
-              const index = rowIndex * 3 + colIndex;
-              textIndices.push(index);
-            }
+            allTextIndices[index] = productGroup;
           }
         });
       });
 
-      // Переключаем текст только для текущей группы (все элементы группы одновременно)
-      if (textIndices.length > 0) {
-        setShowSecondText((prev) => {
-          const newState: { [key: number]: boolean } = {};
-          textIndices.forEach((idx) => {
-            newState[idx] = !prev[idx];
-          });
-          return { ...prev, ...newState };
-        });
-      }
+      // Находим индексы элементов текущей группы
+      const currentGroupIndices: number[] = [];
+      Object.entries(allTextIndices).forEach(([indexStr, group]) => {
+        if (group === groupNum) {
+          currentGroupIndices.push(Number(indexStr));
+        }
+      });
 
-      // Если это была последняя группа (3), планируем сброс всех элементов в следующем цикле
-      if (groupNum === 3) {
-        shouldResetAllRef.current = true;
-      } else {
-        // Переходим к следующей группе
-        currentGroupRef.current = groupNum + 1;
-      }
+      // Сбрасываем все группы на content, затем показываем secondText только для текущей группы
+      setShowSecondText((prev) => {
+        const newState: { [key: number]: boolean } = {};
+
+        // Сбрасываем все элементы на content (названия приложений)
+        Object.keys(allTextIndices).forEach((indexStr) => {
+          newState[Number(indexStr)] = false;
+        });
+
+        // Показываем secondText (характеристики) только для текущей группы
+        currentGroupIndices.forEach((idx) => {
+          newState[idx] = true;
+        });
+
+        return { ...prev, ...newState };
+      });
     };
+
+    // Устанавливаем начальное состояние - группа 1 показывает характеристики
+    setTextForGroup(1);
 
     // Запускаем интервал для переключения групп
     intervalRef.current = setInterval(() => {
-      toggleTextForGroup(currentGroupRef.current);
+      // Переходим к следующей группе (1 -> 2 -> 3 -> 1 -> ...)
+      currentGroupRef.current = currentGroupRef.current === 3 ? 1 : currentGroupRef.current + 1;
+      setTextForGroup(currentGroupRef.current);
     }, 5000);
 
     return () => {
@@ -295,7 +280,7 @@ export default function Products() {
                                 return (
                                   <div
                                     className={`text-[#3F3E3D] px-2 z-10 transition-opacity duration-300 text-center ${isHovered ? "opacity-0" : "opacity-100"
-                                      } font-normal text-sm leading-[26px] md:font-medium md:text-[25px] md:leading-[35px]`}
+                                      } font-normal text-sm leading-[26px] md:font-medium md:text-[20px] md:leading-[28px] lg:text-[25px] lg:leading-[35px]`}
                                   >
                                     {item.content}
                                   </div>
@@ -307,7 +292,7 @@ export default function Products() {
                                 <div className="relative w-full h-full flex items-center justify-center overflow-hidden">
                                   {/* Content текст */}
                                   <div
-                                    className={`absolute text-[#3F3E3D] px-2 z-10 transition-all duration-200 ease-in-out font-normal text-sm leading-[26px] md:font-medium md:text-[25px] md:leading-[35px] text-center ${isHovered || showSecond
+                                    className={`absolute text-[#3F3E3D] px-2 z-10 transition-all duration-200 ease-in-out font-normal text-sm leading-[26px] md:font-medium md:text-[20px] md:leading-[28px] lg:text-[25px] lg:leading-[35px] text-center ${isHovered || showSecond
                                       ? "opacity-0 -translate-y-full"
                                       : "opacity-100 translate-y-0"
                                       }`}
@@ -327,7 +312,7 @@ export default function Products() {
 
                                   {/* SecondText - Desktop */}
                                   <div
-                                    className={`absolute text-[#3F3E3D] px-2 z-10 transition-all duration-200 ease-in-out font-medium text-[25px] leading-[35px] whitespace-pre-line text-center hidden md:block ${isHovered || !showSecond
+                                    className={`absolute text-[#3F3E3D] px-2 z-10 transition-all duration-200 ease-in-out font-medium md:text-[20px] md:leading-[28px] lg:text-[25px] lg:leading-[35px] whitespace-pre-line text-center hidden md:block ${isHovered || !showSecond
                                       ? "opacity-0 translate-y-full"
                                       : "opacity-100 translate-y-0"
                                       }`}

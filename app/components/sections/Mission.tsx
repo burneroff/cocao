@@ -92,24 +92,19 @@ export default function Mission() {
   return (
     <div
       ref={sectionRef}
-      className={`h-[100vh] md:h-[120vh] flex items-start justify-end px-4 py-8 md:px-16 md:py-16 relative transition-opacity duration-1000 ${isVisible ? "opacity-100" : "opacity-0"
+      className={`min-h-[100vh] md:min-h-[120vh] flex items-start justify-end px-4 py-4 md:px-16 md:py-16 relative transition-opacity duration-1000 overflow-x-hidden ${isVisible ? "opacity-100" : "opacity-0"
         }`}
     >
-      <div className="flex justify-end flex-col mt-9 relative">
-        {/* Черный фон на всю ширину страницы - компенсируем padding родителя (px-4 md:px-16) */}
-        <div className="z-10 absolute inset-y-0 -left-4 -right-4 md:-left-16 md:-right-16 bg-black"></div>
-        {/* Текст с адаптивным размером */}
+      <div className="flex justify-end flex-col">
         <div
-          className="z-12 text-[#CDCDCD] font-normal leading-[35px] md:leading-[50px] lg:leading-[70px] tracking-[0%] text-justify"
+          className="text-[#CDCDCD] font-normal leading-normal md:leading-[70px] tracking-[0%] text-justify w-full max-w-full md:max-w-[910px]"
           style={{
             fontFamily: "var(--font-neue-regrade), Neue Regrade, sans-serif",
-            maxWidth: "909px",
-            margin: "0 auto",
             fontSize: "clamp(20px, 4vw, 2.5rem)",
             lineHeight: "clamp(32px, 5vw, 3.5rem)",
           }}
         >
-          <p>
+          <p className="mb-4 md:mb-8">
             We create mobile{" "}
             <span className="inline relative">
               <span className="relative z-10">products</span>
@@ -170,33 +165,33 @@ export default function Mission() {
         </div>
 
         {/* 3 блока под текстом - адаптивные отступы */}
-        <div className="z-12 flex flex-row gap-8 md:gap-12 lg:gap-[180px] mb-10 mt-12 md:mt-[100px]">
+        <div className="flex flex-row gap-4 md:gap-12 lg:gap-[180px] mb-10 mt-8 md:mt-[100px] w-full max-w-full md:max-w-[910px]">
           {/* Блок 1: 30+ Products */}
           <div className="flex flex-col items-left">
-            <div className="text-[36px] md:text-[64px] text-[#CDCDCD] font-normal md:font-medium leading-[40px] md:leading-[100%] tracking-[0%] uppercase mb-2 md:mb-4">
+            <div className="text-[36px] md:text-[40px] lg:text-[64px] text-[#CDCDCD] font-normal md:font-medium leading-[40px] md:leading-[48px] lg:leading-[100%] tracking-[0%] uppercase mb-2 md:mb-4">
               {animatedValues.value1}+
             </div>
-            <div className="text-[14px] md:text-[25px] text-[#CDCDCD] font-normal md:font-medium leading-[18px] md:leading-[35px] tracking-[0%] text-left">
+            <div className="text-[14px] md:text-[16px] lg:text-[25px] text-[#CDCDCD] font-normal md:font-medium leading-[18px] md:leading-[24px] lg:leading-[35px] tracking-[0%] text-left">
               Products
             </div>
           </div>
 
           {/* Блок 2: 28m+ Installs Worldwide */}
           <div className="flex flex-col items-left">
-            <div className="text-[36px] md:text-[64px] text-[#CDCDCD] font-normal md:font-medium leading-[40px] md:leading-[100%] tracking-[0%] uppercase mb-2 md:mb-4">
+            <div className="text-[36px] md:text-[40px] lg:text-[64px] text-[#CDCDCD] font-normal md:font-medium leading-[40px] md:leading-[48px] lg:leading-[100%] tracking-[0%] uppercase mb-2 md:mb-4">
               {Math.floor(animatedValues.value2)}m+
             </div>
-            <div className="text-[14px] md:text-[25px] text-[#CDCDCD] font-normal md:font-medium leading-[18px] md:leading-[35px] tracking-[0%] text-left">
+            <div className="text-[14px] md:text-[16px] lg:text-[25px] text-[#CDCDCD] font-normal md:font-medium leading-[18px] md:leading-[24px] lg:leading-[35px] tracking-[0%] text-left">
               Installs Worldwide
             </div>
           </div>
 
           {/* Блок 3: 1.7m+ Monthly Active Users */}
           <div className="flex flex-col items-left">
-            <div className="text-[36px] md:text-[64px] text-[#CDCDCD] font-normal md:font-medium leading-[40px] md:leading-[100%] tracking-[0%] uppercase mb-2 md:mb-4">
+            <div className="text-[36px] md:text-[40px] lg:text-[64px] text-[#CDCDCD] font-normal md:font-medium leading-[40px] md:leading-[48px] lg:leading-[100%] tracking-[0%] uppercase mb-2 md:mb-4">
               {animatedValues.value3.toFixed(1)}m+
             </div>
-            <div className="text-[14px] md:text-[25px] text-[#CDCDCD] font-normal md:font-medium leading-[18px] md:leading-[35px] tracking-[0%] text-left">
+            <div className="text-[14px] md:text-[16px] lg:text-[25px] text-[#CDCDCD] font-normal md:font-medium leading-[18px] md:leading-[24px] lg:leading-[35px] tracking-[0%] text-left">
               Monthly Active Users
             </div>
           </div>
@@ -204,7 +199,7 @@ export default function Mission() {
       </div>
 
       {/* Картинка по центру правой части секции - адаптивное позиционирование */}
-      <div className="absolute left-1/2 bottom-[100px] md:bottom-0 -translate-x-1/2 translate-y-0 md:-translate-y-1/2 md:ml-[115px] w-[120px] h-[120px] md:w-[150px] md:h-[150px] lg:w-[184px] lg:h-[184px]">
+      <div className="absolute right-4 md:right-[70px] bottom-[100px] md:bottom-0 md:-translate-y-1/2 w-[120px] h-[120px] md:w-[150px] md:h-[150px] lg:w-[184px] lg:h-[184px]">
         <Image
           src="/frames/frame_mission.png"
           alt="Frame Mission"
@@ -214,14 +209,14 @@ export default function Mission() {
           priority
         />
 
-        {/* Первый Cross - адаптивные отступы */}
-        <div className="absolute left-[-30px] md:left-[-45px] lg:left-[-60px] bottom-[-30px] md:bottom-[-40px] lg:bottom-[-50px] w-6 h-6 md:w-8 md:h-8">
-          <Cross color="#000000" />
+        {/* Первый Cross - адаптивное позиционирование */}
+        <div className="absolute left-[-30px] md:left-[-45px] lg:left-[-60px] bottom-[-30px] md:bottom-[-40px] lg:bottom-[-50px]">
+          <Cross color="#000000" className="w-6 h-6 md:w-8 md:h-8 lg:w-auto lg:h-auto" />
         </div>
 
-        {/* Второй Cross - адаптивные отступы */}
-        <div className="absolute right-[-30px] md:right-[-45px] lg:right-[-60px] bottom-[-30px] md:bottom-[-40px] lg:bottom-[-50px] w-6 h-6 md:w-8 md:h-8">
-          <Cross color="#000000" />
+        {/* Второй Cross - адаптивное позиционирование */}
+        <div className="absolute right-[-30px] md:right-[-45px] lg:right-[-60px] top-[-30px] md:top-[-40px] lg:top-[-50px] md:block">
+          <Cross color="#000000" className="w-6 h-6 md:w-8 md:h-8 lg:w-auto lg:h-auto" />
         </div>
       </div>
     </div>

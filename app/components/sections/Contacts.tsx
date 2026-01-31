@@ -71,7 +71,7 @@ export default function Contacts() {
   };
 
   return (
-    <section className="relative w-full xl:min-h-[78vh] flex items-start justify-end mt-15 sm:mt-0 px-4 py-8 md:px-16 md:py-16 bg-[#dadada]">
+    <section className="relative w-full md:min-h-[80vh] xl:min-h-[78vh] flex items-start justify-end mt-15 sm:mt-0 px-4 py-8 md:px-16 md:py-16 bg-[#dadada]">
       <div className="w-full max-w-[910px] flex flex-col">
         {/* EMAIL */}
         <div className="flex flex-col mb-10">

@@ -71,7 +71,7 @@ export default function Contacts() {
   };
 
   return (
-    <section className="relative w-full xl:min-h-[78vh] flex items-start justify-end px-4 py-8 md:px-16 md:py-16">
+    <section className="relative w-full xl:min-h-[78vh] flex items-start justify-end mt-20 px-4 py-8 md:px-16 md:py-16">
       <div className="w-full max-w-[910px] flex flex-col">
         {/* EMAIL */}
         <div className="flex flex-col mb-10">
@@ -128,10 +128,9 @@ export default function Contacts() {
             <button
               onClick={handleSend}
               className={`w-[150px] h-[45px] flex items-center justify-center border font-medium transition-all duration-300 rounded-[0px] hover:rounded-[16px] active:bg-[#9F9B96] active:scale-95
-                ${
-                  isFormValid()
-                    ? "border-[#35353C] text-[#35353C] hover:text-[#35353C] hover:border-[#35353C]"
-                    : "border-[#9F9B96] text-[#9F9B96] hover:text-[#35353C] hover:border-[#35353C]"
+                ${isFormValid()
+                  ? "border-[#35353C] text-[#35353C] hover:text-[#35353C] hover:border-[#35353C]"
+                  : "border-[#9F9B96] text-[#9F9B96] hover:text-[#35353C] hover:border-[#35353C]"
                 }
               `}
             >

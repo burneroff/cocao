@@ -101,9 +101,9 @@ export default function Team() {
   };
 
   return (
-    <section className="relative w-full overflow-x-hidden px-4 md:px-8 lg:px-16 py-8 md:py-12 lg:py-16">
+    <section className="relative w-full overflow-x-hidden px-4 md:px-8 lg:px-16 py-6 md:py-12 lg:py-16">
       {/* FRAME + CROSSES BLOCK */}
-      <div className="relative mt-12 md:mt-24 lg:mt-[180px] mb-16 md:mb-32 lg:mb-[300px] flex justify-end">
+      <div className="relative mt-30 md:mt-24 lg:mt-[180px] mb-16 md:mb-32 lg:mb-[300px] flex justify-end">
         <div className="relative w-24 h-24 md:w-32 md:h-32 lg:w-[184px] lg:h-[184px]">
           <Image
             src="/frames/frame_team_1.png"
@@ -206,7 +206,7 @@ export default function Team() {
             touchAction: "pan-y",
           }}
         >
-          <div className="flex mt-10 gap-6 md:gap-8 px-4 md:px-8 lg:px-16 pb-8" style={{ width: 'max-content' }}>
+          <div className="flex mt-20 mb-18 gap-6 md:gap-8 px-4 md:px-8 lg:px-16 pb-8" style={{ width: 'max-content' }}>
             {team.map((member, index) => {
               const isActive = activeIndex === index;
 
@@ -216,7 +216,7 @@ export default function Team() {
                   onMouseEnter={() => !isDragging && setActiveIndex(index)}
                   onMouseLeave={() => setActiveIndex(null)}
                   className={`relative transition-all duration-500 ease-in-out shrink-0 select-none
-                    ${isActive ? "scale-105 z-10" : ""}
+                    ${isActive ? "z-10" : ""}
                     w-[280px] md:w-[320px] lg:w-[340px]
                   `}
                   style={{

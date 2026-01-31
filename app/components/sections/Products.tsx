@@ -231,7 +231,7 @@ export default function Products() {
             color: "#3F3E3D",
           }}
         >
-          www.App..
+          https://...
         </div>
       )}
       <div className=" max-w-[909px] flex" style={{ alignSelf: "flex-end" }}>

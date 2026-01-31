@@ -7,7 +7,11 @@ import { Cross } from "../icons/Cross";
 export default function Mission() {
   const [isVisible, setIsVisible] = useState(false);
   const [spansAnimated, setSpansAnimated] = useState(false);
-  const [animatedValues, setAnimatedValues] = useState({ value1: 0, value2: 0, value3: 0 });
+  const [animatedValues, setAnimatedValues] = useState({
+    value1: 0,
+    value2: 0,
+    value3: 0,
+  });
   const sectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -19,7 +23,7 @@ export default function Mission() {
           }
         });
       },
-      { threshold: 0.2 }
+      { threshold: 0.2 },
     );
 
     if (sectionRef.current) {
@@ -88,13 +92,15 @@ export default function Mission() {
   return (
     <div
       ref={sectionRef}
-      className={`h-[80vh] md:h-[120vh] flex items-start justify-end px-4 py-8 md:px-16 md:py-16 relative transition-opacity duration-1000 ${isVisible ? "opacity-100" : "opacity-0"
+      className={`h-[100vh] md:h-[120vh] flex items-start justify-end px-4 py-8 md:px-16 md:py-16 relative transition-opacity duration-1000 ${isVisible ? "opacity-100" : "opacity-0"
         }`}
     >
-      <div className="flex justify-end flex-col bg-black mt-9">
+      <div className="flex justify-end flex-col mt-9 relative">
+        {/* Черный фон на всю ширину страницы - компенсируем padding родителя (px-4 md:px-16) */}
+        <div className="z-10 absolute inset-y-0 -left-4 -right-4 md:-left-16 md:-right-16 bg-black"></div>
         {/* Текст с адаптивным размером */}
         <div
-          className="text-[#CDCDCD] font-normal leading-[35px] md:leading-[50px] lg:leading-[70px] tracking-[0%] text-justify"
+          className="z-12 text-[#CDCDCD] font-normal leading-[35px] md:leading-[50px] lg:leading-[70px] tracking-[0%] text-justify"
           style={{
             fontFamily: "var(--font-neue-regrade), Neue Regrade, sans-serif",
             maxWidth: "909px",
@@ -136,8 +142,8 @@ export default function Mission() {
                 }}
               />
             </span>{" "}
-            In every project, we combine creativity, data, and attention to detail
-            to deliver not just an app – but a{" "}
+            In every project, we combine creativity, data, and attention to
+            detail to deliver not just an app – but a{" "}
             <span className="inline relative">
               <span className="relative z-10">clear, inspiring,</span>
               <span
@@ -164,7 +170,7 @@ export default function Mission() {
         </div>
 
         {/* 3 блока под текстом - адаптивные отступы */}
-        <div className="flex flex-row gap-8 md:gap-12 lg:gap-[180px] mt-12 md:mt-[100px]">
+        <div className="z-12 flex flex-row gap-8 md:gap-12 lg:gap-[180px] mb-10 mt-12 md:mt-[100px]">
           {/* Блок 1: 30+ Products */}
           <div className="flex flex-col items-left">
             <div className="text-[36px] md:text-[64px] text-[#CDCDCD] font-normal md:font-medium leading-[40px] md:leading-[100%] tracking-[0%] uppercase mb-2 md:mb-4">
@@ -198,7 +204,7 @@ export default function Mission() {
       </div>
 
       {/* Картинка по центру правой части секции - адаптивное позиционирование */}
-      <div className="absolute left-1/2 bottom-[100px] md:bottom-[0px] -translate-x-1/2 translate-y-0 md:-translate-y-1/2 md:ml-[115px] w-[120px] h-[120px] md:w-[150px] md:h-[150px] lg:w-[184px] lg:h-[184px]">
+      <div className="absolute left-1/2 bottom-[100px] md:bottom-0 -translate-x-1/2 translate-y-0 md:-translate-y-1/2 md:ml-[115px] w-[120px] h-[120px] md:w-[150px] md:h-[150px] lg:w-[184px] lg:h-[184px]">
         <Image
           src="/frames/frame_mission.png"
           alt="Frame Mission"

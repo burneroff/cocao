@@ -5,12 +5,12 @@ import { useEffect, useRef, useState } from "react";
 export default function LoadingScreen() {
   const [progress, setProgress] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
-  const rafRef = useRef<number | null>(null);
   const isMountedRef = useRef(true);
-  const animationDuration = 4500; // 5 секунд плавной анимации
+  const MAX_DURATION = 4500; // 4.5 секунды максимум
 
   useEffect(() => {
     isMountedRef.current = true;
+
     const imageAssets = [
       "/frames/frame_mission.png",
       "/frames/frame_products_1.png",
@@ -46,83 +46,54 @@ export default function LoadingScreen() {
       "/logo.svg",
     ];
 
-    const videoAssets = ["/background-video.mp4"];
+    // 1. Сначала начинаем загрузку видео сразу
+    const preloadVideo = (src: string) => {
+      const video = document.createElement("video");
+      video.preload = "auto";
+      video.muted = true;
+      video.playsInline = true;
+      video.src = src;
+      video.load();
+    };
 
-    const preloadImage = (src: string) =>
-      new Promise<void>((resolve) => {
-        const img = new Image();
-        const done = () => resolve();
-        img.addEventListener("load", done, { once: true });
-        img.addEventListener("error", done, { once: true });
-        img.src = src;
-      });
+    // Загружаем видео сразу
+    preloadVideo("/background-video.mp4");
 
-    const preloadVideo = (src: string) =>
-      new Promise<void>((resolve) => {
-        const video = document.createElement("video");
-        const done = () => resolve();
-        const timeout = window.setTimeout(done, 7000);
-        video.preload = "auto";
-        video.muted = true;
-        video.playsInline = true;
-        video.addEventListener(
-          "canplaythrough",
-          () => {
-            window.clearTimeout(timeout);
-            done();
-          },
-          { once: true }
-        );
-        video.addEventListener(
-          "error",
-          () => {
-            window.clearTimeout(timeout);
-            done();
-          },
-          { once: true }
-        );
-        video.src = src;
-        video.load();
-      });
+    // 2. Затем загружаем картинки
+    const preloadImage = (src: string) => {
+      const img = new Image();
+      img.src = src;
+    };
 
-    const preloadAssets = Promise.allSettled([
-      ...imageAssets.map(preloadImage),
-      ...videoAssets.map(preloadVideo),
-    ]);
+    imageAssets.forEach(preloadImage);
 
-    const easeInOutCubic = (t: number) =>
-      t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    // 3. Анимация прогресса
+    const startTime = performance.now();
+    const animateProgress = () => {
+      if (!isMountedRef.current) return;
 
-    const animateProgress = new Promise<void>((resolve) => {
-      const start = performance.now();
+      const elapsed = performance.now() - startTime;
+      const progressPercent = Math.min((elapsed / MAX_DURATION) * 100, 100);
+      setProgress(Math.round(progressPercent));
 
-      const tick = (now: number) => {
-        const elapsed = now - start;
-        const t = Math.min(elapsed / animationDuration, 1);
-        const eased = easeInOutCubic(t);
-        if (isMountedRef.current) {
-          setProgress(Math.round(eased * 100));
-        }
-        if (t < 1) {
-          rafRef.current = requestAnimationFrame(tick);
-        } else {
-          resolve();
-        }
-      };
+      if (elapsed < MAX_DURATION) {
+        requestAnimationFrame(animateProgress);
+      }
+    };
 
-      rafRef.current = requestAnimationFrame(tick);
-    });
+    requestAnimationFrame(animateProgress);
 
-    Promise.all([preloadAssets, animateProgress]).then(() => {
+    // 4. После 4.5 секунд в любом случае скрываем экран
+    const timeout = setTimeout(() => {
       if (!isMountedRef.current) return;
       setProgress(100);
       setIsLoading(false);
       window.dispatchEvent(new CustomEvent("loading-complete"));
-    });
+    }, MAX_DURATION);
 
     return () => {
       isMountedRef.current = false;
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      clearTimeout(timeout);
     };
   }, []);
 

@@ -50,12 +50,12 @@ const SectionWrapper = ({
   }, []);
 
   // Определяем стиль фона: для mission используем градиент, для остальных - обычный bgColor
-  const backgroundStyle = 
+  const backgroundStyle =
     sectionId === "mission"
-      ? { 
-          background: "linear-gradient(to bottom, #000000 60%, #dadada 60%)",
-          width: isMobile ? "100%" : "100vw"
-        }
+      ? {
+        background: "linear-gradient(to bottom, #000000 60%, #dadada 60%)",
+        width: isMobile ? "100%" : "100vw"
+      }
       : { width: isMobile ? "100%" : "100vw" };
 
   return (
@@ -65,9 +65,8 @@ const SectionWrapper = ({
         wrapperRef.current = el;
       }}
       id={sectionId}
-      className={`relative z-10 ${sectionId === "mission" ? "" : bgColor} transition-opacity duration-1000 ${
-        isVisible ? "opacity-100" : "opacity-0"
-      }`}
+      className={`relative z-10 ${sectionId === "mission" ? "" : bgColor} transition-opacity duration-1000 ${isVisible ? "opacity-100" : "opacity-0"
+        }`}
       style={backgroundStyle}
     >
       <div className={isMobile ? "" : "pl-[33.333333%]"}>{children}</div>
@@ -157,11 +156,10 @@ const NavItems = ({
             className="flex items-center gap-0 text-left text-[clamp(48px,6vw,100px)] font-semibold uppercase"
           >
             <span
-              className={`inline-block transition-all duration-500 ease-in-out ${
-                activeSection === section.id || hoveredId === section.id
-                  ? "opacity-100 translate-x-0 text-[#0100F4] w-auto"
-                  : "opacity-0 -translate-x-4 w-0 overflow-hidden"
-              }`}
+              className={`inline-block transition-all duration-500 ease-in-out ${activeSection === section.id || hoveredId === section.id
+                ? "opacity-100 translate-x-0 text-[#0100F4] w-auto"
+                : "opacity-0 -translate-x-4 w-0 overflow-hidden"
+                }`}
             >
               ›
             </span>
@@ -269,27 +267,27 @@ export default function NavigationSection() {
       const scrollY = window.scrollY;
       const viewportHeight = window.innerHeight;
       const previewDistance = 300; // Расстояние заранее, на котором меняем фон
-      
+
       // Определяем следующую секцию на основе позиции скролла
       let targetSectionId = sections[0].id;
-      
+
       for (let i = 0; i < sections.length; i++) {
         const section = sections[i];
         const element = sectionRefs.current[section.id];
-        
+
         if (element) {
           const rect = element.getBoundingClientRect();
           // getBoundingClientRect возвращает позицию относительно viewport
           const sectionTop = rect.top + scrollY; // Позиция относительно документа
           const sectionBottom = sectionTop + rect.height;
           const currentViewportBottom = scrollY + viewportHeight;
-          
+
           // Если мы еще не дошли до секции, но она близко (в пределах previewDistance)
           if (sectionTop > currentViewportBottom && sectionTop <= currentViewportBottom + previewDistance) {
             targetSectionId = section.id;
             break;
           }
-          
+
           // Если мы в секции
           if (scrollY >= sectionTop && scrollY < sectionBottom) {
             // Если мы в конце секции (близко к концу), берем следующую
@@ -308,7 +306,7 @@ export default function NavigationSection() {
           }
         }
       }
-      
+
       // Меняем фон body заранее (кроме values, так как Values сам управляет своим цветом)
       if (targetSectionId !== "values") {
         const bgColor = getSectionBgColor(targetSectionId);
@@ -416,9 +414,8 @@ export default function NavigationSection() {
 
       {/* Right Content - адаптивная ширина для мобилок и десктопа */}
       <div
-        className={`flex-1 ${
-          isMobile ? "w-full" : "-ml-[33.333333%]"
-        }  overflow-hidden`}
+        className={`flex-1 ${isMobile ? "w-full" : "-ml-[33.333333%]"
+          }  overflow-hidden`}
       >
         {sections.map((section) => {
           const SectionComponent = section.component;

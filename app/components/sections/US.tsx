@@ -45,9 +45,8 @@ export default function US() {
   return (
     <div
       ref={sectionRef}
-      className={`min-h-[100vh] md:min-h-[150vh] flex items-start justify-end px-4 py-4 md:px-16 md:py-16 relative transition-opacity duration-1000 ${
-        isVisible ? "opacity-100" : "opacity-0"
-      }`}
+      className={`min-h-[100vh] md:min-h-[150vh] flex items-start justify-end px-4 py-4 md:px-16 md:py-16 relative transition-opacity duration-1000 ${isVisible ? "opacity-100" : "opacity-0"
+        }`}
     >
       <div className="flex justify-end flex-col">
         <div

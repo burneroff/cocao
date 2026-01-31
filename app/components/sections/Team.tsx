@@ -63,7 +63,7 @@ export default function Team() {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
   return (
-    <section className="relative w-full overflow-x-hidden px-4 md:px-8 lg:px-16 py-6 md:py-12 lg:py-16">
+    <section className="relative w-full overflow-x-hidden px-4 md:px-8 lg:px-16 py-6 md:py-12">
       {/* FRAME + CROSSES BLOCK */}
       <div className="relative mt-30 md:mt-24 lg:mt-[180px] mb-16 md:mb-32 lg:mb-[300px] flex justify-end">
         <div className="relative w-24 h-24 md:w-32 md:h-32 lg:w-[184px] lg:h-[184px]">
@@ -73,7 +73,6 @@ export default function Team() {
             width={184}
             height={184}
             className="w-full h-full object-contain"
-            priority
           />
 
           <div className="absolute left-[-50px] top-[-50px]">
@@ -114,7 +113,8 @@ export default function Team() {
                       : `calc(50% + ${member.offset}px) 50%`,
                   }}
                   sizes="(min-width: 1540px) 1000px, 140px"
-
+                  priority={true}
+                  loading="eager"
                 />
               </div>
 
@@ -192,6 +192,8 @@ export default function Team() {
                         objectPosition: `calc(50% + ${member.offset}px) 50%`,
                       }}
                       sizes="(max-width: 768px) 280px, (max-width: 1024px) 320px, 340px"
+                      priority={true}
+                      loading="eager"
                     />
                   </div>
 
@@ -226,7 +228,6 @@ export default function Team() {
             width={184}
             height={184}
             className="w-full h-full object-contain"
-
           />
 
           <div className="absolute left-[-50px] top-[-50px] sm:right-[-50px] sm:bottom-[-50px]">

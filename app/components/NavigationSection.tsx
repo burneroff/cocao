@@ -35,7 +35,7 @@ const SectionWrapper = ({
           }
         });
       },
-      { threshold: 0.2 }
+      { threshold: 0.2 },
     );
 
     if (wrapperRef.current) {
@@ -47,14 +47,14 @@ const SectionWrapper = ({
         observer.unobserve(wrapperRef.current);
       }
     };
-  }, []);
+  }, [isMobile]);
 
   // Определяем стиль фона: для mission используем градиент, для остальных - обычный bgColor
   const backgroundStyle =
     sectionId === "mission"
       ? {
         background: "linear-gradient(to bottom, #000000 60%, #dadada 60%)",
-        width: isMobile ? "100%" : "100vw"
+        width: isMobile ? "100%" : "100vw",
       }
       : { width: isMobile ? "100%" : "100vw" };
 
@@ -114,7 +114,7 @@ const NavItems = ({
           }
         });
       },
-      { threshold: 0.1 }
+      { threshold: 0.1 },
     );
 
     if (navRef.current) {
@@ -129,7 +129,10 @@ const NavItems = ({
   }, []);
 
   return (
-    <div ref={navRef} className="flex h-full flex-col justify-start gap-0 pointer-events-auto pt-10">
+    <div
+      ref={navRef}
+      className="flex h-full flex-col justify-start gap-0 pointer-events-auto pt-8"
+    >
       {sections.map((section, index) => {
         const isVisible = visibleItems.has(section.id);
         return (
@@ -143,7 +146,7 @@ const NavItems = ({
             }}
             onMouseLeave={() => setHoveredId(null)}
             style={{
-              lineHeight: "clamp(72px, 9vw, 120px)",
+              lineHeight: "clamp(52px, 7vw, 100px)",
               color:
                 activeSection === section.id || hoveredId === section.id
                   ? "#0100F4"
@@ -156,7 +159,7 @@ const NavItems = ({
             className="flex items-center gap-0 text-left text-[clamp(48px,6vw,100px)] font-semibold uppercase"
           >
             <span
-              className={`inline-block transition-all duration-500 ease-in-out ${activeSection === section.id || hoveredId === section.id
+              className={`inline-block transition-all duration-1000 ease-in-out ${activeSection === section.id || hoveredId === section.id
                 ? "opacity-100 translate-x-0 text-[#0100F4] w-auto"
                 : "opacity-0 -translate-x-4 w-0 overflow-hidden"
                 }`}
@@ -238,11 +241,86 @@ const sections: SectionItem[] = [
   },
 ];
 
+
 export default function NavigationSection() {
   const [activeSection, setActiveSection] = useState("us");
   const sectionRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState(false);
+  const isProgrammaticScrollRef = useRef(false);
+  const programmaticTimeoutRef = useRef<number | null>(null);
+  const wheelAccumulatorRef = useRef(0);
+  const touchAccumulatorRef = useRef(0);
+  const lastTouchYRef = useRef<number | null>(null);
+  const animationRafRef = useRef<number | null>(null);
+  const animationDuration = 1600;
+  const scrollThresholds = { wheel: 6, touch: 8 };
+  const edgeTolerance = 3;
+  const snapOffsetsDesktop = { top: -80, bottom: 0 };
+  const snapOffsetsMobile = { top: -120, bottom: 0 };
+  const snapOffsets = isMobile ? snapOffsetsMobile : snapOffsetsDesktop;
+  const valuesLockDelay = 400;
+  const valuesReleaseDelay = 200;
+
+  const getVisibleSnapTarget = (id: string) => {
+    const targets = Array.from(
+      document.querySelectorAll<HTMLElement>(`[data-snap-target="${id}"]`),
+    );
+    const visibleTarget = targets.find(
+      (target) => target.getClientRects().length > 0,
+    );
+
+    return visibleTarget ?? sectionRefs.current[id];
+  };
+
+  const smoothScrollTo = (targetY: number, duration = animationDuration) => {
+    if (animationRafRef.current) {
+      window.cancelAnimationFrame(animationRafRef.current);
+    }
+    const startY = window.scrollY;
+    const distance = targetY - startY;
+    const startTime = performance.now();
+
+    const easeInOutCubic = (t: number) =>
+      t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+    const tick = (now: number) => {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = easeInOutCubic(progress);
+      window.scrollTo({ top: startY + distance * eased, behavior: "auto" });
+
+      if (progress < 1) {
+        animationRafRef.current = window.requestAnimationFrame(tick);
+      } else {
+        animationRafRef.current = null;
+      }
+    };
+
+    animationRafRef.current = window.requestAnimationFrame(tick);
+  };
+
+  const markProgrammaticScroll = (
+    targetId: string | undefined,
+    shouldDispatch: boolean,
+    duration = animationDuration,
+  ) => {
+    isProgrammaticScrollRef.current = true;
+    if (programmaticTimeoutRef.current) {
+      window.clearTimeout(programmaticTimeoutRef.current);
+    }
+    programmaticTimeoutRef.current = window.setTimeout(() => {
+      isProgrammaticScrollRef.current = false;
+    }, duration + 200);
+
+    if (shouldDispatch) {
+      window.dispatchEvent(
+        new CustomEvent("programmatic-scroll-start", {
+          detail: { targetId },
+        }),
+      );
+    }
+  };
 
   useEffect(() => {
     // Проверяем, мобильное ли устройство при загрузке и при изменении размера
@@ -283,7 +361,10 @@ export default function NavigationSection() {
           const currentViewportBottom = scrollY + viewportHeight;
 
           // Если мы еще не дошли до секции, но она близко (в пределах previewDistance)
-          if (sectionTop > currentViewportBottom && sectionTop <= currentViewportBottom + previewDistance) {
+          if (
+            sectionTop > currentViewportBottom &&
+            sectionTop <= currentViewportBottom + previewDistance
+          ) {
             targetSectionId = section.id;
             break;
           }
@@ -310,21 +391,233 @@ export default function NavigationSection() {
       // Меняем фон body заранее (кроме values, так как Values сам управляет своим цветом)
       if (targetSectionId !== "values") {
         const bgColor = getSectionBgColor(targetSectionId);
-        document.documentElement.style.setProperty('--background', bgColor);
+        document.documentElement.style.setProperty("--background", bgColor);
         document.body.style.background = bgColor;
       }
     };
 
     // Обновляем при скролле
-    window.addEventListener('scroll', updateBackgroundColor, { passive: true });
+    window.addEventListener("scroll", updateBackgroundColor, { passive: true });
     // Обновляем при изменении размера окна
-    window.addEventListener('resize', updateBackgroundColor, { passive: true });
+    window.addEventListener("resize", updateBackgroundColor, { passive: true });
     // Обновляем сразу
     updateBackgroundColor();
 
     return () => {
-      window.removeEventListener('scroll', updateBackgroundColor);
-      window.removeEventListener('resize', updateBackgroundColor);
+      window.removeEventListener("scroll", updateBackgroundColor);
+      window.removeEventListener("resize", updateBackgroundColor);
+    };
+  }, [isMobile]);
+
+  useEffect(() => {
+    const handleProgrammaticScroll = (event: Event) => {
+      const customEvent = event as CustomEvent<{ targetId?: string }>;
+      markProgrammaticScroll(customEvent.detail?.targetId, false);
+    };
+
+    window.addEventListener(
+      "programmatic-scroll-start",
+      handleProgrammaticScroll,
+    );
+
+    return () => {
+      window.removeEventListener(
+        "programmatic-scroll-start",
+        handleProgrammaticScroll,
+      );
+    };
+  }, [isMobile]);
+
+  useEffect(() => {
+    const handleValuesRelease = (event: Event) => {
+      const customEvent = event as CustomEvent<{ direction?: "down" | "up" }>;
+      if (isProgrammaticScrollRef.current) return;
+
+      const direction = customEvent.detail?.direction;
+      if (direction !== "down" && direction !== "up") return;
+
+      const targetId = direction === "down" ? "team" : "products";
+      const targetKey = direction === "down" ? "team" : "products";
+      const target = getVisibleSnapTarget(targetKey);
+      if (!target) return;
+
+      window.setTimeout(() => {
+        markProgrammaticScroll(targetId, true, animationDuration);
+        const rect = target.getBoundingClientRect();
+        const targetTop = rect.top + window.scrollY;
+        const targetBottom = targetTop + rect.height;
+        const desiredTop =
+          direction === "down"
+            ? targetTop + snapOffsets.top
+            : targetTop + snapOffsets.top;
+        smoothScrollTo(desiredTop);
+      }, valuesReleaseDelay);
+    };
+
+    window.addEventListener("values-release", handleValuesRelease);
+
+    return () => {
+      window.removeEventListener("values-release", handleValuesRelease);
+    };
+  }, [isMobile]);
+
+  useEffect(() => {
+    const handleIntent = (
+      deltaY: number,
+      event: Event,
+      source: "wheel" | "touch",
+    ) => {
+      if (isProgrammaticScrollRef.current) {
+        if (event.cancelable) {
+          event.preventDefault();
+        }
+        return;
+      }
+
+      const accumulator =
+        source === "wheel" ? wheelAccumulatorRef : touchAccumulatorRef;
+      const threshold = source === "wheel"
+        ? scrollThresholds.wheel
+        : scrollThresholds.touch;
+      accumulator.current += deltaY;
+
+      if (Math.abs(accumulator.current) < threshold) return;
+      const effectiveDelta = accumulator.current;
+      accumulator.current = 0;
+
+      const windowHeight = window.innerHeight;
+      const sectionRects = sections
+        .map((section) => {
+          const element = sectionRefs.current[section.id];
+          if (!element) return null;
+          const rect = element.getBoundingClientRect();
+          return { id: section.id, rect };
+        })
+        .filter(
+          (entry): entry is { id: string; rect: DOMRect } => entry !== null,
+        );
+
+      if (sectionRects.length === 0) return;
+
+      const isScrollingDown = effectiveDelta > 0;
+      if (!isScrollingDown && window.scrollY <= edgeTolerance) {
+        return;
+      }
+      const viewportCenter = windowHeight / 2;
+      const currentSection = sectionRects.find(
+        (entry) => entry.rect.top <= viewportCenter && entry.rect.bottom >= viewportCenter,
+      )?.id;
+
+      if (currentSection === "values") return;
+
+      if (currentSection === "us" && !isScrollingDown) {
+        const usRect = sectionRects.find((entry) => entry.id === "us")?.rect;
+        const atUsTop = usRect ? usRect.top >= -edgeTolerance : false;
+        if (atUsTop) {
+          event.preventDefault();
+          markProgrammaticScroll("hero", true, animationDuration);
+          smoothScrollTo(0);
+          return;
+        }
+        return;
+      }
+
+      const currentIndex = currentSection
+        ? sections.findIndex((section) => section.id === currentSection)
+        : -1;
+
+      const targetIndex = isScrollingDown
+        ? Math.min(currentIndex + 1, sections.length - 1)
+        : Math.max(currentIndex - 1, 0);
+
+      let targetId = sections[targetIndex]?.id;
+
+      if (!targetId) return;
+
+      if (currentSection === "products") {
+        const productsRect = sectionRects.find(
+          (entry) => entry.id === "products",
+        )?.rect;
+        if (productsRect) {
+          const atBottom = productsRect.bottom <= windowHeight + edgeTolerance;
+          const atTop = productsRect.top >= -edgeTolerance;
+          if (isScrollingDown && !atBottom) return;
+          if (!isScrollingDown && !atTop) return;
+        }
+      }
+
+      if (currentSection == null) {
+        targetId = isScrollingDown
+          ? sections[0].id
+          : sections[sections.length - 1].id;
+      }
+
+      if (currentSection === targetId) return;
+
+      const target = getVisibleSnapTarget(targetId);
+      if (!target) return;
+
+      event.preventDefault();
+      const lockDuration =
+        targetId === "values"
+          ? animationDuration + valuesLockDelay
+          : animationDuration;
+      markProgrammaticScroll(targetId, true, lockDuration);
+      const rect = target.getBoundingClientRect();
+      const targetTop = rect.top + window.scrollY;
+      const targetBottom = targetTop + rect.height;
+      const desiredTop = !isScrollingDown && targetId === "mission"
+        ? targetTop + snapOffsets.top
+        : !isScrollingDown && targetId === "us" && currentSection === "mission"
+          ? targetTop + snapOffsets.top + 10
+          : targetId === "values"
+            ? targetTop
+            : isScrollingDown
+              ? targetId === "contacts"
+                ? Math.max(
+                  0,
+                  targetBottom - window.innerHeight + snapOffsets.bottom,
+                )
+                : targetTop + snapOffsets.top
+              : targetTop + snapOffsets.top;
+      smoothScrollTo(desiredTop);
+    };
+
+    const handleWheel = (e: WheelEvent) => handleIntent(e.deltaY, e, "wheel");
+
+    const handleTouchStart = (e: TouchEvent) => {
+      if (e.touches.length !== 1) return;
+      lastTouchYRef.current = e.touches[0].clientY;
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (e.touches.length !== 1) return;
+      if (lastTouchYRef.current === null) {
+        lastTouchYRef.current = e.touches[0].clientY;
+        return;
+      }
+
+      const currentY = e.touches[0].clientY;
+      const deltaY = lastTouchYRef.current - currentY;
+      lastTouchYRef.current = currentY;
+      handleIntent(deltaY, e, "touch");
+    };
+
+    const handleTouchEnd = () => {
+      lastTouchYRef.current = null;
+      touchAccumulatorRef.current = 0;
+    };
+
+    window.addEventListener("wheel", handleWheel, { passive: false });
+    window.addEventListener("touchstart", handleTouchStart, { passive: true });
+    window.addEventListener("touchmove", handleTouchMove, { passive: false });
+    window.addEventListener("touchend", handleTouchEnd, { passive: true });
+
+    return () => {
+      window.removeEventListener("wheel", handleWheel);
+      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("touchmove", handleTouchMove);
+      window.removeEventListener("touchend", handleTouchEnd);
     };
   }, []);
 
@@ -338,7 +631,7 @@ export default function NavigationSection() {
     const handleIntersection = (entries: IntersectionObserverEntry[]) => {
       entries.forEach((entry) => {
         const sectionId = Object.keys(sectionRefs.current).find(
-          (id) => sectionRefs.current[id] === entry.target
+          (id) => sectionRefs.current[id] === entry.target,
         );
 
         if (sectionId) {
@@ -391,7 +684,9 @@ export default function NavigationSection() {
     if (element) {
       // Отправляем событие перед программной прокруткой, чтобы Values знал об этом
       window.dispatchEvent(
-        new CustomEvent("programmatic-scroll-start", { detail: { targetId: id } })
+        new CustomEvent("programmatic-scroll-start", {
+          detail: { targetId: id },
+        }),
       );
       element.scrollIntoView({ behavior: "smooth", block: "start" });
     }
@@ -401,7 +696,7 @@ export default function NavigationSection() {
     <div className="relative flex">
       {/* Left Navigation - скрываем на мобилках */}
       {!isMobile && (
-        <div className="sticky top-0 h-screen w-1/3 px-8 pt-6 pb-8 z-20 pointer-events-none shrink-0 hidden md:block">
+        <div className="sticky top-0 h-screen w-1/3 px-8 pt-12 pb-8 z-20 pointer-events-none shrink-0 hidden md:block">
           <NavItems
             sections={sections}
             activeSection={activeSection}
@@ -432,7 +727,9 @@ export default function NavigationSection() {
             </SectionWrapper>
           );
         })}
-        <Footer />
+        <div data-snap-target="contacts">
+          <Footer />
+        </div>
       </div>
     </div>
   );

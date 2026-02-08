@@ -44,7 +44,7 @@ export default function Home() {
 
     const timeout = setTimeout(() => {
       setIsNavLoaded(true);
-    }, 1500);
+    }, 2500);
 
     return () => clearTimeout(timeout);
   }, [isLoaded]);

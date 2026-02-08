@@ -13,11 +13,12 @@ export default function Contacts() {
   // Auto-resize textarea
   useEffect(() => {
     if (textareaRef.current) {
+      const minHeight = window.innerWidth < 640 ? 167 : 60;
       // Reset height to auto to get the correct scrollHeight
       textareaRef.current.style.height = "auto";
       const scrollHeight = textareaRef.current.scrollHeight;
-      // Set minimum height to 60px, or scrollHeight if larger
-      textareaRef.current.style.height = `${Math.max(60, scrollHeight)}px`;
+      // Set minimum height based on breakpoint, or scrollHeight if larger
+      textareaRef.current.style.height = `${Math.max(minHeight, scrollHeight)}px`;
     }
   }, [message]);
 
@@ -117,7 +118,7 @@ export default function Contacts() {
               setMessage(e.target.value);
               if (messageError) setMessageError(null);
             }}
-            className={`w-full min-h-[60px] resize-none overflow-hidden px-4 py-3 border outline-none text-base sm:text-[18px] transition-all duration-300 rounded-[0px] hover:rounded-[16px] focus:rounded-[16px]
+            className={`w-full min-h-[167px] sm:min-h-[60px] resize-none overflow-hidden px-4 py-3 border outline-none text-base sm:text-[18px] transition-all duration-300 rounded-[0px] hover:rounded-[16px] focus:rounded-[16px]
               ${messageError ? "border-red-600" : isFormValid() ? "border-[#35353C]" : "border-[#35353C]"}
             `}
             rows={1}
@@ -142,7 +143,7 @@ export default function Contacts() {
 
       {/* DECOR */}
       <div className="absolute bottom-6 left-1/2 -translate-x-1/2 hidden sm:block">
-        <Cross color="#35353C" />
+        <Cross color="#35353C" className="w-4 h-4 md:w-auto md:h-auto" />
       </div>
     </section>
   );

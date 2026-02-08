@@ -7,7 +7,7 @@ import BurgerMenu from "../BurgerMenu";
 
 const sections = [
   { id: "us", label: "US", bgColor: "bg-[#080808]" },
-  { id: "mission", label: "Mission", bgColor: "bg-[#dadada]" },
+  { id: "mission", label: "Mission", bgColor: "bg-[#000000]" },
   { id: "products", label: "Products", bgColor: "bg-[#dadada]" },
   { id: "values", label: "Values", bgColor: "bg-[#080808]" },
   { id: "team", label: "Team", bgColor: "bg-[#dadada]" },
@@ -16,7 +16,7 @@ const sections = [
 
 export const FloatingNav = ({
   className,
-  isLoaded = false
+  isLoaded = false,
 }: {
   className?: string;
   isLoaded?: boolean;
@@ -34,7 +34,9 @@ export const FloatingNav = ({
     if (element) {
       // Отправляем событие перед программной прокруткой, чтобы Values знал об этом
       window.dispatchEvent(
-        new CustomEvent("programmatic-scroll-start", { detail: { targetId: id } })
+        new CustomEvent("programmatic-scroll-start", {
+          detail: { targetId: id },
+        }),
       );
       if (isMobile && (id === "us" || id === "mission" || id === "products")) {
         const elementTop = element.getBoundingClientRect().top + window.scrollY;
@@ -68,7 +70,7 @@ export const FloatingNav = ({
     const handleIntersection = (entries: IntersectionObserverEntry[]) => {
       entries.forEach((entry) => {
         const sectionId = Object.keys(sectionRefs.current).find(
-          (id) => sectionRefs.current[id] === entry.target
+          (id) => sectionRefs.current[id] === entry.target,
         );
 
         if (sectionId) {
@@ -152,35 +154,53 @@ export const FloatingNav = ({
         }}
         className={cn(
           "flex max-w-full w-full mx-auto",
-          isMobile ? "fixed top-0 left-0 right-0" : "absolute top-0 left-0 right-0",
-          " z-5000 px-0 md:px-4 py-4 items-end justify-between",
+          isMobile
+            ? "fixed top-0 left-0 right-0"
+            : "absolute top-0 left-0 right-0",
+          " z-5000 px-0 md:px-4 py-4 items-center justify-between",
           "transition-colors duration-500 ease-in-out",
-          isMobile ? `${currentBgColor} h-[109px]` : "",
-          className
+          isMobile ? `${currentBgColor} h-[60px] border-b` : "",
+          className,
         )}
+        style={
+          isMobile
+            ? {
+              borderBottomColor:
+                currentBgColor === "bg-[#dadada]" ? "#CDCDCD" : "#3F3E3D",
+            }
+            : undefined
+        }
       >
         <div className="flex-1 pl-[16px]">
           {!isMenuOpen && (
             <>
               {/* Mobile: показываем активную секцию */}
               <div className="md:hidden">
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={activeSection}
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 10 }}
-                    transition={{ duration: 0.3, ease: "easeInOut" }}
-                    className="flex items-center gap-0 font-medium text-2xl text-[#0100F4]"
-                  >
-                    <span className="inline-block opacity-100 translate-x-0 text-[#0100F4] w-auto">
-                      ›
-                    </span>
-                    <span>
-                      {sections.find((s) => s.id === activeSection)?.label || "US"}
-                    </span>
-                  </motion.div>
-                </AnimatePresence>
+                <button
+                  type="button"
+                  onClick={() => setIsMenuOpen(true)}
+                  className="flex items-center"
+                  aria-label="Open menu"
+                >
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={activeSection}
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 10 }}
+                      transition={{ duration: 0.3, ease: "easeInOut" }}
+                      className="flex items-center gap-0 font-medium text-[22px] text-[#0100F4] uppercase mt-[3px]"
+                    >
+                      <span className="inline-block opacity-100 translate-x-0 text-[#0100F4] w-auto">
+                        ›
+                      </span>
+                      <span>
+                        {sections.find((s) => s.id === activeSection)?.label ||
+                          "US"}
+                      </span>
+                    </motion.div>
+                  </AnimatePresence>
+                </button>
               </div>
               {/* Desktop: показываем Cacao Mobile */}
               <div className="hidden md:block">
@@ -198,7 +218,7 @@ export const FloatingNav = ({
             href="https://linkedin.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="group relative px-2 py-2 overflow-hidden"
+            className="group relative px-2 overflow-hidden"
           >
             <span className="relative z-10 text-[#9F9B96] font-medium text-[clamp(16px,1.5vw,24px)]">
               LinkedIn
@@ -206,10 +226,7 @@ export const FloatingNav = ({
             <span className="absolute inset-0 top-1/2 h-1/2 bg-[#0100F4] origin-left scale-x-0 transition-transform duration-300 ease-out group-hover:scale-x-100"></span>
           </Link>
 
-          <Link
-            href="mailto:"
-            className="group relative px-2 py-2 overflow-hidden"
-          >
+          <Link href="mailto:" className="group relative px-2 overflow-hidden">
             <span className="relative z-10 text-[#9F9B96] font-medium text-[clamp(16px,1.5vw,24px)]">
               Email
             </span>
@@ -220,7 +237,7 @@ export const FloatingNav = ({
             href="https://apps.apple.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="group relative px-2 py-2 overflow-hidden"
+            className="group relative px-2 overflow-hidden"
           >
             <span className="relative z-10 text-[#9F9B96] font-medium text-[clamp(16px,1.5vw,24px)]">
               AppStore
@@ -231,7 +248,13 @@ export const FloatingNav = ({
 
         {/* Mobile Burger Menu */}
         <div className="md:hidden pr-[16px]">
-          <BurgerMenu scrollToSection={scrollToSection} onMenuToggle={setIsMenuOpen} />
+          <BurgerMenu
+            scrollToSection={scrollToSection}
+            onMenuToggle={setIsMenuOpen}
+            isOpen={isMenuOpen}
+            setIsOpen={setIsMenuOpen}
+            iconColor="#9F9B96"
+          />
         </div>
       </motion.div>
     </AnimatePresence>

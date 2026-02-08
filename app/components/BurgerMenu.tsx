@@ -1,6 +1,9 @@
 "use client";
 
+import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
+
+import { vacancies } from "../vacancies/data";
 
 const sections = [
   {
@@ -11,7 +14,7 @@ const sections = [
   {
     id: "mission",
     label: "Mission",
-    bgColor: "bg-[#dadada]",
+    bgColor: "bg-[#000000]",
   },
   {
     id: "products",
@@ -38,10 +41,22 @@ const sections = [
 interface BurgerMenuProps {
   scrollToSection: (id: string) => void;
   onMenuToggle?: (isOpen: boolean) => void;
+  isOpen?: boolean;
+  setIsOpen?: (isOpen: boolean) => void;
+  iconColor?: string;
 }
 
-export default function BurgerMenu({ scrollToSection, onMenuToggle }: BurgerMenuProps) {
-  const [isOpen, setIsOpen] = useState(false);
+export default function BurgerMenu({
+  scrollToSection,
+  onMenuToggle,
+  isOpen: controlledIsOpen,
+  setIsOpen: setControlledIsOpen,
+  iconColor,
+}: BurgerMenuProps) {
+  const hasVacancies = Array.isArray(vacancies) && vacancies.length > 0;
+  const [internalIsOpen, setInternalIsOpen] = useState(false);
+  const isOpen = controlledIsOpen ?? internalIsOpen;
+  const setIsOpen = setControlledIsOpen ?? setInternalIsOpen;
   const [activeSection, setActiveSection] = useState("us");
   const [currentBgColor, setCurrentBgColor] = useState("bg-[#080808]");
   const [clickedSection, setClickedSection] = useState<string | null>(null);
@@ -105,27 +120,26 @@ export default function BurgerMenu({ scrollToSection, onMenuToggle }: BurgerMenu
     };
   }, []);
 
-  const toggleMenu = () => {
-    const newState = !isOpen;
-    setIsOpen(newState);
-    document.body.style.overflow = newState ? "hidden" : "auto";
-    if (!newState) {
+  const setMenuState = (nextState: boolean) => {
+    setIsOpen(nextState);
+    document.body.style.overflow = nextState ? "hidden" : "auto";
+    if (!nextState) {
       // Очищаем состояние клика при закрытии меню
       setClickedSection(null);
     }
     if (onMenuToggle) {
-      onMenuToggle(newState);
+      onMenuToggle(nextState);
     }
+  };
+
+  const toggleMenu = () => {
+    setMenuState(!isOpen);
   };
 
   const handleNavClick = (id: string) => {
     setClickedSection(id);
     scrollToSection(id);
-    setIsOpen(false);
-    document.body.style.overflow = "auto";
-    if (onMenuToggle) {
-      onMenuToggle(false);
-    }
+    setMenuState(false);
     // Очищаем состояние клика после небольшой задержки, чтобы стили успели примениться
     setTimeout(() => {
       setClickedSection(null);
@@ -135,25 +149,34 @@ export default function BurgerMenu({ scrollToSection, onMenuToggle }: BurgerMenu
   // Определяем цвет текста в зависимости от фона
   const getTextColor = () => {
     if (currentBgColor === "bg-[#dadada]") {
-      return "#9F9B96";
+      return "#CDCDCD";
     } else if (currentBgColor === "bg-[#080808]") {
       return "#3F3E3D";
     }
-    return "#9F9B96"; // По умолчанию
+    return "#3F3E3D"; // По умолчанию
   };
 
   const textColor = getTextColor();
+  const menuIconColor = iconColor ?? textColor;
+  const menuItemCount = sections.length + (hasVacancies ? 1 : 0);
+  const menuHeight = `calc(50% * ${menuItemCount / sections.length})`;
 
   return (
     <>
       {/* Burger Button */}
       <button
         onClick={toggleMenu}
-        className="relative z-50 flex flex-col items-end justify-end w-20 h-20 mb-[12px]"
+        className="relative z-50 flex flex-col items-start justify-center w-12 h-12 mr-[24px]"
         aria-label="Toggle menu"
       >
-        <span className="block h-[2px] w-12 mb-1 transition-colors duration-500" style={{ backgroundColor: textColor }} />
-        <span className="block h-[2px] w-18 transition-colors duration-500" style={{ backgroundColor: textColor }} />
+        <span
+          className="block h-[2px] w-12 mb-2 transition-colors duration-500"
+          style={{ backgroundColor: menuIconColor }}
+        />
+        <span
+          className="block h-[2px] w-18 transition-colors duration-500"
+          style={{ backgroundColor: menuIconColor }}
+        />
       </button>
 
       {/* Menu Overlay */}
@@ -164,22 +187,23 @@ export default function BurgerMenu({ scrollToSection, onMenuToggle }: BurgerMenu
       >
         {/* Menu Content - выезжает от границы floating-navbar */}
         <div
-          className={`absolute left-0 right-0 h-1/2 ${currentBgColor} transition-all duration-500 ease-in-out ${isOpen ? "translate-y-0" : "-translate-y-full"
+          className={`absolute left-0 right-0 ${currentBgColor} transition-all duration-500 ease-in-out ${isOpen ? "translate-y-0" : "-translate-y-full"
             }`}
           style={{
-            top: "80px", // Высота floating-navbar
+            top: "60px", // Высота floating-navbar
+            height: menuHeight,
           }}
           onClick={(e) => e.stopPropagation()}
         >
           {/* Navigation Links */}
-          <nav className="flex flex-col h-full justify-center px-8 gap-0 pb-8">
+          <nav className="flex flex-col h-full justify-center gap-0 pb-8">
             {sections.map((section, index) => {
               const isActive = activeSection === section.id || clickedSection === section.id;
               return (
                 <button
                   key={section.id}
                   onClick={() => handleNavClick(section.id)}
-                  className="group relative text-left overflow-hidden py-2"
+                  className="group relative text-left overflow-hidden py-2 pl-[16px]"
                 >
                   <div className="flex items-center gap-0">
                     {/* Arrow indicator */}
@@ -204,12 +228,29 @@ export default function BurgerMenu({ scrollToSection, onMenuToggle }: BurgerMenu
 
                   {/* Underline - всегда видна с цветом текста, не выделяется синим */}
                   <div
-                    className="absolute left-0 bottom-0 h-px w-full opacity-50 transition-all duration-500"
+                    className="absolute left-0 bottom-0 h-px w-full transition-all duration-500"
                     style={{ backgroundColor: textColor }}
                   />
                 </button>
               );
             })}
+            {hasVacancies && (
+              <Link
+                href="/vacancies"
+                className="group relative text-left overflow-hidden py-2 pl-[16px]"
+                style={{ color: textColor }}
+              >
+                <div className="flex items-center gap-0">
+                  <span className="text-[clamp(48px,6vw,100px)] font-semibold uppercase transition-colors duration-500">
+                    Vacancies
+                  </span>
+                </div>
+                <div
+                  className="absolute left-0 bottom-0 h-px w-full transition-all duration-500"
+                  style={{ backgroundColor: textColor }}
+                />
+              </Link>
+            )}
           </nav>
         </div>
       </div>

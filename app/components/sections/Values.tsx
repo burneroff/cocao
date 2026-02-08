@@ -103,16 +103,23 @@ export default function Values() {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          const isVisible = entry.isIntersecting && entry.intersectionRatio > 0.55;
+          const isVisible =
+            entry.isIntersecting && entry.intersectionRatio > 0.55;
           isActiveRef.current = isVisible;
 
-          const isExitingUp = currentIndexRef.current === 0 && lastIntentRef.current < 0;
+          const isExitingUp =
+            currentIndexRef.current === 0 && lastIntentRef.current < 0;
           const isExitingDown =
             currentIndexRef.current === valuesData.length - 1 &&
             allViewedRef.current &&
             lastIntentRef.current > 0;
 
-          if (isVisible && !isProgrammaticScrollRef.current && !isExitingUp && !isExitingDown) {
+          if (
+            isVisible &&
+            !isProgrammaticScrollRef.current &&
+            !isExitingUp &&
+            !isExitingDown
+          ) {
             snapToTopIfNeeded();
           }
         });
@@ -120,7 +127,7 @@ export default function Values() {
       {
         threshold: [0.25, 0.4, 0.55, 0.7, 0.85, 1],
         rootMargin: "0px",
-      }
+      },
     );
 
     if (containerRef.current) {
@@ -151,7 +158,10 @@ export default function Values() {
       if (programmaticFallbackRef.current) {
         window.clearTimeout(programmaticFallbackRef.current);
       }
-      programmaticFallbackRef.current = window.setTimeout(endProgrammaticScroll, 2500);
+      programmaticFallbackRef.current = window.setTimeout(
+        endProgrammaticScroll,
+        2500,
+      );
     };
 
     const handleScroll = () => {
@@ -159,14 +169,23 @@ export default function Values() {
       if (scrollEndTimeoutRef.current) {
         window.clearTimeout(scrollEndTimeoutRef.current);
       }
-      scrollEndTimeoutRef.current = window.setTimeout(endProgrammaticScroll, 120);
+      scrollEndTimeoutRef.current = window.setTimeout(
+        endProgrammaticScroll,
+        120,
+      );
     };
 
-    window.addEventListener("programmatic-scroll-start", handleProgrammaticScroll);
+    window.addEventListener(
+      "programmatic-scroll-start",
+      handleProgrammaticScroll,
+    );
     window.addEventListener("scroll", handleScroll, { passive: true });
 
     return () => {
-      window.removeEventListener("programmatic-scroll-start", handleProgrammaticScroll);
+      window.removeEventListener(
+        "programmatic-scroll-start",
+        handleProgrammaticScroll,
+      );
       window.removeEventListener("scroll", handleScroll);
       if (scrollEndTimeoutRef.current) {
         window.clearTimeout(scrollEndTimeoutRef.current);
@@ -183,9 +202,15 @@ export default function Values() {
   useLayoutEffect(() => {
     const canExitUp = (deltaY: number) => currentSection === 0 && deltaY < 0;
     const canExitDown = (deltaY: number) =>
-      currentSection === valuesData.length - 1 && allSectionsViewed && deltaY > 0;
+      currentSection === valuesData.length - 1 &&
+      allSectionsViewed &&
+      deltaY > 0;
 
-    const handleIntent = (deltaY: number, event: Event, source: "wheel" | "touch") => {
+    const handleIntent = (
+      deltaY: number,
+      event: Event,
+      source: "wheel" | "touch",
+    ) => {
       lastIntentRef.current = deltaY;
       if (!isActiveRef.current) return;
       if (isProgrammaticScrollRef.current) return;
@@ -211,7 +236,8 @@ export default function Values() {
         return;
       }
 
-      const accumulator = source === "wheel" ? wheelAccumulatorRef : touchAccumulatorRef;
+      const accumulator =
+        source === "wheel" ? wheelAccumulatorRef : touchAccumulatorRef;
       const threshold = source === "wheel" ? 70 : 55;
       accumulator.current += deltaY;
 
@@ -224,11 +250,20 @@ export default function Values() {
       accumulator.current = 0;
 
       if (effectiveDelta > 0) {
-        if (canExitDown(effectiveDelta)) return;
+        if (canExitDown(effectiveDelta)) {
+          window.dispatchEvent(
+            new CustomEvent("values-release", {
+              detail: { direction: "down" },
+            }),
+          );
+          return;
+        }
         if (currentSection < valuesData.length - 1) {
           event.preventDefault();
           isAnimatingRef.current = true;
-          setCurrentSection((prev) => Math.min(prev + 1, valuesData.length - 1));
+          setCurrentSection((prev) =>
+            Math.min(prev + 1, valuesData.length - 1),
+          );
           window.setTimeout(() => {
             isAnimatingRef.current = false;
           }, 250);
@@ -238,7 +273,14 @@ export default function Values() {
           event.preventDefault();
         }
       } else if (effectiveDelta < 0) {
-        if (canExitUp(effectiveDelta)) return;
+        if (canExitUp(effectiveDelta)) {
+          window.dispatchEvent(
+            new CustomEvent("values-release", {
+              detail: { direction: "up" },
+            }),
+          );
+          return;
+        }
         if (currentSection > 0) {
           event.preventDefault();
           isAnimatingRef.current = true;
@@ -332,7 +374,7 @@ export default function Values() {
 
             {/* Подзаголовок с подчеркиванием - абсолютно позиционирован (только для десктопа) */}
             <div
-              className="absolute text-white hidden 2xl:block 2xl:ml-[30px]"
+              className="absolute text-white hidden 2xl:block 2xl:ml-[45px]"
               style={{
                 left: "300px",
                 top: "120px",
@@ -370,7 +412,7 @@ export default function Values() {
             </div>
           </div>
 
-          <div className="flex flex-col 2xl:flex-row items-center md:items-start 2xl:items-start gap-4 md:gap-6 2xl:gap-[15px] w-full 2xl:w-auto">
+          <div className="flex flex-col 2xl:flex-row items-center md:items-start 2xl:items-start gap-4 md:gap-6 2xl:gap-[15px] w-full 2xl:w-auto 2xl:ml-4">
             {/* Заголовок с плавной сменой */}
             {valuesData.map((value, index) => (
               <h2
@@ -398,7 +440,10 @@ export default function Values() {
             ))}
 
             {/* Подзаголовок для устройств меньше 1400px (скрыт на десктопе 1400+) */}
-            <div className="2xl:hidden w-full px-0 mt-4 md:mt-6 relative sm:px-4" style={{ maxWidth: "490px" }}>
+            <div
+              className="2xl:hidden w-full px-0 mt-4 md:mt-6 relative sm:px-4"
+              style={{ maxWidth: "490px" }}
+            >
               {valuesData.map((value, index) => (
                 <p
                   key={index}

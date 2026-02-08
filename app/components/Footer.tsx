@@ -1,12 +1,16 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { vacancies } from "../vacancies/data";
+
 export default function Footer() {
+  const hasVacancies = Array.isArray(vacancies) && vacancies.length > 0;
+
   return (
     <footer
       className="
         w-full h-[204px] relative
-        flex items-center
+        flex items-start min-[400px]:items-center
         px-[16px]
         md:px-[40px]
         min-[1000px]:justify-start
@@ -24,11 +28,17 @@ export default function Footer() {
     >
       {/* LEFT */}
       <div className="flex items-center gap-4">
-        <Image src="/logo.svg" alt="Cacao Mobile Logo" width={47} height={58} />
-        <div className="hidden min-[400px]:flex flex-col text-[#35353C]">
-          <span className="font-medium text-lg">Cacao Mobile</span>
-          <span className="text-[16px]">Poland, Warszawa</span>
-          <span className="text-[16px]">Address</span>
+        <Image
+          src="/logo.svg"
+          alt="Cacao Mobile Logo"
+          width={47}
+          height={58}
+          className="hidden min-[400px]:block"
+        />
+        <div className="flex flex-col text-[#35353C] max-[400px]:max-w-[150px]">
+          <span className="font-medium text-lg max-[400px]:text-[14px]">Cacao Mobile</span>
+          <span className="text-[16px] max-[400px]:text-[14px]">Poland, Warszawa</span>
+          <span className="text-[16px] max-[400px]:text-[14px]">UL. Nowogrodzka 31 / 414, 00-511</span>
         </div>
       </div>
 
@@ -47,8 +57,14 @@ export default function Footer() {
       >
         {[
           { label: "hr@cacao-mobile.com", href: "mailto:hr@cacao-mobile.com" },
-          { label: "LinkedIn", href: "https://www.linkedin.com", external: true },
-          { label: "Vacancies", href: "/vacancies" },
+          {
+            label: "LinkedIn",
+            href: "https://www.linkedin.com",
+            external: true,
+          },
+          ...(hasVacancies
+            ? [{ label: "Vacancies", href: "/vacancies", external: true }]
+            : []),
         ].map((item) => (
           <Link
             key={item.label}
@@ -57,7 +73,7 @@ export default function Footer() {
             rel={item.external ? "noreferrer" : undefined}
             className="group relative text-base overflow-hidden 2xl:ml-19"
           >
-            <span className="relative z-10 text-[#35353C] transition-colors">
+            <span className="relative z-10 text-[#35353C] transition-colors max-[400px]:text-[14px]">
               {item.label}
             </span>
             <span className="absolute inset-0 top-1/2 h-1/2 bg-[#0100F4] origin-left scale-x-0 transition-transform duration-300 ease-out group-hover:scale-x-100" />

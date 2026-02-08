@@ -66,7 +66,7 @@ export default function Team() {
     <section className="relative w-full overflow-x-hidden px-4 md:px-8 lg:px-16 py-6 md:py-12">
       {/* FRAME + CROSSES BLOCK */}
       <div className="relative mt-30 md:mt-24 lg:mt-[180px] mb-16 md:mb-32 lg:mb-[300px] flex justify-end">
-        <div className="relative w-24 h-24 md:w-32 md:h-32 lg:w-[184px] lg:h-[184px]">
+        <div className="relative w-[85px] h-[85px] md:w-32 md:h-32 lg:w-[184px] lg:h-[184px]">
           <Image
             src="/frames/frame_team_1.png"
             alt="Frame Team"
@@ -76,16 +76,22 @@ export default function Team() {
           />
 
           <div className="absolute left-[-50px] top-[-50px]">
-            <Cross color="#35353C" />
+            <Cross
+              color="#35353C"
+              className="w-4 h-4 md:w-6 md:h-6 lg:w-auto lg:h-auto"
+            />
           </div>
           <div className="absolute left-[-50px] bottom-[-50px]">
-            <Cross color="#35353C" />
+            <Cross
+              color="#35353C"
+              className="w-4 h-4 md:w-6 md:h-6 lg:w-auto lg:h-auto"
+            />
           </div>
         </div>
       </div>
 
       {/* ОРИГИНАЛЬНЫЙ ДИЗАЙН ТОЛЬКО НА ЭКРАНАХ >= 1540px */}
-      <div className="hidden team-large-screen justify-end">
+      <div className="hidden team-large-screen justify-end" data-snap-target="team">
         {team.map((member, index) => {
           const isActive = activeIndex === index;
           const baseWidth = index === 0 ? "w-[140px]" : "w-[110px]";
@@ -147,7 +153,7 @@ export default function Team() {
       </div>
 
       {/* SWIPER КАРУСЕЛЬ ДЛЯ ЭКРАНОВ < 1540px */}
-      <div className="team-small-screen">
+      <div className="team-small-screen" data-snap-target="team">
         <div className="mt-20 mb-18">
           <Swiper
             modules={[FreeMode]}
@@ -181,21 +187,23 @@ export default function Team() {
                   onMouseEnter={() => setActiveIndex(index)}
                   onMouseLeave={() => setActiveIndex(null)}
                 >
+
                   {/* IMAGE */}
                   <div className="relative w-full h-[400px] md:h-[450px] lg:h-[500px] overflow-hidden">
                     <Image
                       src={member.image}
                       alt={member.name}
-                      fill
+                      width={1020}
+                      height={1350}
                       className="object-cover"
                       draggable={false}
                       style={{
                         objectPosition: "center center",
                         objectFit: "cover",
                       }}
-                      sizes="(max-width: 768px) 280px, (max-width: 1024px) 320px, 340px"
                       priority={true}
                       loading="eager"
+                      unoptimized={true}
                     />
                   </div>
 
@@ -223,7 +231,7 @@ export default function Team() {
 
       {/* ВТОРАЯ РАМКА */}
       <div className="relative mt-12 md:mt-24 lg:mt-[180px] mb-8 md:mb-16 lg:mb-[300px] flex justify-end lg:mr-[300px]">
-        <div className="relative w-24 h-24 md:w-32 md:h-32 lg:w-[184px] lg:h-[184px]">
+        <div className="relative w-[85px] h-[85px] md:w-32 md:h-32 lg:w-[184px] lg:h-[184px]">
           <Image
             src="/frames/frame_team_2.png"
             alt="Frame Team"
@@ -233,10 +241,16 @@ export default function Team() {
           />
 
           <div className="absolute left-[-50px] top-[-50px] sm:right-[-50px] sm:bottom-[-50px]">
-            <Cross color="#35353C" />
+            <Cross
+              color="#35353C"
+              className="w-4 h-4 md:w-6 md:h-6 lg:w-auto lg:h-auto"
+            />
           </div>
           <div className="absolute left-[-50px] bottom-[-50px]">
-            <Cross color="#35353C" />
+            <Cross
+              color="#35353C"
+              className="w-4 h-4 md:w-6 md:h-6 lg:w-auto lg:h-auto"
+            />
           </div>
         </div>
       </div>

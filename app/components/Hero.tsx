@@ -8,7 +8,7 @@ interface HeroProps {
 
 export default function Hero({ isLoaded = false }: HeroProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const videoDelay = "1s";
+  const videoDelay = "1.5s";
   const headerDelay = "0s";
 
   useEffect(() => {
@@ -56,7 +56,7 @@ export default function Hero({ isLoaded = false }: HeroProps) {
         muted
         playsInline
         preload="auto"
-        className={`absolute left-0 top-0 h-full w-full object-cover scale-y-[-1] transition-opacity duration-800 ${isLoaded ? "opacity-100" : "opacity-0"
+        className={`absolute left-0 top-0 h-full w-full object-cover scale-y-[-1] transition-opacity duration-800 max-sm:top-[-152px] ${isLoaded ? "opacity-100" : "opacity-0"
           }`}
         style={{
           transitionDelay: isLoaded ? videoDelay : "0s",
@@ -76,14 +76,14 @@ export default function Hero({ isLoaded = false }: HeroProps) {
       />
 
       <div className="relative z-10 flex h-full flex-col">
-        <div className="flex flex-1 items-center justify-center min-[1000px]:justify-end px-4 min-[1000px]:pr-16">
-          <div className="flex flex-col text-center min-[1000px]:text-right">
+        <div className="flex flex-1 items-end justify-start pb-8 min-[1000px]:justify-end min-[1000px]:pb-12 xl:items-center xl:pb-0 px-4 min-[1000px]:pr-16">
+          <div className="flex flex-col text-left min-[1000px]:text-right">
             {/* Текст с плавным появлением через opacity */}
             <h1
               className={`
                 uppercase text-white font-normal
-                text-[clamp(60px,10vw,120px)]
-                leading-[clamp(62px,8vw,90px)]
+                text-[clamp(48px,10vw,120px)]
+                leading-[clamp(48px,8vw,90px)]
                 min-[1000px]:text-left
                 transition-opacity duration-800
                 ${isLoaded ? "opacity-100" : "opacity-0"}
@@ -98,9 +98,9 @@ export default function Hero({ isLoaded = false }: HeroProps) {
             <h1
               className={`
                 uppercase text-white font-normal
-                text-[clamp(60px,10vw,120px)]
-                leading-[clamp(62px,8vw,90px)]
-                min-[1000px]:ml-[225px]
+                text-[clamp(48px,10vw,120px)]
+                leading-[clamp(48px,8vw,90px)]
+                ml-[72px] min-[1000px]:ml-[225px]
                 transition-opacity duration-800
                 ${isLoaded ? "opacity-100" : "opacity-0"}
               `}
@@ -114,9 +114,9 @@ export default function Hero({ isLoaded = false }: HeroProps) {
             <h1
               className={`
                 uppercase text-white font-normal
-                text-[clamp(60px,10vw,120px)]
-                leading-[clamp(62px,8vw,90px)]
-                min-[1000px]:ml-[225px]
+                text-[clamp(48px,10vw,120px)]
+                leading-[clamp(48px,8vw,90px)]
+                ml-[72px] min-[1000px]:ml-[225px]
                 min-[1000px]:text-left
                 transition-opacity duration-800
                 ${isLoaded ? "opacity-100" : "opacity-0"}

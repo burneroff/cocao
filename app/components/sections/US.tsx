@@ -18,7 +18,7 @@ export default function US() {
           }
         });
       },
-      { threshold: 0.2 }
+      { threshold: 0.2 },
     );
 
     if (sectionRef.current) {
@@ -37,7 +37,7 @@ export default function US() {
     if (isVisible) {
       const timer = setTimeout(() => {
         setSpansAnimated(true);
-      }, 500);
+      }, 750);
       return () => clearTimeout(timer);
     }
   }, [isVisible]);
@@ -45,7 +45,7 @@ export default function US() {
   return (
     <div
       ref={sectionRef}
-      className={`min-h-[100vh] md:min-h-[150vh] flex items-start justify-end px-4 py-4 md:px-16 md:py-16 relative transition-opacity duration-1000 ${isVisible ? "opacity-100" : "opacity-0"
+      className={`min-h-[90vh] md:min-h-[150vh] flex items-start justify-end px-4 py-4 md:px-16 md:py-16 relative transition-opacity duration-1000 ${isVisible ? "opacity-100" : "opacity-0"
         }`}
     >
       <div className="flex justify-end flex-col">
@@ -53,12 +53,14 @@ export default function US() {
           className="text-[#CDCDCD] font-normal leading-normal md:leading-[70px] tracking-[0%] text-justify w-full max-w-full md:max-w-[910px]"
           style={{
             fontSize: "clamp(20px, 4vw, 2.5rem)",
-            lineHeight: "clamp(32px, 5vw, 3.5rem)",
+            lineHeight: "clamp(32px, 5vw, 70px)",
           }}
         >
           <p className="mb-4 md:mb-8">
             We're a product team developing and growing mobile{" "}
-            <span className={`text-highlight ${spansAnimated ? "animated" : ""}`}>
+            <span
+              className={`text-highlight ${spansAnimated ? "animated" : ""}`}
+            >
               <span>
                 apps in Health & Wellness, Entertainment, and Utilities
               </span>
@@ -70,9 +72,7 @@ export default function US() {
               className={`text-highlight ${spansAnimated ? "animated" : ""}`}
               style={{ transitionDelay: spansAnimated ? "0.1s" : "0s" }}
             >
-              <span>
-                ideas into clear, useful digital experiences.
-              </span>
+              <span>ideas into clear, useful digital experiences.</span>
             </span>
           </p>
           <p>
@@ -82,16 +82,14 @@ export default function US() {
               className={`text-highlight ${spansAnimated ? "animated" : ""}`}
               style={{ transitionDelay: spansAnimated ? "0.2s" : "0s" }}
             >
-              <span>
-                sity, creativity, and
-              </span>
+              <span>sity, creativity, and</span>
             </span>{" "}
             the drive to build products people genuinely love to use.
           </p>
         </div>
       </div>
 
-      <div className="absolute right-4 md:right-[70px] bottom-[100px] md:bottom-[270px] w-[184px] h-[184px]">
+      <div className="absolute right-1/2 translate-x-1/2 2xl:right-0 2xl:translate-x-0 bottom-[100px] md:bottom-[270px] 2xl:bottom-[170px] w-[85px] h-[85px] md:w-[184px] md:h-[184px]">
         <Image
           src="/frames/frame_US.png"
           alt="Frame US"
@@ -102,13 +100,19 @@ export default function US() {
         />
 
         {/* Первый Cross: адаптивное позиционирование */}
-        <div className="absolute left-[-50px] md:left-[-90px] bottom-[-30px] md:bottom-[-50px]">
-          <Cross color="#CDCDCD" className="w-8 h-8 md:w-auto md:h-auto" />
+        <div className="absolute left-[150px] md:left-[-90px] bottom-[-30px] md:bottom-[-50px]">
+          <Cross
+            color="#CDCDCD"
+            className="w-4 h-4 md:w-8 md:h-8 lg:w-auto lg:h-auto"
+          />
         </div>
 
         {/* Второй Cross: адаптивное позиционирование */}
-        <div className="absolute left-[-150px] md:left-[-300px] top-[-50px] md:top-[-100px] md:block">
-          <Cross color="#CDCDCD" className="w-8 h-8 md:w-auto md:h-auto" />
+        <div className="absolute left-[-70px] md:left-[-300px] top-[-50px] md:top-[-100px] md:block">
+          <Cross
+            color="#CDCDCD"
+            className="w-4 h-4 md:w-8 md:h-8 lg:w-auto lg:h-auto"
+          />
         </div>
       </div>
     </div>

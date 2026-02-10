@@ -44,6 +44,7 @@ const valuesData: ValueSection[] = [
 export default function Values() {
   const [currentSection, setCurrentSection] = useState(0);
   const [allSectionsViewed, setAllSectionsViewed] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const viewedSectionsRef = useRef<Set<number>>(new Set([0]));
   const isActiveRef = useRef(false);
@@ -59,6 +60,20 @@ export default function Values() {
   const lastTouchYRef = useRef<number | null>(null);
   const snapRafRef = useRef<number | null>(null);
   const lastIntentRef = useRef(0);
+  const transitionLockMs = 600;
+
+  useLayoutEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+
+    return () => {
+      window.removeEventListener("resize", checkMobile);
+    };
+  }, []);
 
   const snapToTopIfNeeded = (behavior: ScrollBehavior = "smooth") => {
     if (snapRafRef.current) {
@@ -251,6 +266,7 @@ export default function Values() {
 
       if (effectiveDelta > 0) {
         if (canExitDown(effectiveDelta)) {
+          if (isMobile) return;
           window.dispatchEvent(
             new CustomEvent("values-release", {
               detail: { direction: "down" },
@@ -266,7 +282,7 @@ export default function Values() {
           );
           window.setTimeout(() => {
             isAnimatingRef.current = false;
-          }, 250);
+          }, transitionLockMs);
           return;
         }
         if (!allSectionsViewed) {
@@ -274,6 +290,7 @@ export default function Values() {
         }
       } else if (effectiveDelta < 0) {
         if (canExitUp(effectiveDelta)) {
+          if (isMobile) return;
           window.dispatchEvent(
             new CustomEvent("values-release", {
               detail: { direction: "up" },
@@ -287,7 +304,7 @@ export default function Values() {
           setCurrentSection((prev) => Math.max(prev - 1, 0));
           window.setTimeout(() => {
             isAnimatingRef.current = false;
-          }, 250);
+          }, transitionLockMs);
         }
       }
     };
@@ -328,7 +345,7 @@ export default function Values() {
       window.removeEventListener("touchmove", handleTouchMove);
       window.removeEventListener("touchend", handleTouchEnd);
     };
-  }, [currentSection, allSectionsViewed]);
+  }, [currentSection, allSectionsViewed, isMobile]);
 
   const currentValue = valuesData[currentSection];
 
@@ -366,7 +383,7 @@ export default function Values() {
                   src={value.image}
                   alt={value.title}
                   fill
-                  className="object-contain 2xl:ml-[60px]"
+                  className="object-contain 2xl:ml-[60px] sm:px-4"
                   sizes="(max-width: 640px) 280px, (max-width: 768px) 320px, (max-width: 1024px) 380px, (max-width: 1280px) 420px, (max-width: 1536px) 450px, 450px"
                 />
               </div>

@@ -92,7 +92,7 @@ export default function Mission() {
   return (
     <div
       ref={sectionRef}
-      className={`min-h-[100vh] md:min-h-[120vh] flex items-start justify-end px-4 py-4 md:px-16 md:py-16 relative transition-opacity duration-1000 overflow-x-hidden ${isVisible ? "opacity-100" : "opacity-0"
+      className={`min-h-screen md:min-h-[130vh] lg:min-h-[150vh] 2xl:min-h-[120vh] flex items-start justify-end px-4 py-4 md:px-16 md:py-16 relative transition-opacity duration-1000 overflow-x-hidden ${isVisible ? "opacity-100" : "opacity-0"
         }`}
     >
       <div className="flex justify-end flex-col">
@@ -101,8 +101,8 @@ export default function Mission() {
           className="text-[#CDCDCD] font-normal leading-normal md:leading-[70px] tracking-[0%] text-justify w-full max-w-full md:max-w-[910px]"
           style={{
             fontFamily: "var(--font-neue-regrade), Neue Regrade, sans-serif",
-            fontSize: "clamp(20px, 4vw, 2.5rem)",
-            lineHeight: "clamp(32px, 5vw, 70px)",
+            fontSize: "clamp(20px, 3vw, 40px)",
+            lineHeight: "clamp(32px, 6vw, 70px)",
           }}
         >
           <p className="mb-4 md:mb-8">
@@ -146,7 +146,7 @@ export default function Mission() {
         </div>
 
         {/* 3 блока под текстом - адаптивные отступы */}
-        <div className="flex flex-row gap-4 md:gap-12 lg:gap-[180px] mb-10 mt-8 md:mt-[100px] w-full max-w-full md:max-w-[910px]">
+        <div className="flex flex-row justify-between gap-4 md:gap-12 xl:gap-[180px] mb-10 mt-8 md:mt-[100px] w-full max-w-full md:max-w-[910px]">
           {/* Блок 1: 30+ Products */}
           <div className="flex flex-col items-left">
             <div className="text-[48px] md:text-[40px] lg:text-[64px] text-[#CDCDCD] font-normal md:font-medium leading-[48px] md:leading-[48px] lg:leading-[100%] tracking-[0%] uppercase mb-2 md:mb-4">
@@ -194,7 +194,7 @@ export default function Mission() {
         <div className="absolute left-[-30px] md:left-[-45px] lg:left-[-60px] bottom-[-30px] md:bottom-[-40px] lg:bottom-[-50px]">
           <Cross
             color="#000000"
-            className="w-4 h-4 md:w-8 md:h-8 lg:w-auto lg:h-auto"
+            className="w-4 h-4 lg:w-auto lg:h-auto"
           />
         </div>
 
@@ -202,7 +202,7 @@ export default function Mission() {
         <div className="absolute right-[-30px] md:right-[-45px] lg:right-[-60px] top-[-30px] md:top-[-40px] lg:top-[-50px] md:block">
           <Cross
             color="#000000"
-            className="w-4 h-4 md:w-8 md:h-8 lg:w-auto lg:h-auto"
+            className="w-4 h-4 lg:w-auto lg:h-auto"
           />
         </div>
       </div>

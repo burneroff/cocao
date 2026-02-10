@@ -43,14 +43,14 @@ export default function Contacts() {
       );
     } else if (!emailRegex.test(email) || email.length > 150) {
       setEmailError(
-        "This email doesn't exist. Please check it and try again.*",
+        "This email doesn't exist. Please check it and try again.",
       );
     }
 
     // Validate message
     if (!message.trim()) {
       setMessageError(
-        "The message field is empty — do you really have nothing to tell us?*",
+        "The message field is empty — do you really have nothing to tell us?",
       );
     } else if (message.length > 999) {
       setMessageError(
@@ -128,14 +128,14 @@ export default function Contacts() {
           <div className="mt-6 flex justify-end">
             <button
               onClick={handleSend}
-              className={`w-[165px] h-[45px] flex items-center justify-center border font-medium transition-all duration-300 rounded-[0px] hover:rounded-[16px] active:bg-[#9F9B96] active:scale-95
+              className={`w-[165px] h-[45px] text-[22px] flex items-center justify-center border font-medium transition-all duration-300 rounded-[0px] hover:rounded-[16px] active:bg-[#9F9B96] active:scale-95
                 ${isFormValid()
                   ? "border-[#35353C] text-[#35353C] hover:text-[#35353C] hover:border-[#35353C]"
                   : "border-[#9F9B96] text-[#9F9B96] hover:text-[#35353C] hover:border-[#35353C]"
                 }
               `}
             >
-              Send &gt;
+              Send{"        "}&#8250;
             </button>
           </div>
         </div>

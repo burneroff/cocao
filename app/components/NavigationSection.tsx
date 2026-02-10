@@ -253,6 +253,7 @@ export default function NavigationSection() {
   const touchAccumulatorRef = useRef(0);
   const lastTouchYRef = useRef<number | null>(null);
   const animationRafRef = useRef<number | null>(null);
+  const isSafariRef = useRef(false);
   const animationDuration = 1600;
   const scrollThresholds = { wheel: 6, touch: 8 };
   const edgeTolerance = 3;
@@ -277,9 +278,14 @@ export default function NavigationSection() {
     if (animationRafRef.current) {
       window.cancelAnimationFrame(animationRafRef.current);
     }
+
     const startY = window.scrollY;
     const distance = targetY - startY;
     const startTime = performance.now();
+    const scrollingElement =
+      isSafariRef.current
+        ? document.scrollingElement || document.documentElement
+        : null;
 
     const easeInOutCubic = (t: number) =>
       t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
@@ -288,7 +294,13 @@ export default function NavigationSection() {
       const elapsed = now - startTime;
       const progress = Math.min(elapsed / duration, 1);
       const eased = easeInOutCubic(progress);
-      window.scrollTo({ top: startY + distance * eased, behavior: "auto" });
+      const nextY = startY + distance * eased;
+
+      if (scrollingElement) {
+        scrollingElement.scrollTop = nextY;
+      } else {
+        window.scrollTo({ top: nextY, behavior: "auto" });
+      }
 
       if (progress < 1) {
         animationRafRef.current = window.requestAnimationFrame(tick);
@@ -323,6 +335,11 @@ export default function NavigationSection() {
   };
 
   useEffect(() => {
+    const userAgent = window.navigator.userAgent;
+    isSafariRef.current =
+      /Safari/i.test(userAgent) &&
+      !/Chrome|Chromium|CriOS|Edg|OPR|FxiOS|Android/i.test(userAgent);
+
     // Проверяем, мобильное ли устройство при загрузке и при изменении размера
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
@@ -339,14 +356,12 @@ export default function NavigationSection() {
     };
   }, []);
 
-  // Отслеживание скролла и изменение фона заранее
   useEffect(() => {
     const updateBackgroundColor = () => {
       const scrollY = window.scrollY;
       const viewportHeight = window.innerHeight;
-      const previewDistance = 300; // Расстояние заранее, на котором меняем фон
+      const previewDistance = 300;
 
-      // Определяем следующую секцию на основе позиции скролла
       let targetSectionId = sections[0].id;
 
       for (let i = 0; i < sections.length; i++) {
@@ -355,12 +370,10 @@ export default function NavigationSection() {
 
         if (element) {
           const rect = element.getBoundingClientRect();
-          // getBoundingClientRect возвращает позицию относительно viewport
-          const sectionTop = rect.top + scrollY; // Позиция относительно документа
+          const sectionTop = rect.top + scrollY;
           const sectionBottom = sectionTop + rect.height;
           const currentViewportBottom = scrollY + viewportHeight;
 
-          // Если мы еще не дошли до секции, но она близко (в пределах previewDistance)
           if (
             sectionTop > currentViewportBottom &&
             sectionTop <= currentViewportBottom + previewDistance
@@ -369,9 +382,7 @@ export default function NavigationSection() {
             break;
           }
 
-          // Если мы в секции
           if (scrollY >= sectionTop && scrollY < sectionBottom) {
-            // Если мы в конце секции (близко к концу), берем следующую
             const distanceToBottom = sectionBottom - currentViewportBottom;
             if (distanceToBottom < previewDistance) {
               const nextIndex = i + 1;
@@ -429,6 +440,7 @@ export default function NavigationSection() {
   }, [isMobile]);
 
   useEffect(() => {
+    if (isMobile) return;
     const handleValuesRelease = (event: Event) => {
       const customEvent = event as CustomEvent<{ direction?: "down" | "up" }>;
       if (isProgrammaticScrollRef.current) return;
@@ -446,11 +458,10 @@ export default function NavigationSection() {
         const rect = target.getBoundingClientRect();
         const targetTop = rect.top + window.scrollY;
         const targetBottom = targetTop + rect.height;
-        const desiredTop =
-          direction === "down"
-            ? targetTop + snapOffsets.top
-            : targetTop + snapOffsets.top;
-        smoothScrollTo(desiredTop);
+        const extraOffset = targetId === "products" ? 100 : 0;
+
+        const desiredTop = targetTop + snapOffsets.top - extraOffset;
+        smoothScrollTo(Math.max(0, desiredTop));
       }, valuesReleaseDelay);
     };
 
@@ -462,15 +473,16 @@ export default function NavigationSection() {
   }, [isMobile]);
 
   useEffect(() => {
+    if (isMobile) return;
     const handleIntent = (
       deltaY: number,
       event: Event,
       source: "wheel" | "touch",
     ) => {
+      if (event.cancelable) {
+        event.preventDefault();
+      }
       if (isProgrammaticScrollRef.current) {
-        if (event.cancelable) {
-          event.preventDefault();
-        }
         return;
       }
 
@@ -510,6 +522,41 @@ export default function NavigationSection() {
 
       if (currentSection === "values") return;
 
+      if (currentSection === "products" && !isMobile) {
+        const productsRect = sectionRects.find(
+          (entry) => entry.id === "products",
+        )?.rect;
+        if (productsRect) {
+          const sectionTop = productsRect.top + window.scrollY;
+          const maxScrollable =
+            Math.max(0, productsRect.height - windowHeight);
+          const productsStart = sectionTop + snapOffsets.top;
+          const productsMiddle = productsStart + maxScrollable / 1.35;
+          const currentY = window.scrollY;
+          const nearMiddle =
+            Math.abs(currentY - productsMiddle) <= edgeTolerance;
+          const nearStart = currentY <= productsStart + edgeTolerance;
+
+          if (isScrollingDown) {
+            if (!nearMiddle) {
+              event.preventDefault();
+              markProgrammaticScroll("products", true, animationDuration);
+              smoothScrollTo(productsMiddle);
+              return;
+            }
+          } else {
+            if (!nearStart) {
+              event.preventDefault();
+              markProgrammaticScroll("products", true, animationDuration);
+              smoothScrollTo(productsStart);
+              return;
+            }
+          }
+
+          // Allow exit after middle even if section is taller than viewport.
+        }
+      }
+
       if (currentSection === "us" && !isScrollingDown) {
         const usRect = sectionRects.find((entry) => entry.id === "us")?.rect;
         const atUsTop = usRect ? usRect.top >= -edgeTolerance : false;
@@ -534,7 +581,7 @@ export default function NavigationSection() {
 
       if (!targetId) return;
 
-      if (currentSection === "products") {
+      if (currentSection === "products" && isMobile) {
         const productsRect = sectionRects.find(
           (entry) => entry.id === "products",
         )?.rect;
@@ -566,20 +613,26 @@ export default function NavigationSection() {
       const rect = target.getBoundingClientRect();
       const targetTop = rect.top + window.scrollY;
       const targetBottom = targetTop + rect.height;
-      const desiredTop = !isScrollingDown && targetId === "mission"
-        ? targetTop + snapOffsets.top
-        : !isScrollingDown && targetId === "us" && currentSection === "mission"
-          ? targetTop + snapOffsets.top + 10
-          : targetId === "values"
-            ? targetTop
-            : isScrollingDown
-              ? targetId === "contacts"
-                ? Math.max(
-                  0,
-                  targetBottom - window.innerHeight + snapOffsets.bottom,
-                )
-                : targetTop + snapOffsets.top
-              : targetTop + snapOffsets.top;
+
+      // Унифицированная логика для симметричного скролла вверх и вниз
+      let desiredTop: number;
+
+      if (targetId === "values") {
+        desiredTop = targetTop;
+      } else if (targetId === "contacts" && isScrollingDown) {
+        // Для contacts при скролле вниз показываем конец секции
+        desiredTop = Math.max(
+          0,
+          targetBottom - window.innerHeight + snapOffsets.bottom,
+        );
+      } else if (targetId === "us" && !isScrollingDown && currentSection === "mission") {
+        // Специальный случай для перехода из mission в us
+        desiredTop = targetTop + snapOffsets.top + 10;
+      } else {
+        // Для всех остальных секций используем одинаковую логику
+        desiredTop = targetTop + snapOffsets.top;
+      }
+
       smoothScrollTo(desiredTop);
     };
 
@@ -619,10 +672,9 @@ export default function NavigationSection() {
       window.removeEventListener("touchmove", handleTouchMove);
       window.removeEventListener("touchend", handleTouchEnd);
     };
-  }, []);
+  }, [isMobile]);
 
   useEffect(() => {
-    // Если мобильное устройство, не используем Intersection Observer
     if (isMobile) return;
 
     const observers: IntersectionObserver[] = [];
@@ -643,7 +695,6 @@ export default function NavigationSection() {
         }
       });
 
-      // Находим секцию с максимальным intersection ratio
       let maxRatio = 0;
       let activeId = sections[0].id;
 
@@ -678,23 +729,29 @@ export default function NavigationSection() {
   }, [isMobile]);
 
   const scrollToSection = (id: string) => {
-    if (isMobile) return; // На мобилках не скроллим к секциям через навигацию
+    if (isMobile) return;
 
-    const element = sectionRefs.current[id];
+    const element = getVisibleSnapTarget(id);
     if (element) {
-      // Отправляем событие перед программной прокруткой, чтобы Values знал об этом
       window.dispatchEvent(
         new CustomEvent("programmatic-scroll-start", {
           detail: { targetId: id },
         }),
       );
-      element.scrollIntoView({ behavior: "smooth", block: "start" });
+
+      const rect = element.getBoundingClientRect();
+      const absoluteTop = rect.top + window.scrollY;
+      const offset = 150;
+
+      window.scrollTo({
+        top: Math.max(0, absoluteTop - offset),
+        behavior: "smooth",
+      });
     }
   };
 
   return (
     <div className="relative flex">
-      {/* Left Navigation - скрываем на мобилках */}
       {!isMobile && (
         <div className="sticky top-0 h-screen w-1/3 px-8 pt-12 pb-8 z-20 pointer-events-none shrink-0 hidden md:block">
           <NavItems
@@ -707,7 +764,6 @@ export default function NavigationSection() {
         </div>
       )}
 
-      {/* Right Content - адаптивная ширина для мобилок и десктопа */}
       <div
         className={`flex-1 ${isMobile ? "w-full" : "-ml-[33.333333%]"
           }  overflow-hidden`}

@@ -146,19 +146,9 @@ export default function BurgerMenu({
     }, 500);
   };
 
-  // Определяем цвет текста в зависимости от фона
-  const getTextColor = () => {
-    if (currentBgColor === "bg-[#dadada]") {
-      return "#CDCDCD";
-    } else if (currentBgColor === "bg-[#080808]") {
-      return "#3F3E3D";
-    }
-    return "#3F3E3D"; // По умолчанию
-  };
-
-  const textColor = getTextColor();
+  const textColor = "#9F9B96"
   const menuIconColor = iconColor ?? textColor;
-  const menuItemCount = sections.length + (hasVacancies ? 1 : 0);
+  const menuItemCount = sections.length + 1;
   const menuHeight = `calc(50% * ${menuItemCount / sections.length})`;
 
   return (
@@ -166,15 +156,15 @@ export default function BurgerMenu({
       {/* Burger Button */}
       <button
         onClick={toggleMenu}
-        className="relative z-50 flex flex-col items-start justify-center w-12 h-12 mr-[24px]"
+        className="relative z-50 flex flex-col items-start justify-center w-12 h-12 mr-[12px]"
         aria-label="Toggle menu"
       >
         <span
-          className="block h-[2px] w-12 mb-2 transition-colors duration-500"
+          className="block h-[2px] w-[40px] mb-2 transition-colors duration-500"
           style={{ backgroundColor: menuIconColor }}
         />
         <span
-          className="block h-[2px] w-18 transition-colors duration-500"
+          className="block h-[2px] w-[60px] transition-colors duration-500"
           style={{ backgroundColor: menuIconColor }}
         />
       </button>
@@ -196,19 +186,20 @@ export default function BurgerMenu({
           onClick={(e) => e.stopPropagation()}
         >
           {/* Navigation Links */}
-          <nav className="flex flex-col h-full justify-center gap-0 pb-8">
+          <nav className="flex flex-col h-full justify-start mt-[-46px] gap-0 pb-8">
             {sections.map((section, index) => {
               const isActive = activeSection === section.id || clickedSection === section.id;
+              const isClicked = clickedSection === section.id;
               return (
                 <button
                   key={section.id}
                   onClick={() => handleNavClick(section.id)}
-                  className="group relative text-left overflow-hidden py-2 pl-[16px]"
+                  className={`group relative text-left overflow-hidden py-2 pl-[16px] transition-colors duration-300 ${isClicked ? "bg-[#9F9B96] md:bg-transparent" : ""}`}
                 >
                   <div className="flex items-center gap-0">
                     {/* Arrow indicator */}
                     <span
-                      className={`inline-block transition-all duration-500 ease-in-out text-[clamp(48px,6vw,100px)] font-semibold ${isActive
+                      className={`inline-block transition-all duration-500 ease-in-out text-[22px] leading-[30px] tracking-[0] font-medium ${isActive
                         ? "opacity-100 translate-x-0 text-[#0100F4] w-auto"
                         : "opacity-0 -translate-x-4 w-0 overflow-hidden"
                         }`}
@@ -218,7 +209,7 @@ export default function BurgerMenu({
 
                     {/* Label */}
                     <span
-                      className={`text-[clamp(48px,6vw,100px)] font-semibold uppercase transition-colors duration-500 ${isActive ? "text-[#0100F4]" : ""
+                      className={`text-[22px] leading-[30px] tracking-[0] font-medium uppercase transition-colors duration-500 ${isActive ? "text-[#0100F4]" : ""
                         }`}
                       style={!isActive ? { color: textColor } : {}}
                     >
@@ -234,15 +225,35 @@ export default function BurgerMenu({
                 </button>
               );
             })}
-            {hasVacancies && (
+            {hasVacancies ? (
               <Link
                 href="/vacancies"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="group relative text-left overflow-hidden py-2 pl-[16px]"
                 style={{ color: textColor }}
               >
                 <div className="flex items-center gap-0">
-                  <span className="text-[clamp(48px,6vw,100px)] font-semibold uppercase transition-colors duration-500">
+                  <span className="text-[22px] leading-[30px] tracking-[0] font-medium uppercase transition-colors duration-500">
                     Vacancies
+                  </span>
+                </div>
+                <div
+                  className="absolute left-0 bottom-0 h-px w-full transition-all duration-500"
+                  style={{ backgroundColor: textColor }}
+                />
+              </Link>
+            ) : (
+              <Link
+                href="https://t.me/kirill_svc"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group relative text-left overflow-hidden py-2 pl-[16px]"
+                style={{ color: textColor }}
+              >
+                <div className="flex items-center gap-0">
+                  <span className="text-[22px] leading-[30px] tracking-[0] font-medium uppercase transition-colors duration-500">
+                    Telegram
                   </span>
                 </div>
                 <div

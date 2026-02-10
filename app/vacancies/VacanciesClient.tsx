@@ -4,11 +4,32 @@ import { useEffect, useMemo, useState, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
 
 import { vacancies } from "./data";
+import { IconCopy } from "@tabler/icons-react";
 
 export default function VacanciesClient() {
   const [activeId, setActiveId] = useState(vacancies[0]?.id ?? "");
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const mobileScrollerRef = useRef<HTMLDivElement>(null);
+  const [isEmailCopied, setIsEmailCopied] = useState(false);
+  const [activeButton, setActiveButton] = useState<"email" | "tg" | "linkedin" | null>(null);
+  const emailTimeoutRef = useRef<number | null>(null);
+  const buttonTimeoutRef = useRef<number | null>(null);
+  const mobileVacancies = useMemo(() => {
+    if (!activeId) {
+      return vacancies;
+    }
+
+    const activeIndex = vacancies.findIndex((vacancy) => vacancy.id === activeId);
+    if (activeIndex <= 0) {
+      return vacancies;
+    }
+
+    return [
+      ...vacancies.slice(activeIndex),
+      ...vacancies.slice(0, activeIndex),
+    ];
+  }, [activeId]);
 
   useEffect(() => {
     document.documentElement.style.setProperty("--background", "#1F1F23");
@@ -18,6 +39,34 @@ export default function VacanciesClient() {
       document.body.style.overflow = "";
     };
   }, []);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const vacancyParam = params.get("vacancy");
+    if (!vacancyParam) {
+      return;
+    }
+
+    const matched = vacancies.find((vacancy) => vacancy.id === vacancyParam);
+    if (matched) {
+      setActiveId(matched.id);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!activeId) {
+      return;
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("vacancy") === activeId) {
+      return;
+    }
+
+    params.set("vacancy", activeId);
+    const nextUrl = `${window.location.pathname}?${params.toString()}`;
+    window.history.replaceState(null, "", nextUrl);
+  }, [activeId]);
 
   useEffect(() => {
     if (contentRef.current) {
@@ -32,6 +81,60 @@ export default function VacanciesClient() {
     }
   }, [activeId]);
 
+  useEffect(() => {
+    return () => {
+      if (emailTimeoutRef.current !== null) {
+        window.clearTimeout(emailTimeoutRef.current);
+      }
+      if (buttonTimeoutRef.current !== null) {
+        window.clearTimeout(buttonTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const handleMobileSelect = (vacancyId: string) => {
+    setActiveId(vacancyId);
+    if (mobileScrollerRef.current) {
+      mobileScrollerRef.current.scrollTo({ left: 0, behavior: "smooth" });
+    }
+  };
+
+  const handleEmailCopy = async () => {
+    const email = "hr@cacao-mobile.com";
+    try {
+      await navigator.clipboard.writeText(email);
+      setIsEmailCopied(true);
+      setActiveButton("email");
+
+      if (emailTimeoutRef.current !== null) {
+        window.clearTimeout(emailTimeoutRef.current);
+      }
+      emailTimeoutRef.current = window.setTimeout(() => {
+        setIsEmailCopied(false);
+      }, 2000);
+
+      if (buttonTimeoutRef.current !== null) {
+        window.clearTimeout(buttonTimeoutRef.current);
+      }
+      buttonTimeoutRef.current = window.setTimeout(() => {
+        setActiveButton(null);
+      }, 2000);
+    } catch {
+      // noop
+    }
+  };
+
+  const handleButtonClick = (buttonType: "tg" | "linkedin") => {
+    setActiveButton(buttonType);
+
+    if (buttonTimeoutRef.current !== null) {
+      window.clearTimeout(buttonTimeoutRef.current);
+    }
+    buttonTimeoutRef.current = window.setTimeout(() => {
+      setActiveButton(null);
+    }, 1000);
+  };
+
   const activeVacancy = useMemo(
     () => vacancies.find((vacancy) => vacancy.id === activeId),
     [activeId]
@@ -40,57 +143,68 @@ export default function VacanciesClient() {
   return (
     <div className="relative flex h-screen bg-[#1F1F23] text-[#DADADA] overflow-hidden">
       <header
-        className="fixed top-0 left-0 right-0 bg-[#1F1F23] border-b border-[#35353C] z-30"
+        className="fixed top-0 left-0 right-0 bg-[#080808] border-b border-[#35353C] z-30"
         style={{ borderWidth: "1px" }}
       >
-        <div className="px-5 py-6">
+        <div className="px-4 py-4">
           <div className="hidden md:flex items-center gap-2 2xl:ml-3">
             <h1 className="text-[16px] text-[#9F9B96]">Vacancies</h1>
           </div>
 
           <div className="md:hidden">
-            <div className="overflow-x-auto -mx-5 px-5 scrollbar-hide">
-              <div className="flex items-center gap-4 min-w-max">
-                {vacancies.map((vacancy) => {
-                  const isActive = activeId === vacancy.id;
-                  return (
-                    <button
-                      key={vacancy.id}
-                      onClick={() => setActiveId(vacancy.id)}
-                      className="text-[16px] uppercase whitespace-nowrap relative inline-flex items-center justify-center"
-                      style={{
-                        color: "#FAFAFA",
-                        backgroundColor: isActive ? "#0100F4" : "transparent",
-                        border: "1px solid #FAFAFA",
-                        fontWeight: isActive ? "bold" : "normal",
-                        borderRadius: "30px",
-                        padding: "8px 12px",
-                        height: "34px",
-                        boxSizing: "border-box",
-                        transition:
-                          "background-color 0.3s ease, border-color 0.3s ease",
-                      }}
-                    >
-                      <span
+            <div
+              ref={mobileScrollerRef}
+              className="overflow-x-auto -mx-5 px-5 scrollbar-hide touch-pan-x overscroll-x-contain"
+            >
+              <div className="flex items-center gap-4 min-w-max h-[50px]">
+                <AnimatePresence initial={false}>
+                  {mobileVacancies.map((vacancy) => {
+                    const isActive = activeId === vacancy.id;
+                    return (
+                      <motion.button
+                        layout
+                        key={vacancy.id}
+                        onClick={() => handleMobileSelect(vacancy.id)}
+                        initial={{ opacity: 0, x: 16 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -24 }}
+                        transition={{ duration: 0.25, ease: "easeOut" }}
+                        className="text-[25px] uppercase whitespace-nowrap relative inline-flex items-center justify-center"
                         style={{
-                          fontWeight: "bold",
-                          visibility: "hidden",
-                          display: "inline-block",
+                          color: "#FAFAFA",
+                          backgroundColor: isActive ? "#0100F4" : "transparent",
+                          border: isActive ? "1px solid #0100F4" : "1px solid #FAFAFA",
+                          fontWeight: isActive ? "bold" : "normal",
+                          borderRadius: "30px",
+                          padding: "8px 12px",
+                          height: "38px",
+                          boxSizing: "border-box",
+                          transition:
+                            "background-color 0.3s ease, border-color 0.3s ease",
                         }}
                       >
-                        {vacancy.title}
-                      </span>
-                      <span
-                        style={{
-                          position: "absolute",
-                          whiteSpace: "nowrap",
-                        }}
-                      >
-                        {vacancy.title}
-                      </span>
-                    </button>
-                  );
-                })}
+                        <span
+                          style={{
+                            fontWeight: "bold",
+                            visibility: "hidden",
+                            display: "inline-block",
+                          }}
+                        >
+                          {vacancy.title}
+                        </span>
+                        <span
+                          style={{
+                            position: "absolute",
+                            whiteSpace: "nowrap",
+                            top: "1px",
+                          }}
+                        >
+                          {vacancy.title}
+                        </span>
+                      </motion.button>
+                    );
+                  })}
+                </AnimatePresence>
               </div>
             </div>
           </div>
@@ -100,7 +214,7 @@ export default function VacanciesClient() {
       <div
         className="fixed left-0 right-0 z-20 pointer-events-none"
         style={{
-          top: "73px",
+          top: "80px",
           height: "40px",
           width: "100%",
           background: "linear-gradient(to bottom, #1F1F23, #1F1F2300)",
@@ -167,7 +281,7 @@ export default function VacanciesClient() {
                 transition={{ duration: 0.25, ease: "easeInOut" }}
                 className="w-full max-w-[860px]"
               >
-                <h1 className="text-[clamp(32px,4vw,56px)] font-semibold uppercase text-white">
+                <h1 className="text-[clamp(32px,4vw,56px)] font-bold uppercase text-white">
                   {activeVacancy.title}
                 </h1>
                 <div className="mt-4 flex flex-wrap gap-3 text-xs font-semibold uppercase tracking-wide">
@@ -252,7 +366,7 @@ export default function VacanciesClient() {
             </span>
             <div className="flex flex-wrap items-center gap-4 md:gap-6">
               <a
-                href="https://t.me"
+                href="https://t.me/kirill_svc"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group relative text-[clamp(16px,2vw,20px)] font-medium overflow-hidden"
@@ -263,7 +377,7 @@ export default function VacanciesClient() {
                 <span className="absolute inset-0 top-1/2 h-1/2 bg-[#0100F4] origin-left scale-x-0 transition-transform duration-300 ease-out group-hover:scale-x-100" />
               </a>
               <a
-                href="https://linkedin.com"
+                href="https://pl.linkedin.com/company/cacao-mobile-sp-z-o-o"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group relative text-[clamp(16px,2vw,20px)] font-medium overflow-hidden"
@@ -288,109 +402,106 @@ export default function VacanciesClient() {
       </footer>
 
       {/* Footer - Mobile: 3 кнопки в абсолютном позиционировании */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-30 px-4 pb-4">
-        <div className="flex items-center align gap-3">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-30 px-4 pb-[40px]">
+        <div className="flex items-center justify-end gap-3">
           <a
-            href="https://t.me"
+            href="https://t.me/kirill_svc"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[16px] uppercase whitespace-nowrap relative inline-flex items-center justify-center"
+            onClick={() => handleButtonClick("tg")}
+            className="text-[22px] uppercase whitespace-nowrap relative inline-flex items-center justify-center"
             style={{
               color: "#FAFAFA",
-              backgroundColor: "gray",
-              border: "1px solid #FAFAFA",
+              backgroundColor: activeButton === "tg" ? "#0100F4" : "#3F3E3D",
               fontWeight: "bold",
               borderRadius: "30px",
               padding: "8px 12px",
               height: "34px",
               boxSizing: "border-box",
+              transition: "background-color 0.3s ease",
             }}
           >
             <span
               style={{
-                fontWeight: "bold",
-                visibility: "hidden",
+                fontWeight: "500",
                 display: "inline-block",
               }}
             >
-              Tg
-            </span>
-            <span
-              style={{
-                position: "absolute",
-                whiteSpace: "nowrap",
-              }}
-            >
-              Tg
+              TG
             </span>
           </a>
           <a
-            href="https://linkedin.com"
+            href="https://pl.linkedin.com/company/cacao-mobile-sp-z-o-o"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[16px] uppercase whitespace-nowrap relative inline-flex items-center justify-center"
+            onClick={() => handleButtonClick("linkedin")}
+            className="text-[22px] whitespace-nowrap relative inline-flex items-center justify-center w-[105px]"
             style={{
               color: "#FAFAFA",
-              backgroundColor: "gray",
-              border: "1px solid #FAFAFA",
-              fontWeight: "bold",
+              backgroundColor: activeButton === "linkedin" ? "#0100F4" : "#3F3E3D",
+              fontWeight: "500",
               borderRadius: "30px",
               height: "34px",
               boxSizing: "border-box",
+              transition: "background-color 0.3s ease",
             }}
           >
             <span
               style={{
-                fontWeight: "bold",
-                visibility: "hidden",
+                fontWeight: "500",
                 display: "inline-block",
               }}
             >
               LinkedIn
             </span>
-            <span
-              style={{
-                position: "absolute",
-                whiteSpace: "nowrap",
-              }}
-            >
-              Lin
-            </span>
           </a>
-          <a
-            href="mailto:hr@cacao-mobile.com"
-            className="text-[16px] uppercase whitespace-nowrap relative inline-flex items-center justify-center"
+          <button
+            type="button"
+            onClick={handleEmailCopy}
+            className="text-[22px] whitespace-nowrap relative inline-flex items-center justify-center"
             style={{
               color: "#FAFAFA",
-              backgroundColor: "gray",
-              border: "1px solid #FAFAFA",
+              backgroundColor: activeButton === "email" ? "#0100F4" : "#3F3E3D",
               fontWeight: "bold",
               borderRadius: "30px",
               padding: "8px 12px",
               height: "34px",
               boxSizing: "border-box",
+              transition: "background-color 0.3s ease",
             }}
           >
             <span
               style={{
-                fontWeight: "bold",
-                visibility: "hidden",
+                fontWeight: "500",
                 display: "inline-block",
               }}
             >
               Email
             </span>
-            <span
-              style={{
-                position: "absolute",
-                whiteSpace: "nowrap",
-              }}
-            >
-              Email
-            </span>
-          </a>
+          </button>
         </div>
       </div>
+
+      {isEmailCopied ? (
+        <div
+          className="md:hidden fixed bottom-[112px] left-1/2 -translate-x-1/2 z-40 flex items-center gap-3 px-4"
+          style={{
+            height: "40px",
+            backgroundColor: "#0D0D0D",
+            border: "1px solid #3F3E3D",
+            color: "#FAFAFA",
+            fontWeight: 400,
+            fontSize: "25px",
+            lineHeight: "40px",
+            letterSpacing: "0%",
+            borderRadius: "20px",
+            transition: "background-color 0.3s ease",
+          }}
+        >
+          <IconCopy />
+          <span>Email copied</span>
+        </div>
+      ) : null}
     </div>
   );
 }

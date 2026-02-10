@@ -6,7 +6,7 @@ export default function LoadingScreen() {
   const [progress, setProgress] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const isMountedRef = useRef(true);
-  const MAX_DURATION = 3000;
+  const MAX_DURATION = 1000;
 
   useEffect(() => {
     isMountedRef.current = true;

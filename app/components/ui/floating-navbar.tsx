@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { cn } from "@/app/lib/utils";
 import Link from "next/link";
 import BurgerMenu from "../BurgerMenu";
+import { vacancies } from "@/app/vacancies/data";
 
 const sections = [
   { id: "us", label: "US", bgColor: "bg-[#080808]" },
@@ -21,6 +22,7 @@ export const FloatingNav = ({
   className?: string;
   isLoaded?: boolean;
 }) => {
+  const hasVacancies = Array.isArray(vacancies) && vacancies.length > 0;
   const [visible, setVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [activeSection, setActiveSection] = useState("us");
@@ -32,19 +34,20 @@ export const FloatingNav = ({
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
-      // Отправляем событие перед программной прокруткой, чтобы Values знал об этом
-      window.dispatchEvent(
-        new CustomEvent("programmatic-scroll-start", {
-          detail: { targetId: id },
-        }),
-      );
-      if (isMobile && (id === "us" || id === "mission" || id === "products")) {
-        const elementTop = element.getBoundingClientRect().top + window.scrollY;
-        const offsetTop = Math.max(0, elementTop - 100);
-        window.scrollTo({ top: offsetTop, behavior: "smooth" });
-      } else {
+      if (!isMobile) {
+        // Отправляем событие перед программной прокруткой, чтобы Values знал об этом
+        window.dispatchEvent(
+          new CustomEvent("programmatic-scroll-start", {
+            detail: { targetId: id },
+          }),
+        );
         element.scrollIntoView({ behavior: "smooth", block: "start" });
+        return;
       }
+
+      const elementTop = element.getBoundingClientRect().top + window.scrollY;
+      const offsetTop = Math.max(0, elementTop - 60);
+      window.scrollTo({ top: offsetTop, behavior: "auto" });
     }
   };
 
@@ -157,7 +160,7 @@ export const FloatingNav = ({
           isMobile
             ? "fixed top-0 left-0 right-0"
             : "absolute top-0 left-0 right-0",
-          " z-5000 px-0 md:px-4 py-4 items-center justify-between",
+          " z-5000 px-0 md:px-4 pt-4 items-center justify-between",
           "transition-colors duration-500 ease-in-out",
           isMobile ? `${currentBgColor} h-[60px] border-b` : "",
           className,
@@ -189,7 +192,7 @@ export const FloatingNav = ({
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 10 }}
                       transition={{ duration: 0.3, ease: "easeInOut" }}
-                      className="flex items-center gap-0 font-medium text-[22px] text-[#0100F4] uppercase mt-[3px]"
+                      className="flex items-center gap-0 font-medium text-[22px] leading-[30px] text-[#0100F4] uppercase"
                     >
                       <span className="inline-block opacity-100 translate-x-0 text-[#0100F4] w-auto">
                         ›
@@ -215,7 +218,18 @@ export const FloatingNav = ({
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-8">
           <Link
-            href="https://linkedin.com"
+            href="https://apps.apple.com/us/developer/cacao-mobile/id1612079536"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative px-2 overflow-hidden"
+          >
+            <span className="relative z-10 text-[#9F9B96] font-medium text-[clamp(16px,1.5vw,24px)]">
+              AppStore
+            </span>
+            <span className="absolute inset-0 top-1/2 h-1/2 bg-[#0100F4] origin-left scale-x-0 transition-transform duration-300 ease-out group-hover:scale-x-100"></span>
+          </Link>
+          <Link
+            href="https://pl.linkedin.com/company/cacao-mobile-sp-z-o-o"
             target="_blank"
             rel="noopener noreferrer"
             className="group relative px-2 overflow-hidden"
@@ -226,24 +240,40 @@ export const FloatingNav = ({
             <span className="absolute inset-0 top-1/2 h-1/2 bg-[#0100F4] origin-left scale-x-0 transition-transform duration-300 ease-out group-hover:scale-x-100"></span>
           </Link>
 
-          <Link href="mailto:" className="group relative px-2 overflow-hidden">
+          <Link
+            href="mailto:hr@cacao-mobile.com"
+            className="group relative px-2 overflow-hidden"
+          >
             <span className="relative z-10 text-[#9F9B96] font-medium text-[clamp(16px,1.5vw,24px)]">
               Email
             </span>
             <span className="absolute inset-0 top-1/2 h-1/2 bg-[#0100F4] origin-left scale-x-0 transition-transform duration-300 ease-out group-hover:scale-x-100"></span>
           </Link>
-
-          <Link
-            href="https://apps.apple.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group relative px-2 overflow-hidden"
-          >
-            <span className="relative z-10 text-[#9F9B96] font-medium text-[clamp(16px,1.5vw,24px)]">
-              AppStore
-            </span>
-            <span className="absolute inset-0 top-1/2 h-1/2 bg-[#0100F4] origin-left scale-x-0 transition-transform duration-300 ease-out group-hover:scale-x-100"></span>
-          </Link>
+          {hasVacancies ? (
+            <Link
+              href="/vacancies"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group relative px-2 overflow-hidden"
+            >
+              <span className="relative z-10 text-[#9F9B96] font-medium text-[clamp(16px,1.5vw,24px)]">
+                Vacancies
+              </span>
+              <span className="absolute inset-0 top-1/2 h-1/2 bg-[#0100F4] origin-left scale-x-0 transition-transform duration-300 ease-out group-hover:scale-x-100"></span>
+            </Link>
+          ) : (
+            <Link
+              href="https://t.me/kirill_svc"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group relative px-2 overflow-hidden"
+            >
+              <span className="relative z-10 text-[#9F9B96] font-medium text-[clamp(16px,1.5vw,24px)]">
+                Telegram
+              </span>
+              <span className="absolute inset-0 top-1/2 h-1/2 bg-[#0100F4] origin-left scale-x-0 transition-transform duration-300 ease-out group-hover:scale-x-100"></span>
+            </Link>
+          )}
         </nav>
 
         {/* Mobile Burger Menu */}

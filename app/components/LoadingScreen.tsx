@@ -6,7 +6,7 @@ export default function LoadingScreen() {
   const [progress, setProgress] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const isMountedRef = useRef(true);
-  const MAX_DURATION = 1000;
+  const MAX_DURATION = 2500;
 
   useEffect(() => {
     isMountedRef.current = true;
@@ -45,7 +45,6 @@ export default function LoadingScreen() {
       "/footer.png",
       "/logo.svg",
     ];
-
 
     const preloadVideo = (src: string) => {
       const video = document.createElement("video");
@@ -98,8 +97,9 @@ export default function LoadingScreen() {
   return (
     <div
       data-loading-screen
-      className={`fixed inset-0 z-9999 flex items-center justify-center bg-black transition-opacity duration-300 ${isLoading ? "opacity-100" : "opacity-0 pointer-events-none"
-        }`}
+      className={`fixed inset-0 z-9999 flex items-center justify-center bg-black transition-opacity duration-300 ${
+        isLoading ? "opacity-100" : "opacity-0 pointer-events-none"
+      }`}
     >
       <div className="flex flex-col items-center gap-8">
         <div className="relative">

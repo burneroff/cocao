@@ -2,11 +2,9 @@
 
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { easeInOut } from "motion-utils";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 import { Cross } from "../icons/Cross";
 
-// image map
 const productImageMap: Record<string, string> = {
   Fleeky: "Fleeky-Wallpapers",
 };
@@ -16,7 +14,6 @@ const getProductImage = (productName: string) => {
   return `/products/${imageName}.png`;
 };
 
-// links
 const productLinks: Record<string, string> = {
   "PDF Converter": "https://apps.apple.com/by/app/pdf-scanner-scan-documents/id1561802302",
   Zipper: "https://apps.apple.com/us/app/zip-extractor-unzip-unrar/id6443985825",
@@ -64,17 +61,32 @@ const productGroups: Record<string, number> = {
   "Plant ID & Care": 3,
 };
 
-const textVariants = {
-  initial: { y: 95, opacity: 0.5 },
+const textVariants: Variants = {
+  initial: {
+    y: 40,
+    opacity: 0,
+    filter: "blur(6px)",
+    scale: 0.985,
+  },
   animate: {
     y: 0,
     opacity: 1,
-    transition: { duration: 0.5, ease: easeInOut },
+    filter: "blur(0px)",
+    scale: 1,
+    transition: {
+      duration: 0.65,
+      ease: [0.22, 1, 0.36, 1] as const,
+    },
   },
   exit: {
-    y: -30,
+    y: -28,
     opacity: 0,
-    transition: { duration: 0.45, ease: easeInOut },
+    filter: "blur(4px)",
+    scale: 0.99,
+    transition: {
+      duration: 0.45,
+      ease: [0.4, 0, 0.2, 1] as const,
+    },
   },
 };
 
@@ -82,9 +94,13 @@ export default function Products() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [cursorPosition, setCursorPosition] = useState<{ x: number; y: number } | null>(null);
   const [isHoveringProduct, setIsHoveringProduct] = useState(false);
+  const [shouldShowLink, setShouldShowLink] = useState(false);
   const [currentGroup, setCurrentGroup] = useState(1);
   const [isDesktop, setIsDesktop] = useState(false);
+
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const hoverTimeout = useRef<NodeJS.Timeout | null>(null);
+  const linkTimeout = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     const check = () => setIsDesktop(window.innerWidth >= 768);
@@ -103,43 +119,69 @@ export default function Products() {
     };
   }, []);
 
+  const handleMouseEnter = (index: number) => {
+    if (!isDesktop) return;
+
+    // Сбрасываем состояние для ссылки
+    setShouldShowLink(false);
+
+    if (linkTimeout.current) {
+      clearTimeout(linkTimeout.current);
+      linkTimeout.current = null;
+    }
+
+    hoverTimeout.current = setTimeout(() => {
+      setHoveredIndex(index);
+      setIsHoveringProduct(true);
+
+      // Добавляем задержку для показа ссылки
+      linkTimeout.current = setTimeout(() => {
+        setShouldShowLink(true);
+      }, 150);
+    }, 150);
+  };
+
+  const handleMouseLeave = () => {
+    if (!isDesktop) return;
+
+    if (hoverTimeout.current) {
+      clearTimeout(hoverTimeout.current);
+      hoverTimeout.current = null;
+    }
+
+    if (linkTimeout.current) {
+      clearTimeout(linkTimeout.current);
+      linkTimeout.current = null;
+    }
+
+    setHoveredIndex(null);
+    setIsHoveringProduct(false);
+    setShouldShowLink(false);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    setCursorPosition({
+      x: e.clientX,
+      y: e.clientY,
+    });
+  };
+
   const tableRows = [
-    [
-      { type: "text", content: "PDF Converter" },
-      { type: "empty" },
-      { type: "text", content: "Zipper" },
-    ],
-    [
-      { type: "frame", frameImage: "/frames/frame_products_1.png" },
-      { type: "text", content: "Call Recorder" },
-      { type: "text", content: "FAX" },
-    ],
-    [
-      { type: "text", content: "Sense" },
-      { type: "text", content: "AI Calorie Counter" },
-      { type: "empty" },
-    ],
-    [
-      { type: "text", content: "NookAI" },
-      { type: "empty" },
-      { type: "frame", frameImage: "/frames/frame_products_2.png" },
-    ],
-    [
-      { type: "empty" },
-      { type: "text", content: "Fleeky" },
-      { type: "text", content: "VEON" },
-    ],
-    [
-      { type: "text", content: "Plant ID & Care" },
-      { type: "empty" },
-      { type: "empty" },
-    ],
+    [{ type: "text", content: "PDF Converter" }, { type: "empty" }, { type: "text", content: "Zipper" }],
+    [{ type: "frame", frameImage: "/frames/frame_products_1.png" }, { type: "text", content: "Call Recorder" }, { type: "text", content: "FAX" }],
+    [{ type: "text", content: "Sense" }, { type: "text", content: "AI Calorie Counter" }, { type: "empty" }],
+    [{ type: "text", content: "NookAI" }, { type: "empty" }, { type: "frame", frameImage: "/frames/frame_products_2.png" }],
+    [{ type: "empty" }, { type: "text", content: "Fleeky" }, { type: "text", content: "VEON" }],
+    [{ type: "text", content: "Plant ID & Care" }, { type: "empty" }, { type: "empty" }],
   ] as const;
 
   return (
     <div className="min-h-screen flex flex-col justify-end px-4 py-4 sm:px-16 sm:py-16 pb-50 relative">
-      {isDesktop && isHoveringProduct && cursorPosition && (
-        <div
+      {isDesktop && isHoveringProduct && shouldShowLink && cursorPosition && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 10 }}
           className="hidden md:block fixed pointer-events-none z-50"
           style={{
             left: cursorPosition.x + 15,
@@ -157,14 +199,9 @@ export default function Products() {
           }}
         >
           https://...
-        </div>
+        </motion.div>
       )}
-
-      <div
-        className="max-w-[909px] flex"
-        style={{ alignSelf: "flex-end" }}
-        data-snap-target="products"
-      >
+      <div className="max-w-[909px] flex" style={{ alignSelf: "flex-end" }}>
         <table className="w-full table-fixed border-collapse">
           <tbody>
             {tableRows.map((row, r) => (
@@ -179,11 +216,12 @@ export default function Products() {
                         <div className="w-full max-w-[303px] aspect-square mx-auto relative overflow-hidden flex items-center justify-center">
                           {item.type === "frame" && (
                             <Image
+                              draggable={false}
                               src={item.frameImage!}
                               alt=""
-                              width={85}
-                              height={85}
-                              className="w-[85px] h-[85px] md:w-[184px] md:h-[184px] max-w-[60%] max-h-[60%]"
+                              width={164}
+                              height={164}
+                              className="w-[84px] h-[84px] md:w-[184px] md:h-[184px] max-w-[60%] max-h-[60%]"
                             />
                           )}
                         </div>
@@ -208,15 +246,9 @@ export default function Products() {
                           target="_blank"
                           rel="noopener noreferrer"
                           className="w-full h-full flex items-center justify-center relative"
-                          onMouseEnter={() =>
-                            isDesktop && (setHoveredIndex(index), setIsHoveringProduct(true))
-                          }
-                          onMouseLeave={() =>
-                            isDesktop && (setHoveredIndex(null), setIsHoveringProduct(false))
-                          }
-                          onMouseMove={e =>
-                            isDesktop && setCursorPosition({ x: e.clientX, y: e.clientY })
-                          }
+                          onMouseEnter={() => handleMouseEnter(index)}
+                          onMouseLeave={handleMouseLeave}
+                          onMouseMove={handleMouseMove}
                         >
                           <div className="relative h-full w-full overflow-hidden flex items-center justify-center">
                             <AnimatePresence mode="wait">
@@ -234,15 +266,15 @@ export default function Products() {
                           </div>
 
                           <div
-                            className={`absolute inset-0 transition-transform duration-500 ${isHovering ? "translate-y-0" : "-translate-y-full"
-                              }`}
+                            className={`absolute inset-0 overflow-hidden transition-transform duration-500 ${isHovering ? "translate-y-0" : "-translate-y-[102%]"
+                              } `}
                           >
                             <Image
+                              draggable={false}
                               src={getProductImage(item.content)}
                               alt={item.content}
                               fill
-                              className="object-cover"
-                            />
+                              className="object-cover" />
                           </div>
                         </a>
                       </div>
@@ -254,7 +286,6 @@ export default function Products() {
           </tbody>
         </table>
       </div>
-
       <div className="max-w-[909px] w-full h-[240px] sm:h-[388px] relative" style={{ alignSelf: "flex-end" }}>
         <div className="absolute right-1/2 translate-x-1/2 bottom-20 w-[85px] h-[85px] md:w-[150px] md:h-[150px] lg:w-[184px] lg:h-[184px]">
           <Image src="/frames/frame_products_3.png" alt="" fill className="object-contain" />

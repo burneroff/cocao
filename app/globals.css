@@ -75,8 +75,32 @@ img {
   -o-user-drag: none;
   user-drag: none;
   pointer-events: none;
+  
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
+.img {
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+  user-drag: none;
+  pointer-events: none;
+  
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
 /* Swiper styles for Team section - изолируем только для team-swiper */
 .team-swiper {
   width: 100%;

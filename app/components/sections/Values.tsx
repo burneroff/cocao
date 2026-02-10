@@ -383,7 +383,7 @@ export default function Values() {
                   src={value.image}
                   alt={value.title}
                   fill
-                  className="object-contain 2xl:ml-[60px] sm:px-4"
+                  className="object-contain 2xl:ml-[60px] sm:px-4 2xl:px-0"
                   sizes="(max-width: 640px) 280px, (max-width: 768px) 320px, (max-width: 1024px) 380px, (max-width: 1280px) 420px, (max-width: 1536px) 450px, 450px"
                 />
               </div>

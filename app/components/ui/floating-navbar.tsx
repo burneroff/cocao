@@ -151,7 +151,7 @@ export const FloatingNav = ({
           isMobile
             ? "fixed top-0 left-0 right-0"
             : "absolute top-0 left-0 right-0",
-          " z-5000 px-0 md:px-4 pt-4 items-center justify-between",
+          " z-5000 px-0 md:px-14 pt-4 items-center justify-between",
           "transition-colors duration-500 ease-in-out",
           isMobile ? `${currentBgColor} h-[60px] border-b` : "",
           className,
@@ -159,9 +159,9 @@ export const FloatingNav = ({
         style={
           isMobile
             ? {
-                borderBottomColor:
-                  currentBgColor === "bg-[#dadada]" ? "#CDCDCD" : "#3F3E3D",
-              }
+              borderBottomColor:
+                currentBgColor === "bg-[#dadada]" ? "#CDCDCD" : "#3F3E3D",
+            }
             : undefined
         }
       >
@@ -204,7 +204,7 @@ export const FloatingNav = ({
           )}
         </div>
 
-        <nav className="hidden md:flex items-center lg:gap-8 xl:gap-[180px]">
+        <nav className="hidden md:flex items-center lg:gap-8 xl:gap-[168px]">
           <Link
             href="https://apps.apple.com/us/developer/cacao-mobile/id1612079536"
             target="_blank"

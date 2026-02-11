@@ -275,7 +275,7 @@ export default function VacanciesClient() {
       <div className="flex-1 overflow-hidden">
         <div
           ref={contentRef}
-          className="h-screen overflow-y-auto px-6 md:px-0 pb-38 md:pb-32 pt-[110px] md:pt-[110px]"
+          className="h-screen overflow-y-auto px-6 md:px-0 pb-42 md:pb-32 pt-[110px] md:pt-[110px]"
         >
           <AnimatePresence mode="wait">
             {activeVacancy ? (

@@ -493,14 +493,14 @@ export default function VacanciesClient() {
 
       {isEmailCopied ? (
         <div
-          className="md:hidden fixed bottom-[112px] left-1/2 -translate-x-1/2 z-40 flex items-center gap-3 px-4"
+          className="md:hidden fixed bottom-[112px] left-1/2 -translate-x-1/2 z-40 flex items-center gap-3 px-4 min-w-[200px]"
           style={{
             height: "40px",
             backgroundColor: "#0D0D0D",
             border: "1px solid #3F3E3D",
             color: "#FAFAFA",
             fontWeight: 400,
-            fontSize: "25px",
+            fontSize: "22px",
             lineHeight: "40px",
             letterSpacing: "0%",
             borderRadius: "20px",

@@ -298,11 +298,10 @@ export default function Products() {
                           </div>
 
                           <div
-                            className={`absolute inset-0 overflow-hidden transition-transform duration-500 ${
-                              isHovering
-                                ? "translate-y-0"
-                                : "-translate-y-[102%]"
-                            } `}
+                            className={`absolute inset-0 overflow-hidden transition-transform duration-500 ${isHovering
+                              ? "translate-y-0"
+                              : "-translate-y-[102%]"
+                              } `}
                           >
                             <Image
                               draggable={false}
@@ -311,6 +310,7 @@ export default function Products() {
                               quality={85}
                               fill
                               className="object-cover"
+                              loading="eager"
                             />
                           </div>
                         </a>
@@ -347,28 +347,6 @@ export default function Products() {
             />
           </div>
         </div>
-      </div>
-      {/* Скрытые изображения для предзагрузки */}
-      <div className="hidden">
-        {Array.from(
-          new Set(
-            tableRows
-              .flat()
-              .filter((item) => item.type === "text")
-              .map((item) => item.content)
-          )
-        ).map((productName) => (
-          <Image
-            key={productName}
-            src={getProductImage(productName)}
-            alt=""
-            width={303}
-            height={303}
-            quality={85}
-            priority={false}
-            loading="eager"
-          />
-        ))}
       </div>
     </div>
   );

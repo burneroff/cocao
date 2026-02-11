@@ -35,7 +35,6 @@ export const FloatingNav = ({
     const element = document.getElementById(id);
     if (element) {
       if (!isMobile) {
-        // Отправляем событие перед программной прокруткой, чтобы Values знал об этом
         window.dispatchEvent(
           new CustomEvent("programmatic-scroll-start", {
             detail: { targetId: id },
@@ -51,7 +50,6 @@ export const FloatingNav = ({
     }
   };
 
-  // Проверяем, мобильное ли устройство
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
@@ -65,7 +63,6 @@ export const FloatingNav = ({
     };
   }, []);
 
-  // Определяем активную секцию через IntersectionObserver
   useEffect(() => {
     const observers: IntersectionObserver[] = [];
     const sectionIntersections = new Map<string, number>();
@@ -207,7 +204,7 @@ export const FloatingNav = ({
           )}
         </div>
 
-        <nav className="hidden md:flex items-center gap-8">
+        <nav className="hidden md:flex items-center lg:gap-8 xl:gap-[180px]">
           <Link
             href="https://apps.apple.com/us/developer/cacao-mobile/id1612079536"
             target="_blank"

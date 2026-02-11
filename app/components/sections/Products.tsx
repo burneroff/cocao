@@ -15,20 +15,27 @@ const getProductImage = (productName: string) => {
 };
 
 const productLinks: Record<string, string> = {
-  "PDF Converter": "https://apps.apple.com/by/app/pdf-scanner-scan-documents/id1561802302",
-  Zipper: "https://apps.apple.com/us/app/zip-extractor-unzip-unrar/id6443985825",
-  "Call Recorder": "https://apps.apple.com/us/app/the-voice-recorder-call-%D0%BC%D0%B5%D0%BC%D0%BEs/id6475734022",
+  "PDF Scanner":
+    "https://apps.apple.com/by/app/pdf-scanner-scan-documents/id1561802302",
+  Zipper:
+    "https://apps.apple.com/us/app/zip-extractor-unzip-unrar/id6443985825",
+  "Call Recorder":
+    "https://apps.apple.com/us/app/the-voice-recorder-call-%D0%BC%D0%B5%D0%BC%D0%BEs/id6475734022",
   FAX: "https://apps.apple.com/us/app/recieve-fax-send-receive/id1627433298",
-  "AI Calorie Counter": "https://apps.apple.com/us/app/ai-calorie-counter-meal-plan/id6749527794",
-  Sense: "https://apps.apple.com/us/app/guided-meditation-calm-rabbit/id1584776535",
-  NookAI: "https://apps.apple.com/us/app/ai-room-planner-nookai-design/id6752864212",
+  "AI Calorie Counter":
+    "https://apps.apple.com/us/app/ai-calorie-counter-meal-plan/id6749527794",
+  Sense:
+    "https://apps.apple.com/us/app/guided-meditation-calm-rabbit/id1584776535",
+  NookAI:
+    "https://apps.apple.com/us/app/ai-room-planner-nookai-design/id6752864212",
   Fleeky: "https://apps.apple.com/us/app/fleeky-wallpapers-theme/id6478114730",
   VEON: "https://apps.apple.com/us/app/ai-cosmetic-scanner-v%C3%A9on/id6742449597",
-  "Plant ID & Care": "https://apps.apple.com/us/app/plant-id-care-planthy-ai/id6504182856",
+  "Plant ID & Care":
+    "https://apps.apple.com/us/app/plant-id-care-planthy-ai/id6504182856",
 };
 
 const productSecondText: Record<string, string> = {
-  "PDF Converter": "6K+ Users 300K+ Downloads",
+  "PDF Scanner": "6K+ Users 300K+ Downloads",
   Zipper: "1K+ Users 29K+ Downloads",
   "Call Recorder": "500+ Users 6K+ Downloads",
   FAX: "700+ Users 18K+ Downloads",
@@ -49,7 +56,7 @@ const formatSecondTextMobile = (text: string) =>
     .replace(/\s+Downloads/g, "\nDownloads");
 
 const productGroups: Record<string, number> = {
-  "PDF Converter": 1,
+  "PDF Scanner": 1,
   FAX: 1,
   "AI Calorie Counter": 1,
   VEON: 1,
@@ -92,7 +99,10 @@ const textVariants: Variants = {
 
 export default function Products() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const [cursorPosition, setCursorPosition] = useState<{ x: number; y: number } | null>(null);
+  const [cursorPosition, setCursorPosition] = useState<{
+    x: number;
+    y: number;
+  } | null>(null);
   const [isHoveringProduct, setIsHoveringProduct] = useState(false);
   const [shouldShowLink, setShouldShowLink] = useState(false);
   const [currentGroup, setCurrentGroup] = useState(1);
@@ -111,7 +121,7 @@ export default function Products() {
 
   useEffect(() => {
     intervalRef.current = setInterval(() => {
-      setCurrentGroup(prev => (prev === 3 ? 1 : prev + 1));
+      setCurrentGroup((prev) => (prev === 3 ? 1 : prev + 1));
     }, 5000);
 
     return () => {
@@ -165,12 +175,36 @@ export default function Products() {
   };
 
   const tableRows = [
-    [{ type: "text", content: "PDF Converter" }, { type: "empty" }, { type: "text", content: "Zipper" }],
-    [{ type: "frame", frameImage: "/frames/frame_products_1.png" }, { type: "text", content: "Call Recorder" }, { type: "text", content: "FAX" }],
-    [{ type: "text", content: "Sense" }, { type: "text", content: "AI Calorie Counter" }, { type: "empty" }],
-    [{ type: "text", content: "NookAI" }, { type: "empty" }, { type: "frame", frameImage: "/frames/frame_products_2.png" }],
-    [{ type: "empty" }, { type: "text", content: "Fleeky" }, { type: "text", content: "VEON" }],
-    [{ type: "text", content: "Plant ID & Care" }, { type: "empty" }, { type: "empty" }],
+    [
+      { type: "text", content: "PDF Scanner" },
+      { type: "empty" },
+      { type: "text", content: "Zipper" },
+    ],
+    [
+      { type: "frame", frameImage: "/frames/frame_products_1.png" },
+      { type: "text", content: "Call Recorder" },
+      { type: "text", content: "FAX" },
+    ],
+    [
+      { type: "text", content: "Sense" },
+      { type: "text", content: "AI Calorie Counter" },
+      { type: "empty" },
+    ],
+    [
+      { type: "text", content: "NookAI" },
+      { type: "empty" },
+      { type: "frame", frameImage: "/frames/frame_products_2.png" },
+    ],
+    [
+      { type: "empty" },
+      { type: "text", content: "Fleeky" },
+      { type: "text", content: "VEON" },
+    ],
+    [
+      { type: "text", content: "Plant ID & Care" },
+      { type: "empty" },
+      { type: "empty" },
+    ],
   ] as const;
 
   return (
@@ -264,15 +298,20 @@ export default function Products() {
                           </div>
 
                           <div
-                            className={`absolute inset-0 overflow-hidden transition-transform duration-500 ${isHovering ? "translate-y-0" : "-translate-y-[102%]"
-                              } `}
+                            className={`absolute inset-0 overflow-hidden transition-transform duration-500 ${
+                              isHovering
+                                ? "translate-y-0"
+                                : "-translate-y-[102%]"
+                            } `}
                           >
                             <Image
                               draggable={false}
                               src={getProductImage(item.content)}
                               alt={item.content}
+                              quality={85}
                               fill
-                              className="object-cover" />
+                              className="object-cover"
+                            />
                           </div>
                         </a>
                       </div>
@@ -284,14 +323,28 @@ export default function Products() {
           </tbody>
         </table>
       </div>
-      <div className="max-w-[909px] w-full h-[240px] sm:h-[388px] relative" style={{ alignSelf: "flex-end" }}>
+      <div
+        className="max-w-[909px] w-full h-[240px] sm:h-[388px] relative"
+        style={{ alignSelf: "flex-end" }}
+      >
         <div className="absolute right-1/2 translate-x-1/2 bottom-20 w-[85px] h-[85px] md:w-[150px] md:h-[150px] lg:w-[184px] lg:h-[184px]">
-          <Image src="/frames/frame_products_3.png" alt="" fill className="object-contain" />
+          <Image
+            src="/frames/frame_products_3.png"
+            alt=""
+            fill
+            className="object-contain"
+          />
           <div className="absolute left-[-30px] md:left-[-45px] lg:left-[-60px] bottom-[-30px] md:bottom-[-40px] lg:bottom-[-50px]">
-            <Cross color="#3F3E3D" className="w-4 h-4 md:w-6 md:h-6 lg:w-auto lg:h-auto" />
+            <Cross
+              color="#3F3E3D"
+              className="w-4 h-4 md:w-6 md:h-6 lg:w-auto lg:h-auto"
+            />
           </div>
           <div className="absolute right-[-30px] md:right-[-45px] lg:right-[-60px] top-[-30px] md:top-[-40px] lg:top-[-50px]">
-            <Cross color="#3F3E3D" className="w-4 h-4 md:w-6 md:h-6 lg:w-auto lg:h-auto" />
+            <Cross
+              color="#3F3E3D"
+              className="w-4 h-4 md:w-6 md:h-6 lg:w-auto lg:h-auto"
+            />
           </div>
         </div>
       </div>

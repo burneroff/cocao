@@ -12,7 +12,9 @@ export default function VacanciesClient() {
   const contentRef = useRef<HTMLDivElement>(null);
   const mobileScrollerRef = useRef<HTMLDivElement>(null);
   const [isEmailCopied, setIsEmailCopied] = useState(false);
-  const [activeButton, setActiveButton] = useState<"email" | "tg" | "linkedin" | null>(null);
+  const [activeButton, setActiveButton] = useState<
+    "email" | "tg" | "linkedin" | null
+  >(null);
   const emailTimeoutRef = useRef<number | null>(null);
   const buttonTimeoutRef = useRef<number | null>(null);
   const mobileVacancies = useMemo(() => {
@@ -20,7 +22,9 @@ export default function VacanciesClient() {
       return vacancies;
     }
 
-    const activeIndex = vacancies.findIndex((vacancy) => vacancy.id === activeId);
+    const activeIndex = vacancies.findIndex(
+      (vacancy) => vacancy.id === activeId,
+    );
     if (activeIndex <= 0) {
       return vacancies;
     }
@@ -137,7 +141,7 @@ export default function VacanciesClient() {
 
   const activeVacancy = useMemo(
     () => vacancies.find((vacancy) => vacancy.id === activeId),
-    [activeId]
+    [activeId],
   );
 
   return (
@@ -148,7 +152,9 @@ export default function VacanciesClient() {
       >
         <div className="px-4 py-4">
           <div className="hidden md:flex items-center gap-2 2xl:ml-3">
-            <h1 className="text-[16px] text-[#9F9B96]">Vacancies</h1>
+            <h1 className="text-[clamp(16px,2vw,20px)] font-medium text-[#DADADA]">
+              Vacancies
+            </h1>
           </div>
 
           <div className="md:hidden">
@@ -173,7 +179,9 @@ export default function VacanciesClient() {
                         style={{
                           color: "#FAFAFA",
                           backgroundColor: isActive ? "#0100F4" : "transparent",
-                          border: isActive ? "1px solid #0100F4" : "1px solid #FAFAFA",
+                          border: isActive
+                            ? "1px solid #0100F4"
+                            : "1px solid #FAFAFA",
                           fontWeight: isActive ? "bold" : "normal",
                           borderRadius: "30px",
                           padding: "8px 12px",
@@ -212,9 +220,8 @@ export default function VacanciesClient() {
       </header>
 
       <div
-        className="fixed left-0 right-0 z-20 pointer-events-none"
+        className="fixed left-0 right-0 z-20 top-[80px] xl:top-[50px] pointer-events-none"
         style={{
-          top: "80px",
           height: "40px",
           width: "100%",
           background: "linear-gradient(to bottom, #1F1F23, #1F1F2300)",
@@ -245,10 +252,11 @@ export default function VacanciesClient() {
                 className="flex items-center gap-0 text-left text-[clamp(48px,6vw,70px)] font-semibold uppercase"
               >
                 <span
-                  className={`inline-block transition-all duration-1000 ease-in-out ${isActive
-                    ? "opacity-100 translate-x-0 text-[#0100F4] w-auto"
-                    : "opacity-0 -translate-x-4 w-0 overflow-hidden"
-                    }`}
+                  className={`inline-block transition-all duration-1000 ease-in-out ${
+                    isActive
+                      ? "opacity-100 translate-x-0 text-[#0100F4] w-auto"
+                      : "opacity-0 -translate-x-4 w-0 overflow-hidden"
+                  }`}
                 >
                   ›
                 </span>
@@ -438,7 +446,8 @@ export default function VacanciesClient() {
             className="text-[22px] whitespace-nowrap relative inline-flex items-center justify-center w-[105px]"
             style={{
               color: "#FAFAFA",
-              backgroundColor: activeButton === "linkedin" ? "#0100F4" : "#3F3E3D",
+              backgroundColor:
+                activeButton === "linkedin" ? "#0100F4" : "#3F3E3D",
               fontWeight: "500",
               borderRadius: "30px",
               height: "34px",

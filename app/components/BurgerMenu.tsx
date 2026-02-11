@@ -70,7 +70,7 @@ export default function BurgerMenu({
     const handleIntersection = (entries: IntersectionObserverEntry[]) => {
       entries.forEach((entry) => {
         const sectionId = Object.keys(sectionRefs.current).find(
-          (id) => sectionRefs.current[id] === entry.target
+          (id) => sectionRefs.current[id] === entry.target,
         );
 
         if (sectionId) {
@@ -146,7 +146,7 @@ export default function BurgerMenu({
     }, 500);
   };
 
-  const textColor = "#9F9B96"
+  const textColor = "#9F9B96";
   const menuIconColor = iconColor ?? textColor;
   const menuItemCount = sections.length + 1;
   const menuHeight = `calc(50% * ${menuItemCount / sections.length})`;
@@ -171,14 +171,18 @@ export default function BurgerMenu({
 
       {/* Menu Overlay */}
       <div
-        className={`fixed inset-0 z-40 transition-all duration-500 ease-in-out ${isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
-          }`}
+        className={`fixed inset-0 z-40 transition-all duration-500 ease-in-out ${
+          isOpen
+            ? "opacity-100 pointer-events-auto"
+            : "opacity-0 pointer-events-none"
+        }`}
         onClick={toggleMenu}
       >
         {/* Menu Content - выезжает от границы floating-navbar */}
         <div
-          className={`absolute left-0 right-0 ${currentBgColor} transition-all duration-500 ease-in-out ${isOpen ? "translate-y-0" : "-translate-y-full"
-            }`}
+          className={`absolute left-0 right-0 ${currentBgColor} transition-all duration-500 ease-in-out ${
+            isOpen ? "translate-y-0" : "-translate-y-full"
+          }`}
           style={{
             top: "60px", // Высота floating-navbar
             height: menuHeight,
@@ -188,7 +192,8 @@ export default function BurgerMenu({
           {/* Navigation Links */}
           <nav className="flex flex-col h-full justify-start mt-[-46px] gap-0 pb-8">
             {sections.map((section, index) => {
-              const isActive = activeSection === section.id || clickedSection === section.id;
+              const isActive =
+                activeSection === section.id || clickedSection === section.id;
               const isClicked = clickedSection === section.id;
               return (
                 <button
@@ -199,18 +204,20 @@ export default function BurgerMenu({
                   <div className="flex items-center gap-0">
                     {/* Arrow indicator */}
                     <span
-                      className={`inline-block transition-all duration-500 ease-in-out text-[22px] leading-[30px] tracking-[0] font-medium ${isActive
-                        ? "opacity-100 translate-x-0 text-[#0100F4] w-auto"
-                        : "opacity-0 -translate-x-4 w-0 overflow-hidden"
-                        }`}
+                      className={`inline-block transition-all duration-500 ease-in-out text-[22px] leading-[30px] tracking-[0] font-medium ${
+                        isActive
+                          ? "opacity-100 translate-x-0 text-[#0100F4] w-auto"
+                          : "opacity-0 -translate-x-4 w-0 overflow-hidden"
+                      }`}
                     >
                       ›
                     </span>
 
                     {/* Label */}
                     <span
-                      className={`text-[22px] leading-[30px] tracking-[0] font-medium uppercase transition-colors duration-500 ${isActive ? "text-[#0100F4]" : ""
-                        }`}
+                      className={`text-[22px] leading-[30px] tracking-[0] font-medium uppercase transition-colors duration-500 ${
+                        isActive ? "text-[#0100F4]" : ""
+                      }`}
                       style={!isActive ? { color: textColor } : {}}
                     >
                       {section.label}
@@ -220,7 +227,7 @@ export default function BurgerMenu({
                   {/* Underline - всегда видна с цветом текста, не выделяется синим */}
                   <div
                     className="absolute left-0 bottom-0 h-px w-full transition-all duration-500"
-                    style={{ backgroundColor: textColor }}
+                    style={{ backgroundColor: "#3F3E3D" }}
                   />
                 </button>
               );
@@ -240,7 +247,7 @@ export default function BurgerMenu({
                 </div>
                 <div
                   className="absolute left-0 bottom-0 h-px w-full transition-all duration-500"
-                  style={{ backgroundColor: textColor }}
+                  style={{ backgroundColor: "#3F3E3D" }}
                 />
               </Link>
             ) : (

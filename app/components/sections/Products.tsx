@@ -311,6 +311,7 @@ export default function Products() {
                               fill
                               className="object-cover"
                               loading="eager"
+                              priority
                             />
                           </div>
                         </a>

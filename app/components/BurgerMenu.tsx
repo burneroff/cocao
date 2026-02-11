@@ -251,7 +251,7 @@ export default function BurgerMenu({
                 </div>
                 <div
                   className="absolute left-0 bottom-0 h-px w-full transition-all duration-500"
-                  style={{ backgroundColor: textColor }}
+                  style={{ backgroundColor: "#3F3E3D" }}
                 />
               </Link>
             )}

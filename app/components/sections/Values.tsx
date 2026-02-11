@@ -60,7 +60,7 @@ export default function Values() {
   const lastTouchYRef = useRef<number | null>(null);
   const snapRafRef = useRef<number | null>(null);
   const lastIntentRef = useRef(0);
-  const transitionLockMs = 600;
+  const transitionLockMs = 500;
 
   useLayoutEffect(() => {
     const checkMobile = () => {

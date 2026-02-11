@@ -26,6 +26,42 @@ const SectionWrapper = ({
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // Для первой секции "us" используем более раннее обнаружение
+    const isFirstSection = sectionId === "us";
+    const threshold = isFirstSection ? 0.05 : 0.2;
+    const rootMargin = isFirstSection ? "200px 0px 0px 0px" : "0px";
+
+    // Предварительная проверка видимости для первой секции
+    const checkInitialVisibility = () => {
+      if (isFirstSection && wrapperRef.current) {
+        const rect = wrapperRef.current.getBoundingClientRect();
+        const viewportHeight = window.innerHeight;
+        // Если секция уже близко к viewport, делаем её видимой сразу
+        if (rect.top < viewportHeight + 200 && rect.bottom > -200) {
+          setIsVisible(true);
+          return true;
+        }
+      }
+      return false;
+    };
+
+    // Обработчик события предварительной активации
+    const handleSectionPreview = (event: Event) => {
+      const customEvent = event as CustomEvent<{ sectionId?: string }>;
+      if (customEvent.detail?.sectionId === sectionId && !isVisible) {
+        setIsVisible(true);
+      }
+    };
+
+    // Проверяем сразу при монтировании
+    if (checkInitialVisibility()) {
+      // Все равно подписываемся на событие для обновлений
+      window.addEventListener("section-preview", handleSectionPreview);
+      return () => {
+        window.removeEventListener("section-preview", handleSectionPreview);
+      };
+    }
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -34,19 +70,23 @@ const SectionWrapper = ({
           }
         });
       },
-      { threshold: 0.2 },
+      { threshold, rootMargin },
     );
 
     if (wrapperRef.current) {
       observer.observe(wrapperRef.current);
     }
 
+    // Подписываемся на событие предварительной активации
+    window.addEventListener("section-preview", handleSectionPreview);
+
     return () => {
       if (wrapperRef.current) {
         observer.unobserve(wrapperRef.current);
       }
+      window.removeEventListener("section-preview", handleSectionPreview);
     };
-  }, [isMobile]);
+  }, [isMobile, sectionId, isVisible]);
 
   const backgroundStyle =
     sectionId === "mission"
@@ -258,7 +298,18 @@ export default function NavigationSection() {
   const valuesLockDelay = 400;
   const valuesReleaseDelay = 200;
 
+  // Кэш для snap targets
+  const snapTargetsCache = useRef<Map<string, HTMLElement | null>>(new Map());
+
   const getVisibleSnapTarget = (id: string) => {
+    // Проверяем кэш
+    if (snapTargetsCache.current.has(id)) {
+      const cached = snapTargetsCache.current.get(id);
+      if (cached && cached.getClientRects().length > 0) {
+        return cached;
+      }
+    }
+
     const targets = Array.from(
       document.querySelectorAll<HTMLElement>(`[data-snap-target="${id}"]`),
     );
@@ -266,7 +317,10 @@ export default function NavigationSection() {
       (target) => target.getClientRects().length > 0,
     );
 
-    return visibleTarget ?? sectionRefs.current[id];
+    const result = visibleTarget ?? sectionRefs.current[id];
+    // Кэшируем результат
+    snapTargetsCache.current.set(id, result);
+    return result;
   };
 
   const smoothScrollTo = (targetY: number, duration = animationDuration) => {
@@ -350,7 +404,43 @@ export default function NavigationSection() {
     };
   }, []);
 
+  // Очищаем кэши при изменении isMobile
   useEffect(() => {
+    snapTargetsCache.current.clear();
+  }, [isMobile]);
+
+  // Предварительная инициализация для плавного перехода из Hero
+  useEffect(() => {
+    // Используем requestAnimationFrame для проверки после первого рендера
+    const rafId = requestAnimationFrame(() => {
+      // Проверяем видимость секции "us" сразу после монтирования
+      const usElement = sectionRefs.current["us"];
+      if (usElement) {
+        const rect = usElement.getBoundingClientRect();
+        const viewportHeight = window.innerHeight;
+        // Если секция уже близко к viewport (в пределах 300px), предварительно инициализируем
+        if (rect.top < viewportHeight + 300 && rect.bottom > -300) {
+          // Предварительно устанавливаем refs для быстрого доступа
+          sections.forEach((section) => {
+            const element = document.getElementById(section.id);
+            if (element && !sectionRefs.current[section.id]) {
+              sectionRefs.current[section.id] = element as HTMLDivElement;
+            }
+          });
+        }
+      }
+    });
+
+    return () => {
+      cancelAnimationFrame(rafId);
+    };
+  }, []);
+
+  useEffect(() => {
+    let rafId: number | null = null;
+    let lastTargetSectionId: string | null = null;
+    let lastUsPreviewState = false;
+
     const updateBackgroundColor = () => {
       const scrollY = window.scrollY;
       const viewportHeight = window.innerHeight;
@@ -393,20 +483,70 @@ export default function NavigationSection() {
         }
       }
 
-      if (targetSectionId !== "values") {
+      // Обновляем цвет фона только если секция изменилась
+      if (targetSectionId !== lastTargetSectionId && targetSectionId !== "values") {
         const bgColor = getSectionBgColor(targetSectionId);
         document.documentElement.style.setProperty("--background", bgColor);
         document.body.style.background = bgColor;
+        lastTargetSectionId = targetSectionId;
+      }
+
+      // Предварительная активация секции "us" при приближении из Hero
+      // Оптимизация: проверяем только если мы в зоне Hero или близко к "us"
+      const shouldCheckUsPreview = targetSectionId === "us" || (scrollY > 0 && scrollY < viewportHeight * 0.5);
+      if (shouldCheckUsPreview) {
+        const usElement = sectionRefs.current["us"];
+        if (usElement) {
+          const usRect = usElement.getBoundingClientRect();
+          const shouldPreview = usRect.top < viewportHeight + 400 && usRect.bottom > -400;
+          
+          // Диспатчим событие только если состояние изменилось
+          if (shouldPreview !== lastUsPreviewState) {
+            if (shouldPreview) {
+              window.dispatchEvent(
+                new CustomEvent("section-preview", {
+                  detail: { sectionId: "us" },
+                }),
+              );
+            }
+            lastUsPreviewState = shouldPreview;
+          }
+        }
+      } else {
+        lastUsPreviewState = false;
       }
     };
 
-    window.addEventListener("scroll", updateBackgroundColor, { passive: true });
-    window.addEventListener("resize", updateBackgroundColor, { passive: true });
+    const handleScroll = () => {
+      if (rafId === null) {
+        rafId = requestAnimationFrame(() => {
+          updateBackgroundColor();
+          rafId = null;
+        });
+      }
+    };
+
+    const handleResize = () => {
+      if (rafId === null) {
+        rafId = requestAnimationFrame(() => {
+          updateBackgroundColor();
+          rafId = null;
+        });
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("resize", handleResize, { passive: true });
+    
+    // Инициализация при монтировании
     updateBackgroundColor();
 
     return () => {
-      window.removeEventListener("scroll", updateBackgroundColor);
-      window.removeEventListener("resize", updateBackgroundColor);
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleResize);
+      if (rafId !== null) {
+        cancelAnimationFrame(rafId);
+      }
     };
   }, [isMobile]);
 
@@ -464,6 +604,39 @@ export default function NavigationSection() {
 
   useEffect(() => {
     if (isMobile) return;
+    
+    // Кэш для sectionRects, обновляется только при необходимости
+    let cachedSectionRects: { id: string; rect: DOMRect }[] | null = null;
+    let cachedScrollY = -1;
+    const cacheValidity = 50; // Кэш валиден в пределах 50px скролла
+
+    const getSectionRects = (): { id: string; rect: DOMRect }[] => {
+      const currentScrollY = window.scrollY;
+      // Используем кэш, если он еще актуален
+      if (
+        cachedSectionRects &&
+        Math.abs(currentScrollY - cachedScrollY) < cacheValidity
+      ) {
+        return cachedSectionRects;
+      }
+
+      // Обновляем кэш
+      const rects = sections
+        .map((section) => {
+          const element = sectionRefs.current[section.id];
+          if (!element) return null;
+          const rect = element.getBoundingClientRect();
+          return { id: section.id, rect };
+        })
+        .filter(
+          (entry): entry is { id: string; rect: DOMRect } => entry !== null,
+        );
+
+      cachedSectionRects = rects;
+      cachedScrollY = currentScrollY;
+      return rects;
+    };
+
     const handleIntent = (
       deltaY: number,
       event: Event,
@@ -487,16 +660,7 @@ export default function NavigationSection() {
       accumulator.current = 0;
 
       const windowHeight = window.innerHeight;
-      const sectionRects = sections
-        .map((section) => {
-          const element = sectionRefs.current[section.id];
-          if (!element) return null;
-          const rect = element.getBoundingClientRect();
-          return { id: section.id, rect };
-        })
-        .filter(
-          (entry): entry is { id: string; rect: DOMRect } => entry !== null,
-        );
+      const sectionRects = getSectionRects();
 
       if (sectionRects.length === 0) return;
 
@@ -667,6 +831,27 @@ export default function NavigationSection() {
 
     const observers: IntersectionObserver[] = [];
     const sectionIntersections = new Map<string, number>();
+    let rafId: number | null = null;
+    let lastActiveSection: string | null = null;
+
+    const updateActiveSection = () => {
+      let maxRatio = 0;
+      let activeId = sections[0].id;
+
+      sectionIntersections.forEach((ratio, id) => {
+        if (ratio > maxRatio) {
+          maxRatio = ratio;
+          activeId = id;
+        }
+      });
+
+      // Обновляем состояние только если секция действительно изменилась
+      if (maxRatio > 0 && activeId !== lastActiveSection) {
+        setActiveSection(activeId);
+        lastActiveSection = activeId;
+      }
+      rafId = null;
+    };
 
     const handleIntersection = (entries: IntersectionObserverEntry[]) => {
       entries.forEach((entry) => {
@@ -683,24 +868,16 @@ export default function NavigationSection() {
         }
       });
 
-      let maxRatio = 0;
-      let activeId = sections[0].id;
-
-      sectionIntersections.forEach((ratio, id) => {
-        if (ratio > maxRatio) {
-          maxRatio = ratio;
-          activeId = id;
-        }
-      });
-
-      if (maxRatio > 0) {
-        setActiveSection(activeId);
+      // Используем requestAnimationFrame для throttling обновлений
+      if (rafId === null) {
+        rafId = requestAnimationFrame(updateActiveSection);
       }
     };
 
     sections.forEach((section) => {
       const observer = new IntersectionObserver(handleIntersection, {
-        threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
+        // Уменьшаем количество threshold для лучшей производительности
+        threshold: [0, 0.25, 0.5, 0.75, 1],
         rootMargin: "-10% 0px -10% 0px",
       });
 
@@ -713,6 +890,9 @@ export default function NavigationSection() {
 
     return () => {
       observers.forEach((observer) => observer.disconnect());
+      if (rafId !== null) {
+        cancelAnimationFrame(rafId);
+      }
     };
   }, [isMobile]);
 

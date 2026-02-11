@@ -17,23 +17,6 @@ export default function VacanciesClient() {
   >(null);
   const emailTimeoutRef = useRef<number | null>(null);
   const buttonTimeoutRef = useRef<number | null>(null);
-  const mobileVacancies = useMemo(() => {
-    if (!activeId) {
-      return vacancies;
-    }
-
-    const activeIndex = vacancies.findIndex(
-      (vacancy) => vacancy.id === activeId,
-    );
-    if (activeIndex <= 0) {
-      return vacancies;
-    }
-
-    return [
-      ...vacancies.slice(activeIndex),
-      ...vacancies.slice(0, activeIndex),
-    ];
-  }, [activeId]);
 
   useEffect(() => {
     document.documentElement.style.setProperty("--background", "#1F1F23");
@@ -96,10 +79,24 @@ export default function VacanciesClient() {
     };
   }, []);
 
-  const handleMobileSelect = (vacancyId: string) => {
+  const handleMobileSelect = (
+    vacancyId: string,
+    target: HTMLButtonElement | null,
+  ) => {
     setActiveId(vacancyId);
-    if (mobileScrollerRef.current) {
-      mobileScrollerRef.current.scrollTo({ left: 0, behavior: "smooth" });
+    if (mobileScrollerRef.current && target) {
+      const scroller = mobileScrollerRef.current;
+      const { offsetLeft, offsetWidth } = target;
+      const scrollerWidth = scroller.clientWidth;
+
+      // Центрируем выбранный элемент в видимой области
+      const targetScrollLeft =
+        offsetLeft - (scrollerWidth - offsetWidth) / 2;
+
+      scroller.scrollTo({
+        left: targetScrollLeft,
+        behavior: "smooth",
+      });
     }
   };
 
@@ -123,7 +120,7 @@ export default function VacanciesClient() {
       buttonTimeoutRef.current = window.setTimeout(() => {
         setActiveButton(null);
       }, 2000);
-    } catch {}
+    } catch { }
   };
 
   const handleButtonClick = (buttonType: "tg" | "linkedin") => {
@@ -144,10 +141,7 @@ export default function VacanciesClient() {
 
   return (
     <div className="relative flex h-screen bg-[#1F1F23] text-[#DADADA] overflow-hidden">
-      <header
-        className="fixed top-0 left-0 right-0 bg-[#080808] border-b border-[#35353C] z-30"
-        style={{ borderWidth: "1px" }}
-      >
+      <header className="fixed top-0 left-0 right-0 bg-[#080808] border-b border-[#35353C] z-30 border-t-0 border-l-0 border-r-0">
         <div className="px-4 py-4">
           <div className="hidden md:flex items-center gap-2 2xl:ml-3">
             <h1 className="text-[clamp(16px,2vw,20px)] font-medium text-[#DADADA]">
@@ -162,13 +156,18 @@ export default function VacanciesClient() {
             >
               <div className="flex items-center gap-4 min-w-max h-[50px]">
                 <AnimatePresence initial={false}>
-                  {mobileVacancies.map((vacancy) => {
+                  {vacancies.map((vacancy) => {
                     const isActive = activeId === vacancy.id;
                     return (
                       <motion.button
                         layout
                         key={vacancy.id}
-                        onClick={() => handleMobileSelect(vacancy.id)}
+                        onClick={(event) =>
+                          handleMobileSelect(
+                            vacancy.id,
+                            event.currentTarget as HTMLButtonElement,
+                          )
+                        }
                         initial={{ opacity: 0, x: 16 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: -24 }}
@@ -250,11 +249,10 @@ export default function VacanciesClient() {
                 className="flex items-center gap-0 text-left text-[clamp(48px,6vw,70px)] font-semibold uppercase"
               >
                 <span
-                  className={`inline-block transition-all duration-1000 ease-in-out ${
-                    isActive
-                      ? "opacity-100 translate-x-0 text-[#0100F4] w-auto"
-                      : "opacity-0 -translate-x-4 w-0 overflow-hidden"
-                  }`}
+                  className={`inline-block transition-all duration-1000 ease-in-out ${isActive
+                    ? "opacity-100 translate-x-0 text-[#0100F4] w-auto"
+                    : "opacity-0 -translate-x-4 w-0 overflow-hidden"
+                    }`}
                 >
                   ›
                 </span>
@@ -308,7 +306,7 @@ export default function VacanciesClient() {
                     Responsibilities
                   </h2>
                   <ul className="mt-3 list-disc space-y-2 pl-6 text-[17px]">
-                    {activeVacancy.responsibilities.map((item) => (
+                    {activeVacancy.responsibilities.map((item: string) => (
                       <li key={item}>{item}</li>
                     ))}
                   </ul>
@@ -319,7 +317,7 @@ export default function VacanciesClient() {
                     Requirements
                   </h2>
                   <ul className="mt-3 list-disc space-y-2 pl-6 text-[17px]">
-                    {activeVacancy.requirements.map((item) => (
+                    {activeVacancy.requirements.map((item: string) => (
                       <li key={item}>{item}</li>
                     ))}
                   </ul>
@@ -330,7 +328,7 @@ export default function VacanciesClient() {
                     We Offer
                   </h2>
                   <ul className="mt-3 list-disc space-y-2 pl-6 text-[17px]">
-                    {activeVacancy.perks.map((item) => (
+                    {activeVacancy.perks.map((item: string) => (
                       <li key={item}>{item}</li>
                     ))}
                   </ul>
@@ -360,8 +358,8 @@ export default function VacanciesClient() {
         }}
       />
       <footer
-        className="hidden md:block fixed bottom-0 left-0 right-0 bg-[#1F1F23] border-t border-[#35353C] z-30"
-        style={{ borderWidth: "1px" }}
+        className="hidden md:block fixed bottom-0 left-0 right-0 bg-[#080808] border-t border-[#35353C] z-30"
+        style={{ borderTopWidth: "1px" }}
       >
         <div className="px-6 md:px-8 py-4">
           <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-[120px]">

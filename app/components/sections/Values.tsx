@@ -2,12 +2,17 @@
 
 import Image from "next/image";
 import { useLayoutEffect, useRef, useState } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Pagination } from "swiper/modules";
+import type { Swiper as SwiperType } from "swiper";
+import "swiper/css";
+import "swiper/css/pagination";
 
 interface ValueSection {
   title: string;
   subtitle: string;
   image: string;
-  bgColor: string; // Hex color code
+  bgColor: string;
 }
 
 const valuesData: ValueSection[] = [
@@ -61,6 +66,7 @@ export default function Values() {
   const snapRafRef = useRef<number | null>(null);
   const lastIntentRef = useRef(0);
   const transitionLockMs = 500;
+  const swiperRef = useRef<SwiperType | null>(null);
 
   useLayoutEffect(() => {
     const checkMobile = () => {
@@ -115,6 +121,8 @@ export default function Values() {
   }, [allSectionsViewed]);
 
   useLayoutEffect(() => {
+    if (isMobile) return;
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -150,9 +158,11 @@ export default function Values() {
     }
 
     return () => observer.disconnect();
-  }, []);
+  }, [isMobile]);
 
   useLayoutEffect(() => {
+    if (isMobile) return;
+
     const endProgrammaticScroll = () => {
       const targetId = programmaticTargetRef.current;
       isProgrammaticScrollRef.current = false;
@@ -212,9 +222,11 @@ export default function Values() {
         window.cancelAnimationFrame(snapRafRef.current);
       }
     };
-  }, []);
+  }, [isMobile]);
 
   useLayoutEffect(() => {
+    if (isMobile) return;
+
     const canExitUp = (deltaY: number) => currentSection === 0 && deltaY < 0;
     const canExitDown = (deltaY: number) =>
       currentSection === valuesData.length - 1 &&
@@ -266,7 +278,6 @@ export default function Values() {
 
       if (effectiveDelta > 0) {
         if (canExitDown(effectiveDelta)) {
-          if (isMobile) return;
           window.dispatchEvent(
             new CustomEvent("values-release", {
               detail: { direction: "down" },
@@ -290,7 +301,6 @@ export default function Values() {
         }
       } else if (effectiveDelta < 0) {
         if (canExitUp(effectiveDelta)) {
-          if (isMobile) return;
           window.dispatchEvent(
             new CustomEvent("values-release", {
               detail: { direction: "up" },
@@ -349,6 +359,109 @@ export default function Values() {
 
   const currentValue = valuesData[currentSection];
 
+  if (isMobile) {
+    return (
+      <div className="relative w-full h-screen">
+        <Swiper
+          modules={[Pagination]}
+          spaceBetween={0}
+          slidesPerView={1}
+          initialSlide={currentSection}
+          onSwiper={(swiper) => {
+            swiperRef.current = swiper;
+          }}
+          onSlideChange={(swiper) => setCurrentSection(swiper.activeIndex)}
+          className="values-swiper h-full"
+        >
+          {valuesData.map((value, index) => (
+            <SwiperSlide key={index}>
+              <div
+                className="relative h-screen flex flex-col items-center justify-center px-4 py-8"
+                style={{
+                  backgroundColor: value.bgColor,
+                }}
+              >
+                <div className="relative h-[325px] w-[355px] sm:h-[300px] sm:w-[320px] shrink-0 mb-6">
+                  <Image
+                    src={value.image}
+                    alt={value.title}
+                    fill
+                    className="object-contain sm:px-4"
+                    sizes="(max-width: 640px) 280px, 320px"
+                  />
+                </div>
+
+                <div className="flex flex-col items-center gap-4 w-full max-w-[490px]">
+                  <h2
+                    className="text-white text-center px-4"
+                    style={{
+                      fontWeight: 400,
+                      fontStyle: "normal",
+                      fontSize: "clamp(28px, 5vw, 36px)",
+                      lineHeight: "clamp(32px, 5.5vw, 45px)",
+                      letterSpacing: "0%",
+                      textAlign: "justify",
+                      textAlignLast: "justify",
+                      textTransform: "uppercase",
+                      width: "100%",
+                      marginTop: "5px",
+                    }}
+                    dangerouslySetInnerHTML={{ __html: value.title }}
+                  />
+
+                  <div className="w-full px-4 mt-4">
+                    <p
+                      className="text-white text-justify"
+                      style={{
+                        fontWeight: 500,
+                        fontStyle: "normal",
+                        fontSize: "clamp(16px, 3vw, 20px)",
+                        lineHeight: "clamp(24px, 4vw, 32px)",
+                        letterSpacing: "0%",
+                      }}
+                    >
+                      <span
+                        className="inline"
+                        style={{
+                          background: `${value.bgColor}`,
+                          backgroundSize: "100% 15px",
+                          backgroundRepeat: "no-repeat",
+                          backgroundPosition: "0 bottom",
+                          paddingBottom: "2px",
+                        }}
+                      >
+                        {value.subtitle}
+                      </span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </SwiperSlide>
+          ))}
+        </Swiper>
+
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex gap-2">
+          {valuesData.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => {
+                if (swiperRef.current) {
+                  swiperRef.current.slideTo(index);
+                }
+                setCurrentSection(index);
+              }}
+              className={`transition-all duration-300 rounded-full ${index === currentSection
+                ? "w-8 h-2 bg-white"
+                : "w-2 h-2 bg-white/40"
+                }`}
+              aria-label={`Go to slide ${index + 1}`}
+            />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div
       ref={containerRef}
@@ -370,11 +483,10 @@ export default function Values() {
             {valuesData.map((value, index) => (
               <div
                 key={index}
-                className={`absolute inset-0 transition-all duration-700 ease-out ${
-                  index === currentSection
-                    ? "opacity-100 translate-y-0 scale-100 blur-0"
-                    : "opacity-0 translate-y-4 scale-[0.98] blur-sm"
-                }`}
+                className={`absolute inset-0 transition-all duration-700 ease-out ${index === currentSection
+                  ? "opacity-100 translate-y-0 scale-100 blur-0"
+                  : "opacity-0 translate-y-4 scale-[0.98] blur-sm"
+                  }`}
               >
                 <Image
                   src={value.image}
@@ -404,11 +516,10 @@ export default function Values() {
               {valuesData.map((value, index) => (
                 <p
                   key={index}
-                  className={`transition-all duration-700 ease-out ${
-                    index === currentSection
-                      ? "opacity-100 translate-y-0 blur-0"
-                      : "opacity-0 -translate-y-2 blur-sm absolute inset-0"
-                  }`}
+                  className={`transition-all duration-700 ease-out ${index === currentSection
+                    ? "opacity-100 translate-y-0 blur-0"
+                    : "opacity-0 -translate-y-2 blur-sm absolute inset-0"
+                    }`}
                 >
                   <span
                     className="inline"
@@ -430,11 +541,10 @@ export default function Values() {
             {valuesData.map((value, index) => (
               <h2
                 key={index}
-                className={`text-white text-center 2xl:text-left px-4 2xl:ml-[30px] transition-all duration-700 ease-out ${
-                  index === currentSection
-                    ? "opacity-100 translate-y-0 blur-0"
-                    : "opacity-0 translate-y-2 blur-sm absolute"
-                }`}
+                className={`text-white text-center 2xl:text-left px-4 2xl:ml-[30px] transition-all duration-700 ease-out ${index === currentSection
+                  ? "opacity-100 translate-y-0 blur-0"
+                  : "opacity-0 translate-y-2 blur-sm absolute"
+                  }`}
                 style={{
                   fontWeight: 400,
                   fontStyle: "normal",
@@ -460,11 +570,10 @@ export default function Values() {
               {valuesData.map((value, index) => (
                 <p
                   key={index}
-                  className={`text-white text-justify transition-all duration-700 ease-out ${
-                    index === currentSection
-                      ? "opacity-100 translate-y-0 blur-0"
-                      : "opacity-0 -translate-y-2 blur-sm absolute inset-0"
-                  }`}
+                  className={`text-white text-justify transition-all duration-700 ease-out ${index === currentSection
+                    ? "opacity-100 translate-y-0 blur-0"
+                    : "opacity-0 -translate-y-2 blur-sm absolute inset-0"
+                    }`}
                   style={{
                     fontWeight: 500,
                     fontStyle: "normal",

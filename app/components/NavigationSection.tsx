@@ -9,7 +9,6 @@ import Team from "./sections/Team";
 import Contacts from "./sections/Contacts";
 import Footer from "./Footer";
 
-// Компонент-обертка для секций с анимацией появления
 const SectionWrapper = ({
   sectionId,
   sectionRefs,
@@ -49,13 +48,12 @@ const SectionWrapper = ({
     };
   }, [isMobile]);
 
-  // Определяем стиль фона: для mission используем градиент, для остальных - обычный bgColor
   const backgroundStyle =
     sectionId === "mission"
       ? {
-        background: "linear-gradient(to bottom, #000000 60%, #dadada 60%)",
-        width: isMobile ? "100%" : "100vw",
-      }
+          background: "linear-gradient(to bottom, #000000 60%, #dadada 60%)",
+          width: isMobile ? "100%" : "100vw",
+        }
       : { width: isMobile ? "100%" : "100vw" };
 
   return (
@@ -65,8 +63,9 @@ const SectionWrapper = ({
         wrapperRef.current = el;
       }}
       id={sectionId}
-      className={`relative z-10 ${sectionId === "mission" ? "" : bgColor} transition-opacity duration-1000 ${isVisible ? "opacity-100" : "opacity-0"
-        }`}
+      className={`relative z-10 ${sectionId === "mission" ? "" : bgColor} transition-opacity duration-1000 ${
+        isVisible ? "opacity-100" : "opacity-0"
+      }`}
       style={backgroundStyle}
     >
       <div className={isMobile ? "" : "pl-[33.333333%]"}>{children}</div>
@@ -74,7 +73,6 @@ const SectionWrapper = ({
   );
 };
 
-// Тип для секции навигации
 type SectionItem = {
   id: string;
   label: string;
@@ -83,7 +81,6 @@ type SectionItem = {
   textColor: string;
 };
 
-// Компонент для навигационных пунктов с анимацией
 const NavItems = ({
   sections,
   activeSection,
@@ -105,7 +102,6 @@ const NavItems = ({
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            // Анимируем каждый пункт с задержкой
             sections.forEach((section, index) => {
               setTimeout(() => {
                 setVisibleItems((prev) => new Set(prev).add(section.id));
@@ -159,10 +155,11 @@ const NavItems = ({
             className="flex items-center gap-0 text-left text-[clamp(48px,6vw,100px)] font-semibold uppercase"
           >
             <span
-              className={`inline-block transition-all duration-1000 ease-in-out ${activeSection === section.id || hoveredId === section.id
-                ? "opacity-100 translate-x-0 text-[#0100F4] w-auto"
-                : "opacity-0 -translate-x-4 w-0 overflow-hidden"
-                }`}
+              className={`inline-block transition-all duration-1000 ease-in-out ${
+                activeSection === section.id || hoveredId === section.id
+                  ? "opacity-100 translate-x-0 text-[#0100F4] w-auto"
+                  : "opacity-0 -translate-x-4 w-0 overflow-hidden"
+              }`}
             >
               ›
             </span>
@@ -183,11 +180,10 @@ const NavItems = ({
   );
 };
 
-// Функция для получения цвета фона секции
 const getSectionBgColor = (sectionId: string): string => {
   const colorMap: { [key: string]: string } = {
     us: "#000000",
-    mission: "#000000", // Верхняя часть градиента черная
+    mission: "#000000",
     products: "#dadada",
     values: "#000000",
     team: "#dadada",
@@ -241,7 +237,6 @@ const sections: SectionItem[] = [
   },
 ];
 
-
 export default function NavigationSection() {
   const [activeSection, setActiveSection] = useState("us");
   const sectionRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
@@ -282,10 +277,9 @@ export default function NavigationSection() {
     const startY = window.scrollY;
     const distance = targetY - startY;
     const startTime = performance.now();
-    const scrollingElement =
-      isSafariRef.current
-        ? document.scrollingElement || document.documentElement
-        : null;
+    const scrollingElement = isSafariRef.current
+      ? document.scrollingElement || document.documentElement
+      : null;
 
     const easeInOutCubic = (t: number) =>
       t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
@@ -399,7 +393,6 @@ export default function NavigationSection() {
         }
       }
 
-      // Меняем фон body заранее (кроме values, так как Values сам управляет своим цветом)
       if (targetSectionId !== "values") {
         const bgColor = getSectionBgColor(targetSectionId);
         document.documentElement.style.setProperty("--background", bgColor);
@@ -407,11 +400,8 @@ export default function NavigationSection() {
       }
     };
 
-    // Обновляем при скролле
     window.addEventListener("scroll", updateBackgroundColor, { passive: true });
-    // Обновляем при изменении размера окна
     window.addEventListener("resize", updateBackgroundColor, { passive: true });
-    // Обновляем сразу
     updateBackgroundColor();
 
     return () => {
@@ -488,9 +478,8 @@ export default function NavigationSection() {
 
       const accumulator =
         source === "wheel" ? wheelAccumulatorRef : touchAccumulatorRef;
-      const threshold = source === "wheel"
-        ? scrollThresholds.wheel
-        : scrollThresholds.touch;
+      const threshold =
+        source === "wheel" ? scrollThresholds.wheel : scrollThresholds.touch;
       accumulator.current += deltaY;
 
       if (Math.abs(accumulator.current) < threshold) return;
@@ -517,7 +506,9 @@ export default function NavigationSection() {
       }
       const viewportCenter = windowHeight / 2;
       const currentSection = sectionRects.find(
-        (entry) => entry.rect.top <= viewportCenter && entry.rect.bottom >= viewportCenter,
+        (entry) =>
+          entry.rect.top <= viewportCenter &&
+          entry.rect.bottom >= viewportCenter,
       )?.id;
 
       if (currentSection === "values") return;
@@ -528,8 +519,7 @@ export default function NavigationSection() {
         )?.rect;
         if (productsRect) {
           const sectionTop = productsRect.top + window.scrollY;
-          const maxScrollable =
-            Math.max(0, productsRect.height - windowHeight);
+          const maxScrollable = Math.max(0, productsRect.height - windowHeight);
           const productsStart = sectionTop + snapOffsets.top;
           const productsMiddle = productsStart + maxScrollable / 1.35;
           const currentY = window.scrollY;
@@ -552,8 +542,6 @@ export default function NavigationSection() {
               return;
             }
           }
-
-          // Allow exit after middle even if section is taller than viewport.
         }
       }
 
@@ -614,22 +602,22 @@ export default function NavigationSection() {
       const targetTop = rect.top + window.scrollY;
       const targetBottom = targetTop + rect.height;
 
-      // Унифицированная логика для симметричного скролла вверх и вниз
       let desiredTop: number;
 
       if (targetId === "values") {
         desiredTop = targetTop;
       } else if (targetId === "contacts" && isScrollingDown) {
-        // Для contacts при скролле вниз показываем конец секции
         desiredTop = Math.max(
           0,
           targetBottom - window.innerHeight + snapOffsets.bottom,
         );
-      } else if (targetId === "us" && !isScrollingDown && currentSection === "mission") {
-        // Специальный случай для перехода из mission в us
+      } else if (
+        targetId === "us" &&
+        !isScrollingDown &&
+        currentSection === "mission"
+      ) {
         desiredTop = targetTop + snapOffsets.top + 10;
       } else {
-        // Для всех остальных секций используем одинаковую логику
         desiredTop = targetTop + snapOffsets.top;
       }
 
@@ -765,8 +753,9 @@ export default function NavigationSection() {
       )}
 
       <div
-        className={`flex-1 ${isMobile ? "w-full" : "-ml-[33.333333%]"
-          }  overflow-hidden`}
+        className={`flex-1 ${
+          isMobile ? "w-full" : "-ml-[33.333333%]"
+        }  overflow-hidden`}
       >
         {sections.map((section) => {
           const SectionComponent = section.component;

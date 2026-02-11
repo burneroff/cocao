@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-const REDIRECT_DELAY_MS = 500000;
+const REDIRECT_DELAY_MS = 5000;
 
 export default function NotFoundScreen() {
   const router = useRouter();
@@ -17,9 +17,7 @@ export default function NotFoundScreen() {
   }, [router]);
 
   return (
-    <main
-      className="flex min-h-screen w-full items-center justify-center bg-cover bg-center text-[#3F3E3D] bg-[url('/errors/Error_404_Mobile.png')] md:bg-[url('/errors/Error%20404.png')]"
-    >
+    <main className="flex min-h-screen w-full items-center justify-center bg-cover bg-center text-[#3F3E3D] bg-[url('/errors/Error_404_Mobile.png')] md:bg-[url('/errors/Error%20404.png')]">
       <div className="relative flex flex-col items-center justify-center px-6 text-center">
         <div
           className="absolute left-1/2 -translate-x-1/2 bg-[#ED4C22] text-[#DADADA] px-1 text-[12px] leading-[18px] font-normal"

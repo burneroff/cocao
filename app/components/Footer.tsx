@@ -26,7 +26,6 @@ export default function Footer() {
         backgroundPosition: "center",
       }}
     >
-      {/* LEFT */}
       <div className="flex items-center gap-4">
         <Image
           src="/logo.svg"
@@ -48,7 +47,6 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* LINKS */}
       <div
         className="
           flex flex-col gap-1 text-[#35353C] font-medium text-[16px]
@@ -71,12 +69,12 @@ export default function Footer() {
           ...(hasVacancies
             ? [{ label: "Vacancies", href: "/vacancies", external: true }]
             : [
-              {
-                label: "Telegram",
-                href: "https://t.me/kirill_svc",
-                external: true,
-              },
-            ]),
+                {
+                  label: "Telegram",
+                  href: "https://t.me/kirill_svc",
+                  external: true,
+                },
+              ]),
         ].map((item) => (
           <Link
             key={item.label}

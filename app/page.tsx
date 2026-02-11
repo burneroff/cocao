@@ -8,6 +8,20 @@ import { FloatingNav } from "./components/ui/floating-navbar";
 export default function Home() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isNavLoaded, setIsNavLoaded] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+
+    return () => {
+      window.removeEventListener("resize", checkMobile);
+    };
+  }, []);
 
   useEffect(() => {
     const handleLoadingComplete = () => {
@@ -42,9 +56,12 @@ export default function Home() {
       return;
     }
 
-    const timeout = setTimeout(() => {
-      setIsNavLoaded(true);
-    }, 2500);
+    const timeout = setTimeout(
+      () => {
+        setIsNavLoaded(true);
+      },
+      isMobile ? 1000 : 2500,
+    );
 
     return () => clearTimeout(timeout);
   }, [isLoaded]);

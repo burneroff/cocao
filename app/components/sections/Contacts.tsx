@@ -10,19 +10,15 @@ export default function Contacts() {
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  // Auto-resize textarea
   useEffect(() => {
     if (textareaRef.current) {
       const minHeight = window.innerWidth < 640 ? 167 : 60;
-      // Reset height to auto to get the correct scrollHeight
       textareaRef.current.style.height = "auto";
       const scrollHeight = textareaRef.current.scrollHeight;
-      // Set minimum height based on breakpoint, or scrollHeight if larger
       textareaRef.current.style.height = `${Math.max(minHeight, scrollHeight)}px`;
     }
   }, [message]);
 
-  // Check if all fields are valid
   const isFormValid = () => {
     const isEmailValid =
       email.trim() && emailRegex.test(email) && email.length <= 150;
@@ -32,22 +28,17 @@ export default function Contacts() {
   };
 
   const handleSend = () => {
-    // Reset errors
     setEmailError(null);
     setMessageError(null);
 
-    // Validate email
     if (!email.trim()) {
       setEmailError(
         "It seems you forgot to enter your email. Please add it so we can get back to you.",
       );
     } else if (!emailRegex.test(email) || email.length > 150) {
-      setEmailError(
-        "This email doesn't exist. Please check it and try again.",
-      );
+      setEmailError("This email doesn't exist. Please check it and try again.");
     }
 
-    // Validate message
     if (!message.trim()) {
       setMessageError(
         "The message field is empty — do you really have nothing to tell us?",
@@ -58,7 +49,6 @@ export default function Contacts() {
       );
     }
 
-    // Check if there are any errors
     const hasEmailError =
       !email.trim() || !emailRegex.test(email) || email.length > 150;
     const hasMessageError = !message.trim() || message.length > 999;
@@ -74,7 +64,6 @@ export default function Contacts() {
   return (
     <section className="relative w-full md:min-h-[80vh] xl:min-h-[78vh] flex items-start justify-end mt-15 sm:mt-0 px-4 py-8 md:px-16 md:py-16 bg-[#dadada]">
       <div className="w-full max-w-[910px] flex flex-col">
-        {/* EMAIL */}
         <div className="flex flex-col mb-10">
           <h4 className="mb-3 font-medium text-lg sm:text-[25px] text-[#35353C]">
             Enter your email
@@ -99,7 +88,6 @@ export default function Contacts() {
           />
         </div>
 
-        {/* MESSAGE */}
         <div className="flex flex-col">
           <h4 className="mb-3 font-medium text-lg sm:text-[25px] text-[#35353C]">
             Enter your message
@@ -124,24 +112,23 @@ export default function Contacts() {
             rows={1}
           />
 
-          {/* BUTTON */}
           <div className="mt-6 flex justify-end">
             <button
               onClick={handleSend}
               className={`w-[165px] h-[45px] text-[22px] flex items-center justify-center border font-medium transition-all duration-300 rounded-[0px] hover:rounded-[16px] active:bg-[#9F9B96] active:scale-95
-                ${isFormValid()
-                  ? "border-[#35353C] text-[#35353C] hover:text-[#35353C] hover:border-[#35353C]"
-                  : "border-[#9F9B96] text-[#9F9B96] hover:text-[#35353C] hover:border-[#35353C]"
+                ${
+                  isFormValid()
+                    ? "border-[#35353C] text-[#35353C] hover:text-[#35353C] hover:border-[#35353C]"
+                    : "border-[#9F9B96] text-[#9F9B96] hover:text-[#35353C] hover:border-[#35353C]"
                 }
               `}
             >
-              Send{"        "}&#8250;
+              Send &#8250;
             </button>
           </div>
         </div>
       </div>
 
-      {/* DECOR */}
       <div className="absolute bottom-6 left-1/2 -translate-x-1/2 hidden sm:block">
         <Cross color="#35353C" className="w-4 h-4 md:w-auto md:h-auto" />
       </div>

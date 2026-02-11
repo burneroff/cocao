@@ -354,7 +354,6 @@ export default function Values() {
       ref={containerRef}
       className="relative h-screen flex flex-col items-center justify-center px-4 md:px-8 lg:px-12 xl:px-20 py-8 md:py-12 lg:py-16 md:mr-10"
     >
-      {/* Фон на всю ширину экрана с плавным переходом */}
       <div
         className="absolute inset-y-0 z-0 transition-colors ease-in-out"
         style={{
@@ -365,19 +364,17 @@ export default function Values() {
         }}
       />
 
-      {/* Контент поверх фона с плавной анимацией появления */}
       <div className="relative z-10 h-full flex items-center justify-end w-full">
-        {/* Внутренняя обертка для блока с картинкой и заголовком */}
         <div className="flex flex-col w-full 2xl:w-[910px] 2xl:flex-row items-center md:items-start 2xl:items-start gap-6 md:gap-8 2xl:gap-[15px] min-[1775px]:ml-[100px]">
-          {/* Картинка с адаптивными размерами и плавной сменой */}
           <div className="relative h-[250px] w-[280px] sm:h-[300px] sm:w-[320px] md:h-[350px] md:w-[380px] lg:h-[400px] lg:w-[420px] xl:h-[468px] xl:w-[450px] 2xl:h-[468px] 2xl:w-[450px] shrink-0">
             {valuesData.map((value, index) => (
               <div
                 key={index}
-                className={`absolute inset-0 transition-all duration-700 ease-out ${index === currentSection
-                  ? "opacity-100 translate-y-0 scale-100 blur-0"
-                  : "opacity-0 translate-y-4 scale-[0.98] blur-sm"
-                  }`}
+                className={`absolute inset-0 transition-all duration-700 ease-out ${
+                  index === currentSection
+                    ? "opacity-100 translate-y-0 scale-100 blur-0"
+                    : "opacity-0 translate-y-4 scale-[0.98] blur-sm"
+                }`}
               >
                 <Image
                   src={value.image}
@@ -389,7 +386,6 @@ export default function Values() {
               </div>
             ))}
 
-            {/* Подзаголовок с подчеркиванием - абсолютно позиционирован (только для десктопа) */}
             <div
               className="absolute text-white hidden 2xl:block 2xl:ml-[45px]"
               style={{
@@ -408,10 +404,11 @@ export default function Values() {
               {valuesData.map((value, index) => (
                 <p
                   key={index}
-                  className={`transition-all duration-700 ease-out ${index === currentSection
-                    ? "opacity-100 translate-y-0 blur-0"
-                    : "opacity-0 -translate-y-2 blur-sm absolute inset-0"
-                    }`}
+                  className={`transition-all duration-700 ease-out ${
+                    index === currentSection
+                      ? "opacity-100 translate-y-0 blur-0"
+                      : "opacity-0 -translate-y-2 blur-sm absolute inset-0"
+                  }`}
                 >
                   <span
                     className="inline"
@@ -430,14 +427,14 @@ export default function Values() {
           </div>
 
           <div className="flex flex-col 2xl:flex-row items-center md:items-start 2xl:items-start gap-4 md:gap-6 2xl:gap-[15px] w-full 2xl:w-auto 2xl:ml-4">
-            {/* Заголовок с плавной сменой */}
             {valuesData.map((value, index) => (
               <h2
                 key={index}
-                className={`text-white text-center 2xl:text-left px-4 2xl:ml-[30px] transition-all duration-700 ease-out ${index === currentSection
-                  ? "opacity-100 translate-y-0 blur-0"
-                  : "opacity-0 translate-y-2 blur-sm absolute"
-                  }`}
+                className={`text-white text-center 2xl:text-left px-4 2xl:ml-[30px] transition-all duration-700 ease-out ${
+                  index === currentSection
+                    ? "opacity-100 translate-y-0 blur-0"
+                    : "opacity-0 translate-y-2 blur-sm absolute"
+                }`}
                 style={{
                   fontWeight: 400,
                   fontStyle: "normal",
@@ -456,7 +453,6 @@ export default function Values() {
               />
             ))}
 
-            {/* Подзаголовок для устройств меньше 1400px (скрыт на десктопе 1400+) */}
             <div
               className="2xl:hidden w-full px-0 mt-4 md:mt-6 relative sm:px-4"
               style={{ maxWidth: "490px" }}
@@ -464,10 +460,11 @@ export default function Values() {
               {valuesData.map((value, index) => (
                 <p
                   key={index}
-                  className={`text-white text-justify transition-all duration-700 ease-out ${index === currentSection
-                    ? "opacity-100 translate-y-0 blur-0"
-                    : "opacity-0 -translate-y-2 blur-sm absolute inset-0"
-                    }`}
+                  className={`text-white text-justify transition-all duration-700 ease-out ${
+                    index === currentSection
+                      ? "opacity-100 translate-y-0 blur-0"
+                      : "opacity-0 -translate-y-2 blur-sm absolute inset-0"
+                  }`}
                   style={{
                     fontWeight: 500,
                     fontStyle: "normal",

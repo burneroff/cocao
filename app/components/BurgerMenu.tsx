@@ -62,7 +62,6 @@ export default function BurgerMenu({
   const [clickedSection, setClickedSection] = useState<string | null>(null);
   const sectionRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
-  // Определяем активную секцию через IntersectionObserver
   useEffect(() => {
     const observers: IntersectionObserver[] = [];
     const sectionIntersections = new Map<string, number>();
@@ -82,7 +81,6 @@ export default function BurgerMenu({
         }
       });
 
-      // Находим секцию с максимальным intersection ratio
       let maxRatio = 0;
       let activeId = sections[0].id;
 
@@ -124,7 +122,6 @@ export default function BurgerMenu({
     setIsOpen(nextState);
     document.body.style.overflow = nextState ? "hidden" : "auto";
     if (!nextState) {
-      // Очищаем состояние клика при закрытии меню
       setClickedSection(null);
     }
     if (onMenuToggle) {
@@ -140,7 +137,6 @@ export default function BurgerMenu({
     setClickedSection(id);
     scrollToSection(id);
     setMenuState(false);
-    // Очищаем состояние клика после небольшой задержки, чтобы стили успели примениться
     setTimeout(() => {
       setClickedSection(null);
     }, 500);
@@ -148,12 +144,9 @@ export default function BurgerMenu({
 
   const textColor = "#9F9B96";
   const menuIconColor = iconColor ?? textColor;
-  const menuItemCount = sections.length + 1;
-  const menuHeight = `calc(50% * ${menuItemCount / sections.length})`;
 
   return (
     <>
-      {/* Burger Button */}
       <button
         onClick={toggleMenu}
         className="relative z-50 flex flex-col items-start justify-center w-12 h-12 mr-[12px]"
@@ -169,7 +162,6 @@ export default function BurgerMenu({
         />
       </button>
 
-      {/* Menu Overlay */}
       <div
         className={`fixed inset-0 z-40 transition-all duration-500 ease-in-out ${
           isOpen
@@ -178,19 +170,16 @@ export default function BurgerMenu({
         }`}
         onClick={toggleMenu}
       >
-        {/* Menu Content - выезжает от границы floating-navbar */}
         <div
           className={`absolute left-0 right-0 ${currentBgColor} transition-all duration-500 ease-in-out ${
             isOpen ? "translate-y-0" : "-translate-y-full"
           }`}
           style={{
-            top: "60px", // Высота floating-navbar
-            height: menuHeight,
+            top: "60px",
           }}
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Navigation Links */}
-          <nav className="flex flex-col h-full justify-start mt-[-46px] gap-0 pb-8">
+          <nav className="flex flex-col h-full justify-start mt-[-46px] gap-0 pb-[1px]">
             {sections.map((section, index) => {
               const isActive =
                 activeSection === section.id || clickedSection === section.id;
@@ -202,7 +191,6 @@ export default function BurgerMenu({
                   className={`group relative text-left overflow-hidden py-2 pl-[16px] transition-colors duration-300 ${isClicked ? "bg-[#9F9B96] md:bg-transparent" : ""}`}
                 >
                   <div className="flex items-center gap-0">
-                    {/* Arrow indicator */}
                     <span
                       className={`inline-block transition-all duration-500 ease-in-out text-[22px] leading-[30px] tracking-[0] font-medium ${
                         isActive
@@ -213,7 +201,6 @@ export default function BurgerMenu({
                       ›
                     </span>
 
-                    {/* Label */}
                     <span
                       className={`text-[22px] leading-[30px] tracking-[0] font-medium uppercase transition-colors duration-500 ${
                         isActive ? "text-[#0100F4]" : ""
@@ -224,7 +211,6 @@ export default function BurgerMenu({
                     </span>
                   </div>
 
-                  {/* Underline - всегда видна с цветом текста, не выделяется синим */}
                   <div
                     className="absolute left-0 bottom-0 h-px w-full transition-all duration-500"
                     style={{ backgroundColor: "#3F3E3D" }}

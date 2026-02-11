@@ -10,7 +10,6 @@ export default function CustomCursor() {
   const [isPointer, setIsPointer] = useState(false);
   const [enabled, setEnabled] = useState(false);
 
-  // 👉 определяем устройство
   useEffect(() => {
     const isTouch =
       window.matchMedia("(hover: none)").matches ||
@@ -29,7 +28,7 @@ export default function CustomCursor() {
 
       const target = e.target as HTMLElement;
       const pointer = !!target.closest(
-        "a, button, [role='button'], [data-cursor='pointer']"
+        "a, button, [role='button'], [data-cursor='pointer']",
       );
 
       setIsPointer(pointer);
@@ -58,7 +57,6 @@ export default function CustomCursor() {
     };
   }, [enabled, isPointer, state]);
 
-  // ❌ мобилки / планшеты
   if (!enabled) return null;
 
   const isHover = state === "hover" || state === "active";
@@ -73,7 +71,6 @@ export default function CustomCursor() {
       ref={cursorRef}
       className="pointer-events-none fixed left-0 top-0 z-[9999]"
     >
-      {/* Horizontal */}
       <div
         style={{
           position: "absolute",
@@ -86,7 +83,6 @@ export default function CustomCursor() {
             "width 0.1s cubic-bezier(0.4, 0, 0.2, 1), height 0.1s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.1s, border-radius 0.1s",
         }}
       />
-      {/* Vertical */}
       <div
         style={{
           position: "absolute",

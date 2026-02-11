@@ -37,7 +37,6 @@ export default function Mission() {
     };
   }, []);
 
-  // Запускаем анимацию span через 1.5 секунды после появления блока
   useEffect(() => {
     if (isVisible) {
       const timer = setTimeout(() => {
@@ -47,10 +46,9 @@ export default function Mission() {
     }
   }, [isVisible]);
 
-  // Анимация чисел от 0 до целевых значений
   useEffect(() => {
     if (isVisible) {
-      const duration = 2000; // 2 секунды
+      const duration = 2000;
       const startTime = Date.now();
       const targetValues = { value1: 30, value2: 28, value3: 1.7 };
 
@@ -58,7 +56,6 @@ export default function Mission() {
         const elapsed = Date.now() - startTime;
         const progress = Math.min(elapsed / duration, 1);
 
-        // Easing function для плавной анимации
         const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
 
         const easedProgress = easeOutCubic(progress);
@@ -72,7 +69,6 @@ export default function Mission() {
         if (progress < 1) {
           requestAnimationFrame(animate);
         } else {
-          // Убеждаемся, что финальные значения точные
           setAnimatedValues({
             value1: targetValues.value1,
             value2: targetValues.value2,
@@ -81,7 +77,6 @@ export default function Mission() {
         }
       };
 
-      // Запускаем анимацию через небольшую задержку после появления блока
       const timer = setTimeout(() => {
         animate();
       }, 500);
@@ -92,8 +87,9 @@ export default function Mission() {
   return (
     <div
       ref={sectionRef}
-      className={`min-h-screen md:min-h-[130vh] lg:min-h-[150vh] 2xl:min-h-[120vh] flex items-start justify-end px-4 py-4 md:px-16 md:py-16 relative transition-opacity duration-1000 overflow-x-hidden ${isVisible ? "opacity-100" : "opacity-0"
-        }`}
+      className={`min-h-screen md:min-h-[130vh] lg:min-h-[150vh] 2xl:min-h-[120vh] flex items-start justify-end px-4 py-4 md:px-16 md:py-16 relative transition-opacity duration-1000 overflow-x-hidden ${
+        isVisible ? "opacity-100" : "opacity-0"
+      }`}
     >
       <div className="flex justify-end flex-col">
         <div
@@ -145,9 +141,7 @@ export default function Mission() {
           </p>
         </div>
 
-        {/* 3 блока под текстом - адаптивные отступы */}
         <div className="flex flex-row justify-between gap-4 md:gap-12 xl:gap-[180px] mb-10 mt-8 md:mt-[100px] w-full max-w-full md:max-w-[910px]">
-          {/* Блок 1: 30+ Products */}
           <div className="flex flex-col items-left">
             <div className="text-[48px] md:text-[40px] lg:text-[64px] text-[#CDCDCD] font-normal md:font-medium leading-[48px] md:leading-[48px] lg:leading-[100%] tracking-[0%] uppercase mb-2 md:mb-4">
               {animatedValues.value1}+
@@ -157,7 +151,6 @@ export default function Mission() {
             </div>
           </div>
 
-          {/* Блок 2: 28m+ Installs Worldwide */}
           <div className="flex flex-col items-left">
             <div className="text-[48px] md:text-[40px] lg:text-[64px] text-[#CDCDCD] font-normal md:font-medium leading-[48px] md:leading-[48px] lg:leading-[100%] tracking-[0%] uppercase mb-2 md:mb-4">
               {Math.floor(animatedValues.value2)}m+
@@ -167,7 +160,6 @@ export default function Mission() {
             </div>
           </div>
 
-          {/* Блок 3: 1.7m+ Monthly Active Users */}
           <div className="flex flex-col items-left">
             <div className="text-[48px] md:text-[40px] lg:text-[64px] text-[#CDCDCD] font-normal md:font-medium leading-[48px] md:leading-[48px] lg:leading-[100%] tracking-[0%] uppercase mb-2 md:mb-4">
               {animatedValues.value3.toFixed(1)}m+
@@ -179,7 +171,6 @@ export default function Mission() {
         </div>
       </div>
 
-      {/* Картинка по центру правой части секции - адаптивное позиционирование */}
       <div className="absolute right-1/2 translate-x-1/2 2xl:translate-x-[calc(50%+90px)] bottom-[100px] md:bottom-0 md:-translate-y-1/2 w-[85px] h-[85px] md:w-[150px] md:h-[150px] lg:w-[184px] lg:h-[184px]">
         <Image
           src="/frames/frame_mission.png"
@@ -190,20 +181,12 @@ export default function Mission() {
           priority
         />
 
-        {/* Первый Cross - адаптивное позиционирование */}
         <div className="absolute left-[-30px] md:left-[-45px] lg:left-[-60px] bottom-[-30px] md:bottom-[-40px] lg:bottom-[-50px]">
-          <Cross
-            color="#000000"
-            className="w-4 h-4 lg:w-auto lg:h-auto"
-          />
+          <Cross color="#000000" className="w-4 h-4 lg:w-auto lg:h-auto" />
         </div>
 
-        {/* Второй Cross - адаптивное позиционирование */}
         <div className="absolute right-[-30px] md:right-[-45px] lg:right-[-60px] top-[-30px] md:top-[-40px] lg:top-[-50px] md:block">
-          <Cross
-            color="#000000"
-            className="w-4 h-4 lg:w-auto lg:h-auto"
-          />
+          <Cross color="#000000" className="w-4 h-4 lg:w-auto lg:h-auto" />
         </div>
       </div>
     </div>

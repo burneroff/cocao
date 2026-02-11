@@ -122,7 +122,6 @@ export default function Products() {
   const handleMouseEnter = (index: number) => {
     if (!isDesktop) return;
 
-    // Сбрасываем состояние для ссылки
     setShouldShowLink(false);
 
     if (linkTimeout.current) {
@@ -134,7 +133,6 @@ export default function Products() {
       setHoveredIndex(index);
       setIsHoveringProduct(true);
 
-      // Добавляем задержку для показа ссылки
       linkTimeout.current = setTimeout(() => {
         setShouldShowLink(true);
       }, 150);

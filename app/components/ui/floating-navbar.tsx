@@ -85,7 +85,6 @@ export const FloatingNav = ({
         }
       });
 
-      // Находим секцию с максимальным intersection ratio
       let maxRatio = 0;
       let activeId = sections[0].id;
 
@@ -123,20 +122,15 @@ export const FloatingNav = ({
     };
   }, []);
 
-  // Отслеживание направления скролла (только для мобилок)
   useEffect(() => {
-    // На десктопе всегда показываем статично
     if (!isMobile) {
       setVisible(true);
       return;
     }
 
-    // На мобилках всегда показываем
     setVisible(true);
   }, [isMobile]);
 
-  // Определяем финальное состояние для анимации
-  // На десктопе всегда показываем статично, на мобилках - по логике скролла
   const shouldShow = isLoaded && (!isMobile || visible);
 
   return (
@@ -168,16 +162,15 @@ export const FloatingNav = ({
         style={
           isMobile
             ? {
-              borderBottomColor:
-                currentBgColor === "bg-[#dadada]" ? "#CDCDCD" : "#3F3E3D",
-            }
+                borderBottomColor:
+                  currentBgColor === "bg-[#dadada]" ? "#CDCDCD" : "#3F3E3D",
+              }
             : undefined
         }
       >
         <div className="flex-1 pl-[16px]">
           {!isMenuOpen && (
             <>
-              {/* Mobile: показываем активную секцию */}
               <div className="md:hidden">
                 <button
                   type="button"
@@ -205,7 +198,6 @@ export const FloatingNav = ({
                   </AnimatePresence>
                 </button>
               </div>
-              {/* Desktop: показываем Cacao Mobile */}
               <div className="hidden md:block">
                 <span className="text-[#9F9B96] font-medium text-[clamp(16px,1.5vw,24px)]">
                   Cacao Mobile
@@ -215,7 +207,6 @@ export const FloatingNav = ({
           )}
         </div>
 
-        {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-8">
           <Link
             href="https://apps.apple.com/us/developer/cacao-mobile/id1612079536"
@@ -275,8 +266,6 @@ export const FloatingNav = ({
             </Link>
           )}
         </nav>
-
-        {/* Mobile Burger Menu */}
         <div className="md:hidden pr-[16px]">
           <BurgerMenu
             scrollToSection={scrollToSection}

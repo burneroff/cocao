@@ -348,6 +348,28 @@ export default function Products() {
           </div>
         </div>
       </div>
+      {/* Скрытые изображения для предзагрузки */}
+      <div className="hidden">
+        {Array.from(
+          new Set(
+            tableRows
+              .flat()
+              .filter((item) => item.type === "text")
+              .map((item) => item.content)
+          )
+        ).map((productName) => (
+          <Image
+            key={productName}
+            src={getProductImage(productName)}
+            alt=""
+            width={303}
+            height={303}
+            quality={85}
+            priority={false}
+            loading="eager"
+          />
+        ))}
+      </div>
     </div>
   );
 }

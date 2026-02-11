@@ -123,9 +123,7 @@ export default function VacanciesClient() {
       buttonTimeoutRef.current = window.setTimeout(() => {
         setActiveButton(null);
       }, 2000);
-    } catch {
-      // noop
-    }
+    } catch {}
   };
 
   const handleButtonClick = (buttonType: "tg" | "linkedin") => {
@@ -361,8 +359,6 @@ export default function VacanciesClient() {
           background: "linear-gradient(to top, #1F1F23, #1F1F2300)",
         }}
       />
-
-      {/* Footer - Desktop */}
       <footer
         className="hidden md:block fixed bottom-0 left-0 right-0 bg-[#1F1F23] border-t border-[#35353C] z-30"
         style={{ borderWidth: "1px" }}
@@ -408,8 +404,6 @@ export default function VacanciesClient() {
           </div>
         </div>
       </footer>
-
-      {/* Footer - Mobile: 3 кнопки в абсолютном позиционировании */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 z-30 px-4 pb-[40px]">
         <div className="flex items-center justify-end gap-3">
           <a

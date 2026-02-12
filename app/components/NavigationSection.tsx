@@ -195,8 +195,8 @@ const NavItems = ({
           >
             <span
               className={`inline-block transition-all duration-1000 ease-in-out ${activeSection === section.id || hoveredId === section.id
-                  ? "opacity-100 translate-x-0 text-[#0100F4] w-auto"
-                  : "opacity-0 -translate-x-4 w-0 overflow-hidden"
+                ? "opacity-100 translate-x-0 text-[#0100F4] w-auto"
+                : "opacity-0 -translate-x-4 w-0 overflow-hidden"
                 }`}
             >
               ›

@@ -58,7 +58,7 @@ export default function Contacts() {
     const subject = encodeURIComponent("Message from website");
     const body = encodeURIComponent(message);
 
-    window.location.href = `mailto:burneroff@outlook.com?subject=${subject}&body=From: ${email}%0A%0A${body}`;
+    window.location.href = `mailto:hr@cacao-mobile.com?subject=${subject}&body=Email: ${email}%0A%0A${body}`;
   };
 
   return (
@@ -116,9 +116,10 @@ export default function Contacts() {
             <button
               onClick={handleSend}
               className={`w-[165px] h-[45px] text-[22px] flex items-center justify-center border font-medium transition-all duration-300 rounded-[0px] hover:rounded-[16px] active:bg-[#9F9B96] active:scale-95
-                ${isFormValid()
-                  ? "border-[#35353C] text-[#35353C] hover:text-[#35353C] hover:border-[#35353C]"
-                  : "border-[#9F9B96] text-[#9F9B96] hover:text-[#35353C] hover:border-[#35353C]"
+                ${
+                  isFormValid()
+                    ? "border-[#35353C] text-[#35353C] hover:text-[#35353C] hover:border-[#35353C]"
+                    : "border-[#9F9B96] text-[#9F9B96] hover:text-[#35353C] hover:border-[#35353C]"
                 }
               `}
             >

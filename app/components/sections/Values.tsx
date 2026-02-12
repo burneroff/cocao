@@ -49,8 +49,7 @@ const valuesData: ValueSection[] = [
 export default function Values() {
   const [currentSection, setCurrentSection] = useState(0);
   const [allSectionsViewed, setAllSectionsViewed] = useState(false);
-  const [isMobile, setIsMobile] = useState(true);
-  const [isSnapDisabled, setIsSnapDisabled] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const viewedSectionsRef = useRef<Set<number>>(new Set([0]));
   const isActiveRef = useRef(false);
@@ -68,31 +67,10 @@ export default function Values() {
   const lastIntentRef = useRef(0);
   const transitionLockMs = 500;
   const swiperRef = useRef<SwiperType | null>(null);
-  const useMobileLayout = isMobile || isSnapDisabled;
 
   useLayoutEffect(() => {
-    const userAgent = window.navigator.userAgent;
-    const hasTelegramWebApp =
-      typeof (window as { Telegram?: { WebApp?: unknown } }).Telegram?.WebApp !==
-      "undefined";
-    const isTelegramUa = /Telegram/i.test(userAgent);
-
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 820);
-      const hasFinePointerAndHover =
-        window.matchMedia?.("(hover: hover) and (pointer: fine)").matches ??
-        false;
-      const hasTouchSupport = window.navigator.maxTouchPoints > 0;
-      const isIosDevice =
-        /iPhone|iPad|iPod/i.test(userAgent) ||
-        (/Macintosh/i.test(userAgent) && hasTouchSupport);
-      const canUseDesktopSnap =
-        hasFinePointerAndHover &&
-        !hasTouchSupport &&
-        !hasTelegramWebApp &&
-        !isTelegramUa &&
-        !isIosDevice;
-      setIsSnapDisabled(!canUseDesktopSnap);
     };
 
     checkMobile();
@@ -143,7 +121,7 @@ export default function Values() {
   }, [allSectionsViewed]);
 
   useLayoutEffect(() => {
-    if (useMobileLayout) return;
+    if (isMobile) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -180,10 +158,10 @@ export default function Values() {
     }
 
     return () => observer.disconnect();
-  }, [useMobileLayout]);
+  }, [isMobile]);
 
   useLayoutEffect(() => {
-    if (useMobileLayout) return;
+    if (isMobile) return;
 
     const endProgrammaticScroll = () => {
       const targetId = programmaticTargetRef.current;
@@ -244,10 +222,10 @@ export default function Values() {
         window.cancelAnimationFrame(snapRafRef.current);
       }
     };
-  }, [useMobileLayout]);
+  }, [isMobile]);
 
   useLayoutEffect(() => {
-    if (useMobileLayout) return;
+    if (isMobile) return;
 
     const canExitUp = (deltaY: number) => currentSection === 0 && deltaY < 0;
     const canExitDown = (deltaY: number) =>
@@ -377,11 +355,11 @@ export default function Values() {
       window.removeEventListener("touchmove", handleTouchMove);
       window.removeEventListener("touchend", handleTouchEnd);
     };
-  }, [currentSection, allSectionsViewed, useMobileLayout]);
+  }, [currentSection, allSectionsViewed, isMobile]);
 
   const currentValue = valuesData[currentSection];
 
-  if (useMobileLayout) {
+  if (isMobile) {
     return (
       <div className="relative w-full h-screen">
         <Swiper

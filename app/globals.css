@@ -37,7 +37,7 @@ body {
 }
 
 /* Custom breakpoint for team section */
-@media (min-width: 1540px) {
+@media (min-width: 1200px) {
   .team-large-screen {
     display: flex !important;
   }
@@ -47,7 +47,7 @@ body {
   }
 }
 
-@media (max-width: 1539px) {
+@media (max-width: 1200px) {
   .team-large-screen {
     display: none !important;
   }

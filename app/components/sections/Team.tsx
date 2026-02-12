@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Cross } from "../icons/Cross";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { FreeMode } from "swiper/modules";
@@ -61,7 +61,19 @@ const team = [
 
 export default function Team() {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const [isLargeScreen, setIsLargeScreen] = useState(false);
   const hoverTimeout = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsLargeScreen(window.innerWidth >= 1300);
+    };
+
+    checkScreenSize();
+    window.addEventListener("resize", checkScreenSize);
+
+    return () => window.removeEventListener("resize", checkScreenSize);
+  }, []);
 
   const handleMouseEnter = (index: number) => {
     hoverTimeout.current = setTimeout(() => {
@@ -75,6 +87,11 @@ export default function Team() {
       hoverTimeout.current = null;
     }
     setActiveIndex(null);
+  };
+
+  // Размеры для активной карточки: 340px для >= 1400px, 240px для < 1400px
+  const getActiveCardSize = () => {
+    return isLargeScreen ? 340 : 240;
   };
 
   return (
@@ -109,22 +126,22 @@ export default function Team() {
       >
         {team.map((member, index) => {
           const isActive = activeIndex === index;
-          const baseWidth = index === 0 ? "w-[140px]" : "w-[110px]";
+          const activeSize = getActiveCardSize();
 
           return (
             <div
               key={member.name}
               onMouseEnter={() => handleMouseEnter(index)}
               onMouseLeave={handleMouseLeave}
-              className={`relative cursor-pointer transition-all duration-500  z-10`}
+              className={`relative cursor-pointer transition-all duration-500 z-10`}
               style={{
                 flexGrow: isActive ? 0 : 1,
-                flexBasis: isActive ? "340px" : "0px",
-                maxWidth: isActive ? "340px" : "113px",
-                minWidth: isActive ? "340px" : "80px",
+                maxWidth: isActive ? `${activeSize}px` : "113px",
+                flexBasis: isActive ? `${activeSize}px` : "0px",
+                minWidth: isActive ? `${activeSize}px` : "80px",
               }}
             >
-              <div className="relative w-full h-[450px] overflow-hidden">
+              <div className="relative w-full lg:h-[350px] xl:h-[450px] overflow-hidden">
                 <Image
                   src={member.image}
                   alt={member.name}
@@ -139,18 +156,20 @@ export default function Team() {
                 />
               </div>
 
-              <div className="mt-6 h-[70px] overflow-hidden w-[350px]">
+              <div
+                className="mt-4 xl:mt-6 h-[70px] overflow-hidden w-[350px]"
+              >
                 <div
                   className={`transition-all duration-500 ${isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"}`}
                 >
                   <p
-                    className="text-[25px] leading-[35px] font-medium"
+                    className="text-[18px] xl:text-[25px] leading-[35px] font-medium"
                     style={{ color: "#3F3E3D" }}
                   >
                     {member.position}
                   </p>
                   <p
-                    className="text-[16px] leading-[25px] font-normal"
+                    className=" text-[14px] xl:text-[16px] leading-[25px] font-normal"
                     style={{ color: "#3F3E3D" }}
                   >
                     {member.name}

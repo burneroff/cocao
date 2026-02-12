@@ -185,7 +185,7 @@ const NavItems = ({
             }}
             onMouseLeave={() => setHoveredId(null)}
             style={{
-              lineHeight: "clamp(52px, 7vw, 100px)",
+              lineHeight: "clamp(52px, 6vw, 100px)",
               color:
                 activeSection === section.id || hoveredId === section.id
                   ? "#0100F4"
@@ -195,7 +195,7 @@ const NavItems = ({
 
               transition: "color 0.5s ease-in-out",
             }}
-            className="flex items-center gap-0 text-left text-[clamp(48px,6vw,100px)] font-semibold uppercase"
+            className="flex items-center gap-0 text-left lg:text-[clamp(48px,5vw,100px)] 2xl:text-[clamp(48px,6vw,100px)] font-semibold uppercase"
           >
             <span
               className={`inline-block transition-all duration-1000 ease-in-out ${activeSection === section.id || hoveredId === section.id

@@ -9,8 +9,8 @@ export default function Footer() {
   return (
     <footer
       className="
-      mt-[170px]
-      md: mt-[0px]
+      pt-[170px]
+      md: pt-[0px]
     w-full mb-[20px] md:mb-[0px] md:h-[204px] relative
     flex items-start min-[400px]:items-center
     px-[16px]
@@ -63,12 +63,12 @@ export default function Footer() {
           ...(hasVacancies
             ? [{ label: "Vacancies", href: "/vacancies", external: true }]
             : [
-                {
-                  label: "Telegram",
-                  href: "https://t.me/kirill_svc",
-                  external: true,
-                },
-              ]),
+              {
+                label: "Telegram",
+                href: "https://t.me/kirill_svc",
+                external: true,
+              },
+            ]),
           {
             label: "LinkedIn",
             href: "https://pl.linkedin.com/company/cacao-mobile-sp-z-o-o",

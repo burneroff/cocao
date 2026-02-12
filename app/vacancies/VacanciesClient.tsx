@@ -17,6 +17,7 @@ export default function VacanciesClient() {
   >(null);
   const emailTimeoutRef = useRef<number | null>(null);
   const buttonTimeoutRef = useRef<number | null>(null);
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
 
   useEffect(() => {
     document.documentElement.style.setProperty("--background", "#1F1F23");
@@ -65,6 +66,21 @@ export default function VacanciesClient() {
           });
         }
       });
+    }
+
+    // Auto-scroll mobile tabs to center the active vacancy
+    if (mobileScrollerRef.current) {
+      const scroller = mobileScrollerRef.current;
+      const container = scroller.firstElementChild;
+      if (container) {
+        const idx = vacancies.findIndex((v) => v.id === activeId);
+        const target = container.children[idx] as HTMLElement | undefined;
+        if (target) {
+          const targetScrollLeft =
+            target.offsetLeft - (scroller.clientWidth - target.offsetWidth) / 2;
+          scroller.scrollTo({ left: targetScrollLeft, behavior: "smooth" });
+        }
+      }
     }
   }, [activeId]);
 
@@ -132,6 +148,32 @@ export default function VacanciesClient() {
     buttonTimeoutRef.current = window.setTimeout(() => {
       setActiveButton(null);
     }, 1000);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartRef.current = {
+      x: e.touches[0].clientX,
+      y: e.touches[0].clientY,
+    };
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!touchStartRef.current) return;
+    const dx = e.changedTouches[0].clientX - touchStartRef.current.x;
+    const dy = e.changedTouches[0].clientY - touchStartRef.current.y;
+    touchStartRef.current = null;
+
+    // Only trigger on horizontal swipes (ignore vertical scroll gestures)
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+      const currentIndex = vacancies.findIndex((v) => v.id === activeId);
+      if (dx < 0 && currentIndex < vacancies.length - 1) {
+        // Swipe left → next vacancy
+        setActiveId(vacancies[currentIndex + 1].id);
+      } else if (dx > 0 && currentIndex > 0) {
+        // Swipe right → previous vacancy
+        setActiveId(vacancies[currentIndex - 1].id);
+      }
+    }
   };
 
   const activeVacancy = useMemo(
@@ -274,6 +316,8 @@ export default function VacanciesClient() {
         <div
           ref={contentRef}
           className="h-screen overflow-y-auto px-6 md:px-0 pb-42 md:pb-32 pt-[110px] md:pt-[110px]"
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
         >
           <AnimatePresence mode="wait">
             {activeVacancy ? (

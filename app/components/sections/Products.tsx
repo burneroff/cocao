@@ -99,7 +99,9 @@ const textVariants: Variants = {
 
 export default function Products() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const [mobileHoveredIndexes, setMobileHoveredIndexes] = useState<number[]>([]);
+  const [mobileHoveredIndexes, setMobileHoveredIndexes] = useState<number[]>(
+    [],
+  );
   const [cursorPosition, setCursorPosition] = useState<{
     x: number;
     y: number;
@@ -153,7 +155,8 @@ export default function Products() {
 
         const rect = el.getBoundingClientRect();
         const itemCenterY = rect.top + rect.height / 2;
-        const isInCenterZone = itemCenterY >= zoneTop && itemCenterY <= zoneBottom;
+        const isInCenterZone =
+          itemCenterY >= zoneTop && itemCenterY <= zoneBottom;
 
         if (isInCenterZone) nextHoveredIndexes.push(Number(key));
       });
@@ -272,14 +275,14 @@ export default function Products() {
           style={{
             left: cursorPosition.x + 15,
             top: cursorPosition.y - 40,
-            width: 155,
+            width: 110,
             height: 30,
             background: "#FAFAFA",
             borderRadius: 30,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            fontSize: 25,
+            fontSize: 18,
             fontWeight: 500,
             color: "#9F9B96",
           }}
@@ -357,10 +360,11 @@ export default function Products() {
                           </div>
 
                           <div
-                            className={`absolute inset-0 overflow-hidden transition-transform duration-500 ${isHovering
-                              ? "translate-y-0"
-                              : "-translate-y-[102%]"
-                              } `}
+                            className={`absolute inset-0 overflow-hidden transition-transform duration-500 ${
+                              isHovering
+                                ? "translate-y-0"
+                                : "-translate-y-[102%]"
+                            } `}
                           >
                             <Image
                               draggable={false}

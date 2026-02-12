@@ -157,18 +157,18 @@ export default function BurgerMenu({
       >
         <span
           className="block h-[2px] w-[40px] mb-2 transition-colors duration-500"
-          style={{ backgroundColor: "#3F3E3D" }}
+          style={{ backgroundColor: menuIconColor }}
         />
         <span
           className="block h-[2px] w-[60px] transition-colors duration-500"
-          style={{ backgroundColor: "#3F3E3D" }}
+          style={{ backgroundColor: menuIconColor }}
         />
       </button>
 
       <div
         className={`fixed inset-0 z-40 transition-all duration-500 ease-in-out ${isOpen
-          ? "opacity-100 pointer-events-auto"
-          : "opacity-0 pointer-events-none"
+            ? "opacity-100 pointer-events-auto"
+            : "opacity-0 pointer-events-none"
           }`}
         onClick={toggleMenu}
       >
@@ -194,8 +194,8 @@ export default function BurgerMenu({
                   <div className="flex items-center gap-0">
                     <span
                       className={`inline-block transition-all duration-500 ease-in-out text-[22px] leading-[30px] tracking-[0] font-medium ${isActive
-                        ? "opacity-100 translate-x-0 text-[#0100F4] w-auto"
-                        : "opacity-0 -translate-x-4 w-0 overflow-hidden"
+                          ? "opacity-100 translate-x-0 text-[#0100F4] w-auto"
+                          : "opacity-0 -translate-x-4 w-0 overflow-hidden"
                         }`}
                     >
                       ›

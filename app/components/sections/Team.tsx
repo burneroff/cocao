@@ -110,7 +110,6 @@ export default function Team() {
         {team.map((member, index) => {
           const isActive = activeIndex === index;
           const baseWidth = index === 0 ? "w-[140px]" : "w-[110px]";
-          const isEugene = member.name === "Eugene Krukov";
 
           return (
             <div
@@ -126,48 +125,18 @@ export default function Team() {
               }}
             >
               <div className="relative w-full h-[450px] overflow-hidden">
-                {isEugene ? (
-                  <>
-                    <Image
-                      src={member.image}
-                      alt={member.name}
-                      fill
-                      className={`object-cover grayscale transition-opacity duration-500 ${isActive ? "opacity-0" : "opacity-100"
-                        }`}
-                      style={{
-                        objectPosition: isActive
-                          ? "50% 50%"
-                          : `calc(50% + ${member.offset}px) 50%`,
-                      }}
-                      priority
-                    />
-                    <Image
-                      src="/team/Soldier.png"
-                      alt={member.name}
-                      fill
-                      className={`object-cover transition-opacity duration-500 absolute inset-0 ${isActive ? "opacity-100" : "opacity-0"
-                        }`}
-                      style={{
-                        objectPosition: "50% 50%",
-                      }}
-                      priority
-                    />
-                  </>
-                ) : (
-                  <Image
-                    src={member.image}
-                    alt={member.name}
-                    fill
-                    className={`object-cover grayscale transition-all duration-500 ${isActive ? "grayscale-0" : ""
-                      }`}
-                    style={{
-                      objectPosition: isActive
-                        ? "50% 50%"
-                        : `calc(50% + ${member.offset}px) 50%`,
-                    }}
-                    priority
-                  />
-                )}
+                <Image
+                  src={member.image}
+                  alt={member.name}
+                  fill
+                  className={`object-cover grayscale transition-all duration-500 ${isActive ? "grayscale-0" : ""}`}
+                  style={{
+                    objectPosition: isActive
+                      ? "50% 50%"
+                      : `calc(50% + ${member.offset}px) 50%`,
+                  }}
+                  priority
+                />
               </div>
 
               <div className="mt-6 h-[70px] overflow-hidden w-[350px]">

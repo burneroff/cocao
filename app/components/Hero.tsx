@@ -18,14 +18,14 @@ export default function Hero({ isLoaded = false }: HeroProps) {
     const resetVideo = () => {
       try {
         video.currentTime = 0;
-      } catch {}
+      } catch { }
     };
 
     if (isLoaded) {
       resetVideo();
       const playPromise = video.play();
       if (playPromise && typeof playPromise.catch === "function") {
-        playPromise.catch(() => {});
+        playPromise.catch(() => { });
       }
     } else {
       video.pause();
@@ -36,9 +36,8 @@ export default function Hero({ isLoaded = false }: HeroProps) {
   return (
     <section className="relative h-screen max-h-screen w-screen overflow-hidden font-sans bg-black">
       <div
-        className={`absolute inset-0 bg-black transition-opacity duration-800 ${
-          isLoaded ? "opacity-0" : "opacity-100"
-        }`}
+        className={`absolute inset-0 bg-black transition-opacity duration-800 ${isLoaded ? "opacity-0" : "opacity-100"
+          }`}
         style={{
           transitionDelay: isLoaded ? videoDelay : "0s",
         }}
@@ -51,9 +50,8 @@ export default function Hero({ isLoaded = false }: HeroProps) {
         muted
         playsInline
         preload="auto"
-        className={`absolute left-0 top-0 h-full w-full object-cover scale-y-[-1] transition-opacity duration-800 max-sm:top-[-152px] ${
-          isLoaded ? "opacity-100" : "opacity-0"
-        }`}
+        className={`absolute left-0 top-0 h-full w-full object-cover scale-y-[-1] transition-opacity duration-800 max-sm:top-[-152px] ${isLoaded ? "opacity-100" : "opacity-0"
+          }`}
         style={{
           transitionDelay: isLoaded ? videoDelay : "0s",
         }}
@@ -62,9 +60,8 @@ export default function Hero({ isLoaded = false }: HeroProps) {
       </video>
 
       <div
-        className={`absolute bottom-0 left-0 h-[200px] w-full transition-opacity duration-800 ${
-          isLoaded ? "opacity-100" : "opacity-0"
-        }`}
+        className={`absolute bottom-0 left-0 h-[200px] w-full transition-opacity duration-800 ${isLoaded ? "opacity-100" : "opacity-0"
+          }`}
         style={{
           background: "linear-gradient(to top, black, rgba(8,8,8,0))",
           transitionDelay: isLoaded ? videoDelay : "0s",
@@ -72,7 +69,7 @@ export default function Hero({ isLoaded = false }: HeroProps) {
       />
 
       <div className="relative z-10 flex h-full flex-col">
-        <div className="flex flex-1 items-end justify-start pb-18 md:justify-end md:pb-12 md:items-center xl:pb-0 px-4 md:pr-16">
+        <div className="flex flex-1 items-end justify-start pb-22 md:justify-end md:pb-12 md:items-center xl:pb-0 px-4 md:pr-16">
           <div className="flex flex-col text-left min-[1000px]:text-right">
             <h1
               className={`

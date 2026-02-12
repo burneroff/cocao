@@ -52,24 +52,26 @@ export default function Footer() {
     static
     transform-none
     flex-col-reverse min-[1000px]:flex-col
+    text-right
+    min-[1000px]:text-left
   "
       >
         {[
           { label: "hr@cacao-mobile.com", href: "mailto:hr@cacao-mobile.com" },
+          ...(hasVacancies
+            ? [{ label: "Vacancies", href: "/vacancies", external: true }]
+            : [
+              {
+                label: "Telegram",
+                href: "https://t.me/kirill_svc",
+                external: true,
+              },
+            ]),
           {
             label: "LinkedIn",
             href: "https://pl.linkedin.com/company/cacao-mobile-sp-z-o-o",
             external: true,
           },
-          ...(hasVacancies
-            ? [{ label: "Vacancies", href: "/vacancies", external: true }]
-            : [
-                {
-                  label: "Telegram",
-                  href: "https://t.me/kirill_svc",
-                  external: true,
-                },
-              ]),
         ].map((item) => (
           <Link
             key={item.label}

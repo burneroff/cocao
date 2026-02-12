@@ -70,7 +70,7 @@ export default function Values() {
 
   useLayoutEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
+      setIsMobile(window.innerWidth < 820);
     };
 
     checkMobile();

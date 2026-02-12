@@ -50,6 +50,7 @@ export default function Values() {
   const [currentSection, setCurrentSection] = useState(0);
   const [allSectionsViewed, setAllSectionsViewed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [isSnapDisabled, setIsSnapDisabled] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const viewedSectionsRef = useRef<Set<number>>(new Set([0]));
   const isActiveRef = useRef(false);
@@ -69,8 +70,20 @@ export default function Values() {
   const swiperRef = useRef<SwiperType | null>(null);
 
   useLayoutEffect(() => {
+    const userAgent = window.navigator.userAgent;
+    const hasTelegramWebApp =
+      typeof (window as { Telegram?: { WebApp?: unknown } }).Telegram?.WebApp !==
+      "undefined";
+    const isTelegramUa = /Telegram/i.test(userAgent);
+
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 820);
+      const hasCoarsePointer =
+        window.matchMedia?.("(hover: none), (pointer: coarse)").matches ?? false;
+      const hasTouchSupport = window.navigator.maxTouchPoints > 0;
+      setIsSnapDisabled(
+        hasCoarsePointer || hasTouchSupport || hasTelegramWebApp || isTelegramUa,
+      );
     };
 
     checkMobile();
@@ -121,7 +134,7 @@ export default function Values() {
   }, [allSectionsViewed]);
 
   useLayoutEffect(() => {
-    if (isMobile) return;
+    if (isMobile || isSnapDisabled) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -158,10 +171,10 @@ export default function Values() {
     }
 
     return () => observer.disconnect();
-  }, [isMobile]);
+  }, [isMobile, isSnapDisabled]);
 
   useLayoutEffect(() => {
-    if (isMobile) return;
+    if (isMobile || isSnapDisabled) return;
 
     const endProgrammaticScroll = () => {
       const targetId = programmaticTargetRef.current;
@@ -222,10 +235,10 @@ export default function Values() {
         window.cancelAnimationFrame(snapRafRef.current);
       }
     };
-  }, [isMobile]);
+  }, [isMobile, isSnapDisabled]);
 
   useLayoutEffect(() => {
-    if (isMobile) return;
+    if (isMobile || isSnapDisabled) return;
 
     const canExitUp = (deltaY: number) => currentSection === 0 && deltaY < 0;
     const canExitDown = (deltaY: number) =>
@@ -355,7 +368,7 @@ export default function Values() {
       window.removeEventListener("touchmove", handleTouchMove);
       window.removeEventListener("touchend", handleTouchEnd);
     };
-  }, [currentSection, allSectionsViewed, isMobile]);
+  }, [currentSection, allSectionsViewed, isMobile, isSnapDisabled]);
 
   const currentValue = valuesData[currentSection];
 

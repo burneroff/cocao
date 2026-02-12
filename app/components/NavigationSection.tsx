@@ -91,9 +91,9 @@ const SectionWrapper = ({
   const backgroundStyle =
     sectionId === "mission"
       ? {
-          background: "linear-gradient(to bottom, #000000 60%, #dadada 60%)",
-          width: isMobile ? "100%" : "100vw",
-        }
+        background: "linear-gradient(to bottom, #000000 60%, #dadada 60%)",
+        width: isMobile ? "100%" : "100vw",
+      }
       : { width: isMobile ? "100%" : "100vw" };
 
   return (
@@ -103,9 +103,8 @@ const SectionWrapper = ({
         wrapperRef.current = el;
       }}
       id={sectionId}
-      className={`relative z-10 ${sectionId === "mission" ? "" : bgColor} transition-opacity duration-1000 ${
-        isVisible ? "opacity-100" : "opacity-0"
-      }`}
+      className={`relative z-10 ${sectionId === "mission" ? "" : bgColor} transition-opacity duration-1000 ${isVisible ? "opacity-100" : "opacity-0"
+        }`}
       style={backgroundStyle}
     >
       <div className={isMobile ? "" : "pl-[33.333333%]"}>{children}</div>
@@ -195,11 +194,10 @@ const NavItems = ({
             className="flex items-center gap-0 text-left text-[clamp(48px,6vw,100px)] font-semibold uppercase"
           >
             <span
-              className={`inline-block transition-all duration-1000 ease-in-out ${
-                activeSection === section.id || hoveredId === section.id
+              className={`inline-block transition-all duration-1000 ease-in-out ${activeSection === section.id || hoveredId === section.id
                   ? "opacity-100 translate-x-0 text-[#0100F4] w-auto"
                   : "opacity-0 -translate-x-4 w-0 overflow-hidden"
-              }`}
+                }`}
             >
               ›
             </span>
@@ -282,6 +280,7 @@ export default function NavigationSection() {
   const sectionRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState(false);
+  const [isSnapDisabled, setIsSnapDisabled] = useState(false);
   const isProgrammaticScrollRef = useRef(false);
   const programmaticTimeoutRef = useRef<number | null>(null);
   const wheelAccumulatorRef = useRef(0);
@@ -388,9 +387,21 @@ export default function NavigationSection() {
       /Safari/i.test(userAgent) &&
       !/Chrome|Chromium|CriOS|Edg|OPR|FxiOS|Android/i.test(userAgent);
 
-    // Проверяем, мобильное ли устройство при загрузке и при изменении размера
+    const hasTelegramWebApp =
+      typeof (window as { Telegram?: { WebApp?: unknown } }).Telegram?.WebApp !==
+      "undefined";
+    const isTelegramUa = /Telegram/i.test(userAgent);
+
+    // На touch-устройствах и в Telegram WebView отключаем кастомный snap,
+    // оставляя нативный скролл во избежание лагов.
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
+      const hasCoarsePointer =
+        window.matchMedia?.("(hover: none), (pointer: coarse)").matches ?? false;
+      const hasTouchSupport = window.navigator.maxTouchPoints > 0;
+      setIsSnapDisabled(
+        hasCoarsePointer || hasTouchSupport || hasTelegramWebApp || isTelegramUa,
+      );
     };
 
     // Проверяем при загрузке
@@ -499,7 +510,7 @@ export default function NavigationSection() {
         if (usElement) {
           const usRect = usElement.getBoundingClientRect();
           const shouldPreview = usRect.top < viewportHeight + 400 && usRect.bottom > -400;
-          
+
           // Диспатчим событие только если состояние изменилось
           if (shouldPreview !== lastUsPreviewState) {
             if (shouldPreview) {
@@ -537,7 +548,7 @@ export default function NavigationSection() {
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     window.addEventListener("resize", handleResize, { passive: true });
-    
+
     // Инициализация при монтировании
     updateBackgroundColor();
 
@@ -570,7 +581,7 @@ export default function NavigationSection() {
   }, [isMobile]);
 
   useEffect(() => {
-    if (isMobile) return;
+    if (isMobile || isSnapDisabled) return;
     const handleValuesRelease = (event: Event) => {
       const customEvent = event as CustomEvent<{ direction?: "down" | "up" }>;
       if (isProgrammaticScrollRef.current) return;
@@ -600,11 +611,11 @@ export default function NavigationSection() {
     return () => {
       window.removeEventListener("values-release", handleValuesRelease);
     };
-  }, [isMobile]);
+  }, [isMobile, isSnapDisabled]);
 
   useEffect(() => {
-    if (isMobile) return;
-    
+    if (isMobile || isSnapDisabled) return;
+
     // Кэш для sectionRects, обновляется только при необходимости
     let cachedSectionRects: { id: string; rect: DOMRect }[] | null = null;
     let cachedScrollY = -1;
@@ -824,7 +835,7 @@ export default function NavigationSection() {
       window.removeEventListener("touchmove", handleTouchMove);
       window.removeEventListener("touchend", handleTouchEnd);
     };
-  }, [isMobile]);
+  }, [isMobile, isSnapDisabled]);
 
   useEffect(() => {
     if (isMobile) return;
@@ -933,9 +944,8 @@ export default function NavigationSection() {
       )}
 
       <div
-        className={`flex-1 ${
-          isMobile ? "w-full" : "-ml-[33.333333%]"
-        }  overflow-hidden`}
+        className={`flex-1 ${isMobile ? "w-full" : "-ml-[33.333333%]"
+          }  overflow-hidden`}
       >
         {sections.map((section) => {
           const SectionComponent = section.component;

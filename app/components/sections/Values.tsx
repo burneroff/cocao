@@ -78,12 +78,20 @@ export default function Values() {
 
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 820);
-      const hasCoarsePointer =
-        window.matchMedia?.("(hover: none), (pointer: coarse)").matches ?? false;
+      const hasFinePointerAndHover =
+        window.matchMedia?.("(hover: hover) and (pointer: fine)").matches ??
+        false;
       const hasTouchSupport = window.navigator.maxTouchPoints > 0;
-      setIsSnapDisabled(
-        hasCoarsePointer || hasTouchSupport || hasTelegramWebApp || isTelegramUa,
-      );
+      const isIosDevice =
+        /iPhone|iPad|iPod/i.test(userAgent) ||
+        (/Macintosh/i.test(userAgent) && hasTouchSupport);
+      const canUseDesktopSnap =
+        hasFinePointerAndHover &&
+        !hasTouchSupport &&
+        !hasTelegramWebApp &&
+        !isTelegramUa &&
+        !isIosDevice;
+      setIsSnapDisabled(!canUseDesktopSnap);
     };
 
     checkMobile();

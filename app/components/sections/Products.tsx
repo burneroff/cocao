@@ -275,7 +275,7 @@ export default function Products() {
           style={{
             left: cursorPosition.x + 15,
             top: cursorPosition.y - 40,
-            width: 110,
+            width: 160,
             height: 30,
             background: "#FAFAFA",
             borderRadius: 30,
@@ -287,7 +287,7 @@ export default function Products() {
             color: "#9F9B96",
           }}
         >
-          https://...
+          /apps.apple.com..
         </motion.div>
       )}
       <div className="max-w-[909px] flex" style={{ alignSelf: "flex-end" }}>

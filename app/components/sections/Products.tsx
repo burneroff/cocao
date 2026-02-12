@@ -99,6 +99,7 @@ const textVariants: Variants = {
 
 export default function Products() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [mobileHoveredIndexes, setMobileHoveredIndexes] = useState<number[]>([]);
   const [cursorPosition, setCursorPosition] = useState<{
     x: number;
     y: number;
@@ -111,6 +112,7 @@ export default function Products() {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const hoverTimeout = useRef<NodeJS.Timeout | null>(null);
   const linkTimeout = useRef<NodeJS.Timeout | null>(null);
+  const productRefs = useRef<Record<number, HTMLAnchorElement | null>>({});
 
   useEffect(() => {
     const check = () => setIsDesktop(window.innerWidth >= 768);
@@ -128,6 +130,58 @@ export default function Products() {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
   }, []);
+
+  useEffect(() => {
+    if (isDesktop) {
+      setHoveredIndex(null);
+      setMobileHoveredIndexes([]);
+      return;
+    }
+
+    let rafId: number | null = null;
+
+    const updateHoveredByViewportZone = () => {
+      const viewportCenterY = window.innerHeight / 2;
+      const zoneHalfHeight = Math.max(36, window.innerHeight * 0.08);
+      const zoneTop = viewportCenterY - zoneHalfHeight;
+      const zoneBottom = viewportCenterY + zoneHalfHeight;
+
+      const nextHoveredIndexes: number[] = [];
+
+      Object.entries(productRefs.current).forEach(([key, el]) => {
+        if (!el) return;
+
+        const rect = el.getBoundingClientRect();
+        const itemCenterY = rect.top + rect.height / 2;
+        const isInCenterZone = itemCenterY >= zoneTop && itemCenterY <= zoneBottom;
+
+        if (isInCenterZone) nextHoveredIndexes.push(Number(key));
+      });
+
+      setMobileHoveredIndexes(nextHoveredIndexes);
+    };
+
+    const handleScrollOrResize = () => {
+      if (rafId !== null) return;
+
+      rafId = window.requestAnimationFrame(() => {
+        updateHoveredByViewportZone();
+        rafId = null;
+      });
+    };
+
+    updateHoveredByViewportZone();
+    window.addEventListener("scroll", handleScrollOrResize, { passive: true });
+    window.addEventListener("resize", handleScrollOrResize);
+
+    return () => {
+      window.removeEventListener("scroll", handleScrollOrResize);
+      window.removeEventListener("resize", handleScrollOrResize);
+      if (rafId !== null) {
+        window.cancelAnimationFrame(rafId);
+      }
+    };
+  }, [isDesktop]);
 
   const handleMouseEnter = (index: number) => {
     if (!isDesktop) return;
@@ -240,7 +294,9 @@ export default function Products() {
               <tr key={r}>
                 {row.map((item, c) => {
                   const index = r * 3 + c;
-                  const isHovering = hoveredIndex === index;
+                  const isHovering = isDesktop
+                    ? hoveredIndex === index
+                    : mobileHoveredIndexes.includes(index);
 
                   if (item.type !== "text") {
                     return (
@@ -281,6 +337,9 @@ export default function Products() {
                           onMouseEnter={() => handleMouseEnter(index)}
                           onMouseLeave={handleMouseLeave}
                           onMouseMove={handleMouseMove}
+                          ref={(el) => {
+                            productRefs.current[index] = el;
+                          }}
                         >
                           <div className="relative h-full w-full overflow-hidden flex items-center justify-center">
                             <AnimatePresence mode="wait">

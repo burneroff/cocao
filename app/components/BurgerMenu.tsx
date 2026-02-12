@@ -145,7 +145,7 @@ export default function BurgerMenu({
   const textColor = "#9F9B96";
   const menuIconColor = iconColor ?? textColor;
   const dividerStyle: CSSProperties = {
-    backgroundColor: "#3F3E3D",
+    backgroundColor: currentBgColor === "bg-[#dadada]" ? "#9F9B96" : "#3F3E3D",
   };
 
   return (
@@ -166,15 +166,17 @@ export default function BurgerMenu({
       </button>
 
       <div
-        className={`fixed inset-0 z-40 transition-all duration-500 ease-in-out ${isOpen
+        className={`fixed inset-0 z-40 transition-all duration-500 ease-in-out ${
+          isOpen
             ? "opacity-100 pointer-events-auto"
             : "opacity-0 pointer-events-none"
-          }`}
+        }`}
         onClick={toggleMenu}
       >
         <div
-          className={`absolute left-0 right-0 ${currentBgColor} transition-all duration-500 ease-in-out ${isOpen ? "translate-y-0" : "-translate-y-full"
-            }`}
+          className={`absolute left-0 right-0 ${currentBgColor} transition-all duration-500 ease-in-out ${
+            isOpen ? "translate-y-0" : "-translate-y-full"
+          }`}
           style={{
             top: "60px",
           }}
@@ -193,17 +195,19 @@ export default function BurgerMenu({
                 >
                   <div className="flex items-center gap-0">
                     <span
-                      className={`inline-block transition-all duration-500 ease-in-out text-[22px] leading-[30px] tracking-[0] font-medium ${isActive
+                      className={`inline-block transition-all duration-500 ease-in-out text-[22px] leading-[30px] tracking-[0] font-medium ${
+                        isActive
                           ? "opacity-100 translate-x-0 text-[#0100F4] w-auto"
                           : "opacity-0 -translate-x-4 w-0 overflow-hidden"
-                        }`}
+                      }`}
                     >
                       ›
                     </span>
 
                     <span
-                      className={`text-[22px] leading-[30px] tracking-[0] font-medium uppercase transition-colors duration-500 ${isActive ? "text-[#0100F4]" : ""
-                        }`}
+                      className={`text-[22px] leading-[30px] tracking-[0] font-medium uppercase transition-colors duration-500 ${
+                        isActive ? "text-[#0100F4]" : ""
+                      }`}
                       style={!isActive ? { color: textColor } : {}}
                     >
                       {section.label}

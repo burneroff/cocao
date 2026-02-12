@@ -159,9 +159,9 @@ export const FloatingNav = ({
         style={
           isMobile
             ? {
-              borderBottomColor:
-                currentBgColor === "bg-[#dadada]" ? "#CDCDCD" : "#3F3E3D",
-            }
+                borderBottomColor:
+                  currentBgColor === "bg-[#dadada]" ? "#9F9B96" : "#3F3E3D",
+              }
             : undefined
         }
       >

@@ -69,7 +69,7 @@ export default function Hero({ isLoaded = false }: HeroProps) {
       />
 
       <div className="relative z-10 flex h-full flex-col">
-        <div className="flex flex-1 items-end justify-start pb-22 md:justify-end md:pb-12 md:items-center xl:pb-0 px-4 md:pr-16">
+        <div className="flex flex-1 items-end justify-start pb-20 md:justify-end md:pb-12 md:items-center xl:pb-0 px-4 md:pr-16">
           <div className="flex flex-col text-left min-[1000px]:text-right">
             <h1
               className={`

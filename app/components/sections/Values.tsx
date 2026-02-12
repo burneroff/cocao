@@ -49,8 +49,8 @@ const valuesData: ValueSection[] = [
 export default function Values() {
   const [currentSection, setCurrentSection] = useState(0);
   const [allSectionsViewed, setAllSectionsViewed] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-  const [isSnapDisabled, setIsSnapDisabled] = useState(false);
+  const [isMobile, setIsMobile] = useState(true);
+  const [isSnapDisabled, setIsSnapDisabled] = useState(true);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const viewedSectionsRef = useRef<Set<number>>(new Set([0]));
   const isActiveRef = useRef(false);
@@ -68,6 +68,7 @@ export default function Values() {
   const lastIntentRef = useRef(0);
   const transitionLockMs = 500;
   const swiperRef = useRef<SwiperType | null>(null);
+  const useMobileLayout = isMobile || isSnapDisabled;
 
   useLayoutEffect(() => {
     const userAgent = window.navigator.userAgent;
@@ -142,7 +143,7 @@ export default function Values() {
   }, [allSectionsViewed]);
 
   useLayoutEffect(() => {
-    if (isMobile || isSnapDisabled) return;
+    if (useMobileLayout) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -179,10 +180,10 @@ export default function Values() {
     }
 
     return () => observer.disconnect();
-  }, [isMobile, isSnapDisabled]);
+  }, [useMobileLayout]);
 
   useLayoutEffect(() => {
-    if (isMobile || isSnapDisabled) return;
+    if (useMobileLayout) return;
 
     const endProgrammaticScroll = () => {
       const targetId = programmaticTargetRef.current;
@@ -243,10 +244,10 @@ export default function Values() {
         window.cancelAnimationFrame(snapRafRef.current);
       }
     };
-  }, [isMobile, isSnapDisabled]);
+  }, [useMobileLayout]);
 
   useLayoutEffect(() => {
-    if (isMobile || isSnapDisabled) return;
+    if (useMobileLayout) return;
 
     const canExitUp = (deltaY: number) => currentSection === 0 && deltaY < 0;
     const canExitDown = (deltaY: number) =>
@@ -376,11 +377,11 @@ export default function Values() {
       window.removeEventListener("touchmove", handleTouchMove);
       window.removeEventListener("touchend", handleTouchEnd);
     };
-  }, [currentSection, allSectionsViewed, isMobile, isSnapDisabled]);
+  }, [currentSection, allSectionsViewed, useMobileLayout]);
 
   const currentValue = valuesData[currentSection];
 
-  if (isMobile) {
+  if (useMobileLayout) {
     return (
       <div className="relative w-full h-screen">
         <Swiper

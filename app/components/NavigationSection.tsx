@@ -279,8 +279,8 @@ export default function NavigationSection() {
   const [activeSection, setActiveSection] = useState("us");
   const sectionRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const [hoveredId, setHoveredId] = useState<string | null>(null);
-  const [isMobile, setIsMobile] = useState(false);
-  const [isSnapDisabled, setIsSnapDisabled] = useState(false);
+  const [isMobile, setIsMobile] = useState(true);
+  const [isSnapDisabled, setIsSnapDisabled] = useState(true);
   const isProgrammaticScrollRef = useRef(false);
   const programmaticTimeoutRef = useRef<number | null>(null);
   const wheelAccumulatorRef = useRef(0);
@@ -294,6 +294,7 @@ export default function NavigationSection() {
   const snapOffsetsDesktop = { top: -80, bottom: 0 };
   const snapOffsetsMobile = { top: -120, bottom: 0 };
   const snapOffsets = isMobile ? snapOffsetsMobile : snapOffsetsDesktop;
+  const useMobileLayout = isMobile || isSnapDisabled;
   const valuesLockDelay = 400;
   const valuesReleaseDelay = 200;
 
@@ -456,6 +457,7 @@ export default function NavigationSection() {
   }, []);
 
   useEffect(() => {
+    if (useMobileLayout) return;
     let rafId: number | null = null;
     let lastTargetSectionId: string | null = null;
     let lastUsPreviewState = false;
@@ -567,9 +569,10 @@ export default function NavigationSection() {
         cancelAnimationFrame(rafId);
       }
     };
-  }, [isMobile]);
+  }, [useMobileLayout]);
 
   useEffect(() => {
+    if (useMobileLayout) return;
     const handleProgrammaticScroll = (event: Event) => {
       const customEvent = event as CustomEvent<{ targetId?: string }>;
       markProgrammaticScroll(customEvent.detail?.targetId, false);
@@ -586,10 +589,10 @@ export default function NavigationSection() {
         handleProgrammaticScroll,
       );
     };
-  }, [isMobile]);
+  }, [useMobileLayout]);
 
   useEffect(() => {
-    if (isMobile || isSnapDisabled) return;
+    if (useMobileLayout) return;
     const handleValuesRelease = (event: Event) => {
       const customEvent = event as CustomEvent<{ direction?: "down" | "up" }>;
       if (isProgrammaticScrollRef.current) return;
@@ -619,10 +622,10 @@ export default function NavigationSection() {
     return () => {
       window.removeEventListener("values-release", handleValuesRelease);
     };
-  }, [isMobile, isSnapDisabled]);
+  }, [useMobileLayout]);
 
   useEffect(() => {
-    if (isMobile || isSnapDisabled) return;
+    if (useMobileLayout) return;
 
     // Кэш для sectionRects, обновляется только при необходимости
     let cachedSectionRects: { id: string; rect: DOMRect }[] | null = null;
@@ -843,10 +846,10 @@ export default function NavigationSection() {
       window.removeEventListener("touchmove", handleTouchMove);
       window.removeEventListener("touchend", handleTouchEnd);
     };
-  }, [isMobile, isSnapDisabled]);
+  }, [useMobileLayout]);
 
   useEffect(() => {
-    if (isMobile) return;
+    if (useMobileLayout) return;
 
     const observers: IntersectionObserver[] = [];
     const sectionIntersections = new Map<string, number>();
@@ -913,10 +916,10 @@ export default function NavigationSection() {
         cancelAnimationFrame(rafId);
       }
     };
-  }, [isMobile]);
+  }, [useMobileLayout]);
 
   const scrollToSection = (id: string) => {
-    if (isMobile) return;
+    if (useMobileLayout) return;
 
     const element = getVisibleSnapTarget(id);
     if (element) {
@@ -939,7 +942,7 @@ export default function NavigationSection() {
 
   return (
     <div className="relative flex">
-      {!isMobile && (
+      {!useMobileLayout && (
         <div className="sticky top-0 h-screen w-1/3 px-8 pt-12 pb-8 z-20 pointer-events-none shrink-0 hidden md:block">
           <NavItems
             sections={sections}
@@ -952,7 +955,7 @@ export default function NavigationSection() {
       )}
 
       <div
-        className={`flex-1 ${isMobile ? "w-full" : "-ml-[33.333333%]"
+        className={`flex-1 ${useMobileLayout ? "w-full" : "-ml-[33.333333%]"
           }  overflow-hidden`}
       >
         {sections.map((section) => {
@@ -963,7 +966,7 @@ export default function NavigationSection() {
               key={section.id}
               sectionId={section.id}
               sectionRefs={sectionRefs}
-              isMobile={isMobile}
+              isMobile={useMobileLayout}
               bgColor={sectionData?.bgColor || "bg-white"}
             >
               <SectionComponent />

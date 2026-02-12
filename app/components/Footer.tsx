@@ -11,7 +11,7 @@ export default function Footer() {
       className="
       pt-[170px]
       md: pt-[0px]
-    w-full pb-[20px] md:pb-[0px] md:h-[204px] relative
+    w-full pb-[40px] md:pb-[0px] md:h-[204px] relative
     flex items-start min-[400px]:items-center
     px-[16px]
     md:px-[40px]
@@ -63,12 +63,12 @@ export default function Footer() {
           ...(hasVacancies
             ? [{ label: "Vacancies", href: "/vacancies", external: true }]
             : [
-                {
-                  label: "Telegram",
-                  href: "https://t.me/kirill_svc",
-                  external: true,
-                },
-              ]),
+              {
+                label: "Telegram",
+                href: "https://t.me/kirill_svc",
+                external: true,
+              },
+            ]),
           {
             label: "LinkedIn",
             href: "https://pl.linkedin.com/company/cacao-mobile-sp-z-o-o",

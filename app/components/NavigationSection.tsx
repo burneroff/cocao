@@ -103,11 +103,15 @@ const SectionWrapper = ({
         wrapperRef.current = el;
       }}
       id={sectionId}
-      className={`relative z-10 ${sectionId === "mission" ? "" : bgColor} transition-opacity duration-1000 ${isVisible ? "opacity-100" : "opacity-0"
-        }`}
+      className={`relative z-10 ${sectionId === "mission" ? "" : bgColor}`}
       style={backgroundStyle}
     >
-      <div className={isMobile ? "" : "pl-[33.333333%]"}>{children}</div>
+      <div
+        className={`${isMobile ? "" : "pl-[33.333333%]"} transition-opacity duration-1000 ${isVisible ? "opacity-100" : "opacity-0"
+          }`}
+      >
+        {children}
+      </div>
     </div>
   );
 };
@@ -457,7 +461,6 @@ export default function NavigationSection() {
   }, []);
 
   useEffect(() => {
-    if (useMobileLayout) return;
     let rafId: number | null = null;
     let lastTargetSectionId: string | null = null;
     let lastUsPreviewState = false;
@@ -569,7 +572,7 @@ export default function NavigationSection() {
         cancelAnimationFrame(rafId);
       }
     };
-  }, [useMobileLayout]);
+  }, [isMobile]);
 
   useEffect(() => {
     if (useMobileLayout) return;

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, type CSSProperties } from "react";
 
 import { vacancies } from "../vacancies/data";
 
@@ -144,6 +144,9 @@ export default function BurgerMenu({
 
   const textColor = "#9F9B96";
   const menuIconColor = iconColor ?? textColor;
+  const dividerStyle: CSSProperties = {
+    backgroundColor: "#3F3E3D",
+  };
 
   return (
     <>
@@ -163,23 +166,21 @@ export default function BurgerMenu({
       </button>
 
       <div
-        className={`fixed inset-0 z-40 transition-all duration-500 ease-in-out ${
-          isOpen
+        className={`fixed inset-0 z-40 transition-all duration-500 ease-in-out ${isOpen
             ? "opacity-100 pointer-events-auto"
             : "opacity-0 pointer-events-none"
-        }`}
+          }`}
         onClick={toggleMenu}
       >
         <div
-          className={`absolute left-0 right-0 ${currentBgColor} transition-all duration-500 ease-in-out ${
-            isOpen ? "translate-y-0" : "-translate-y-full"
-          }`}
+          className={`absolute left-0 right-0 ${currentBgColor} transition-all duration-500 ease-in-out ${isOpen ? "translate-y-0" : "-translate-y-full"
+            }`}
           style={{
             top: "60px",
           }}
           onClick={(e) => e.stopPropagation()}
         >
-          <nav className="flex flex-col h-full justify-start mt-[-46px] gap-0 pb-[1px]">
+          <nav className="flex flex-col h-full justify-start mt-[-46px] gap-0 pb-px">
             {sections.map((section, index) => {
               const isActive =
                 activeSection === section.id || clickedSection === section.id;
@@ -192,19 +193,17 @@ export default function BurgerMenu({
                 >
                   <div className="flex items-center gap-0">
                     <span
-                      className={`inline-block transition-all duration-500 ease-in-out text-[22px] leading-[30px] tracking-[0] font-medium ${
-                        isActive
+                      className={`inline-block transition-all duration-500 ease-in-out text-[22px] leading-[30px] tracking-[0] font-medium ${isActive
                           ? "opacity-100 translate-x-0 text-[#0100F4] w-auto"
                           : "opacity-0 -translate-x-4 w-0 overflow-hidden"
-                      }`}
+                        }`}
                     >
                       ›
                     </span>
 
                     <span
-                      className={`text-[22px] leading-[30px] tracking-[0] font-medium uppercase transition-colors duration-500 ${
-                        isActive ? "text-[#0100F4]" : ""
-                      }`}
+                      className={`text-[22px] leading-[30px] tracking-[0] font-medium uppercase transition-colors duration-500 ${isActive ? "text-[#0100F4]" : ""
+                        }`}
                       style={!isActive ? { color: textColor } : {}}
                     >
                       {section.label}
@@ -212,8 +211,8 @@ export default function BurgerMenu({
                   </div>
 
                   <div
-                    className="absolute left-0 bottom-0 h-px w-full transition-all duration-500"
-                    style={{ backgroundColor: "#3F3E3D" }}
+                    className="pointer-events-none absolute bottom-0 left-1/2 h-px w-screen -translate-x-1/2"
+                    style={dividerStyle}
                   />
                 </button>
               );
@@ -232,8 +231,8 @@ export default function BurgerMenu({
                   </span>
                 </div>
                 <div
-                  className="absolute left-0 bottom-0 h-px w-full transition-all duration-500"
-                  style={{ backgroundColor: "#3F3E3D" }}
+                  className="pointer-events-none absolute bottom-0 left-1/2 h-px w-screen -translate-x-1/2"
+                  style={dividerStyle}
                 />
               </Link>
             ) : (
@@ -250,8 +249,8 @@ export default function BurgerMenu({
                   </span>
                 </div>
                 <div
-                  className="absolute left-0 bottom-0 h-px w-full transition-all duration-500"
-                  style={{ backgroundColor: "#3F3E3D" }}
+                  className="pointer-events-none absolute bottom-0 left-1/2 h-px w-screen -translate-x-1/2"
+                  style={dividerStyle}
                 />
               </Link>
             )}

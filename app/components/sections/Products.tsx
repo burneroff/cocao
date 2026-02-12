@@ -303,8 +303,11 @@ export default function Products() {
 
                   if (item.type !== "text") {
                     return (
-                      <td key={c}>
-                        <div className="w-full max-w-[303px] aspect-square mx-auto relative overflow-hidden flex items-center justify-center">
+                      <td
+                        key={c}
+                        className="border border-dashed border-transparent p-0 align-top box-border"
+                      >
+                        <div className="w-full aspect-square relative overflow-hidden flex items-center justify-center">
                           {item.type === "frame" && (
                             <Image
                               draggable={false}
@@ -330,8 +333,11 @@ export default function Products() {
                     : item.content;
 
                   return (
-                    <td key={c} className="border border-[#9F9B96]">
-                      <div className="w-full max-w-[303px] aspect-square mx-auto relative overflow-hidden">
+                    <td
+                      key={c}
+                      className="border border-[#9F9B96] p-0 align-top box-border"
+                    >
+                      <div className="w-full aspect-square relative overflow-hidden">
                         <a
                           href={productLinks[item.content]}
                           target="_blank"
@@ -360,11 +366,10 @@ export default function Products() {
                           </div>
 
                           <div
-                            className={`absolute inset-0 overflow-hidden transition-transform duration-500 ${
-                              isHovering
-                                ? "translate-y-0"
-                                : "-translate-y-[102%]"
-                            } `}
+                            className={`absolute inset-0 overflow-hidden transition-transform duration-500 ${isHovering
+                              ? "translate-y-0"
+                              : "-translate-y-[102%]"
+                              } `}
                           >
                             <Image
                               draggable={false}

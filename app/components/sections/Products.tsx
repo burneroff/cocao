@@ -142,7 +142,7 @@ export default function Products() {
 
     const updateHoveredByViewportZone = () => {
       const viewportCenterY = window.innerHeight / 2;
-      const zoneHalfHeight = Math.max(36, window.innerHeight * 0.08);
+      const zoneHalfHeight = Math.max(64, window.innerHeight * 0.14);
       const zoneTop = viewportCenterY - zoneHalfHeight;
       const zoneBottom = viewportCenterY + zoneHalfHeight;
 

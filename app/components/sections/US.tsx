@@ -52,8 +52,8 @@ export default function US() {
         <div
           className="text-[#CDCDCD] font-normal leading-normal md:leading-[70px] tracking-[0%] text-justify w-full max-w-full md:max-w-[910px]"
           style={{
-            fontSize: "clamp(20px, 3vw, 40px)",
-            lineHeight: "clamp(32px, 5vw, 70px)",
+            fontSize: "clamp(20px, 2.2vw, 40px)",
+            lineHeight: "clamp(32px, 4vw, 70px)",
           }}
         >
           <p className="mb-4 md:mb-8">

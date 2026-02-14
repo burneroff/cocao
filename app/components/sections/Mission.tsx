@@ -87,8 +87,9 @@ export default function Mission() {
   return (
     <div
       ref={sectionRef}
-      className={`min-h-screen md:min-h-[130vh] lg:min-h-[165vh] 2xl:min-h-[120vh] flex items-start justify-end px-4 py-4 md:px-16 md:py-16 relative transition-opacity duration-1000 overflow-x-hidden ${isVisible ? "opacity-100" : "opacity-0"
-        }`}
+      className={`min-h-screen md:min-h-[130vh] lg:min-h-[165vh] 2xl:min-h-[120vh] flex items-start justify-end px-4 py-4 md:px-16 md:py-16 relative transition-opacity duration-1000 overflow-x-hidden ${
+        isVisible ? "opacity-100" : "opacity-0"
+      }`}
     >
       <div className="flex justify-end flex-col">
         <div
@@ -96,8 +97,8 @@ export default function Mission() {
           className="text-[#CDCDCD] font-normal leading-normal md:leading-[70px] tracking-[0%] text-justify w-full max-w-full md:max-w-[910px]"
           style={{
             fontFamily: "var(--font-neue-regrade), Neue Regrade, sans-serif",
-            fontSize: "clamp(20px, 3vw, 40px)",
-            lineHeight: "clamp(32px, 6vw, 70px)",
+            fontSize: "clamp(20px, 2.2vw, 40px)",
+            lineHeight: "clamp(32px, 4vw, 70px)",
           }}
         >
           <p className="mb-4 md:mb-8">

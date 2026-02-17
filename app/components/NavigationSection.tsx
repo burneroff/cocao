@@ -185,7 +185,7 @@ const NavItems = ({
             }}
             onMouseLeave={() => setHoveredId(null)}
             style={{
-              lineHeight: "clamp(52px, 6vw, 100px)",
+              lineHeight: "clamp(52px, 5.5vw, 100px)",
               color:
                 activeSection === section.id || hoveredId === section.id
                   ? "#0100F4"

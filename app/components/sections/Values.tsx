@@ -450,11 +450,10 @@ export default function Values() {
                 }
                 setCurrentSection(index);
               }}
-              className={`transition-all duration-300 rounded-full ${
-                index === currentSection
-                  ? "w-8 h-2 bg-white"
-                  : "w-2 h-2 bg-white/40"
-              }`}
+              className={`transition-all duration-300 rounded-full ${index === currentSection
+                ? "w-8 h-2 bg-white"
+                : "w-2 h-2 bg-white/40"
+                }`}
               aria-label={`Go to slide ${index + 1}`}
             />
           ))}
@@ -479,16 +478,15 @@ export default function Values() {
       />
 
       <div className="relative z-10 h-full flex items-center justify-end w-full">
-        <div className="flex flex-col w-full 2xl:w-[910px] 2xl:flex-row items-center md:items-start 2xl:items-start gap-6 md:gap-8 2xl:gap-[15px] min-[1775px]:ml-[100px]">
+        <div className="flex flex-col w-full 2xl:w-[910px] 2xl:flex-row items-center md:items-start 2xl:items-start gap-6 md:gap-4 2xl:gap8 2xl:gap-[15px] min-[1775px]:ml-[100px]">
           <div className="relative h-[250px] w-[280px] sm:h-[300px] sm:w-[320px] md:h-[350px] md:w-[380px] lg:h-[350px] lg:w-[500px] xl:h-[468px] xl:w-[450px] 2xl:h-[468px] 2xl:w-[450px] shrink-0">
             {valuesData.map((value, index) => (
               <div
                 key={index}
-                className={`absolute inset-0 transition-all duration-700 ease-out ${
-                  index === currentSection
-                    ? "opacity-100 translate-y-0 scale-100 blur-0"
-                    : "opacity-0 translate-y-4 scale-[0.98] blur-sm"
-                }`}
+                className={`absolute inset-0 transition-all duration-700 ease-out ${index === currentSection
+                  ? "opacity-100 translate-y-0 scale-100 blur-0"
+                  : "opacity-0 translate-y-4 scale-[0.98] blur-sm"
+                  }`}
               >
                 <Image
                   src={value.image}
@@ -518,11 +516,10 @@ export default function Values() {
               {valuesData.map((value, index) => (
                 <p
                   key={index}
-                  className={`transition-all duration-700 ease-out ${
-                    index === currentSection
-                      ? "opacity-100 translate-y-0 blur-0"
-                      : "opacity-0 -translate-y-2 blur-sm absolute inset-0"
-                  }`}
+                  className={`transition-all duration-700 ease-out ${index === currentSection
+                    ? "opacity-100 translate-y-0 blur-0"
+                    : "opacity-0 -translate-y-2 blur-sm absolute inset-0"
+                    }`}
                 >
                   <span
                     className="inline"
@@ -540,15 +537,14 @@ export default function Values() {
             </div>
           </div>
 
-          <div className="flex flex-col 2xl:flex-row items-center md:items-start 2xl:items-start gap-4 md:gap-6 2xl:gap-[15px] w-full 2xl:w-auto 2xl:ml-4">
+          <div className="flex flex-col 2xl:flex-row items-center md:items-start 2xl:items-start gap-4 md:gap-0  2xl:gap-[15px] w-full 2xl:w-auto 2xl:ml-4">
             {valuesData.map((value, index) => (
               <h2
                 key={index}
-                className={`text-white text-center 2xl:text-left px-4 2xl:ml-[30px] transition-all duration-700 ease-out ${
-                  index === currentSection
-                    ? "opacity-100 translate-y-0 blur-0"
-                    : "opacity-0 translate-y-2 blur-sm absolute"
-                }`}
+                className={`text-white text-center 2xl:text-left px-4 2xl:ml-[30px] transition-all duration-700 ease-out ${index === currentSection
+                  ? "opacity-100 translate-y-0 blur-0"
+                  : "opacity-0 translate-y-2 blur-sm absolute"
+                  }`}
                 style={{
                   fontWeight: 400,
                   fontStyle: "normal",
@@ -574,11 +570,10 @@ export default function Values() {
               {valuesData.map((value, index) => (
                 <p
                   key={index}
-                  className={`text-white text-justify transition-all duration-700 ease-out ${
-                    index === currentSection
-                      ? "opacity-100 translate-y-0 blur-0"
-                      : "opacity-0 -translate-y-2 blur-sm absolute inset-0"
-                  }`}
+                  className={`text-white text-justify transition-all duration-700 ease-out ${index === currentSection
+                    ? "opacity-100 translate-y-0 blur-0"
+                    : "opacity-0 -translate-y-2 blur-sm absolute inset-0"
+                    }`}
                   style={{
                     fontWeight: 500,
                     fontStyle: "normal",

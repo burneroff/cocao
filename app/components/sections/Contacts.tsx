@@ -75,6 +75,7 @@ export default function Contacts() {
 
           <input
             type="email"
+            data-cursor="pointer"
             placeholder="Enter your email"
             value={email}
             maxLength={150}
@@ -99,6 +100,7 @@ export default function Contacts() {
 
           <textarea
             ref={textareaRef}
+            data-cursor="pointer"
             placeholder="Hi, I want to talk about..."
             value={message}
             maxLength={999}

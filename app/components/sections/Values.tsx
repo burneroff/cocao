@@ -478,8 +478,8 @@ export default function Values() {
       />
 
       <div className="relative z-10 h-full flex items-center justify-end w-full">
-        <div className="flex flex-col w-full 2xl:w-[910px] 2xl:flex-row items-center md:items-start 2xl:items-start gap-6 md:gap-4 2xl:gap8 2xl:gap-[15px] min-[1775px]:ml-[100px]">
-          <div className="relative h-[250px] w-[280px] sm:h-[300px] sm:w-[320px] md:h-[350px] md:w-[380px] lg:h-[350px] lg:w-[500px] xl:h-[468px] xl:w-[450px] 2xl:h-[468px] 2xl:w-[450px] shrink-0">
+        <div className="flex flex-col w-full xl:w-[910px] xl:flex-row items-center md:items-start xl:items-start gap-6 md:gap-4 xl:gap8 xl:gap-[15px] min-[1775px]:ml-[100px]">
+          <div className="relative h-[250px] w-[280px] sm:h-[300px] sm:w-[320px] md:h-[350px] md:w-[380px] lg:h-[350px] lg:w-[500px] xl:h-[468px] xl:w-[450px] xl:h-[468px] xl:w-[450px] shrink-0">
             {valuesData.map((value, index) => (
               <div
                 key={index}
@@ -492,14 +492,14 @@ export default function Values() {
                   src={value.image}
                   alt={value.title}
                   fill
-                  className="object-contain 2xl:ml-[60px] sm:px-4 2xl:px-0"
+                  className="object-contain xl:ml-[60px] sm:px-4 xl:px-0"
                   sizes="(max-width: 640px) 280px, (max-width: 768px) 320px, (max-width: 1024px) 380px, (max-width: 1280px) 420px, (max-width: 1536px) 450px, 450px"
                 />
               </div>
             ))}
 
             <div
-              className="absolute text-white hidden 2xl:block 2xl:ml-[45px]"
+              className="absolute text-white hidden xl:block xl:ml-[45px]"
               style={{
                 left: "300px",
                 top: "120px",
@@ -537,11 +537,11 @@ export default function Values() {
             </div>
           </div>
 
-          <div className="flex flex-col 2xl:flex-row items-center md:items-start 2xl:items-start gap-4 md:gap-0  2xl:gap-[15px] w-full 2xl:w-auto 2xl:ml-4">
+          <div className="flex flex-col xl:flex-row items-center md:items-start xl:items-start gap-4 md:gap-0  xl:gap-[15px] w-full xl:w-auto xl:ml-4">
             {valuesData.map((value, index) => (
               <h2
                 key={index}
-                className={`text-white text-center 2xl:text-left px-4 2xl:ml-[30px] transition-all duration-700 ease-out ${index === currentSection
+                className={`text-white text-center xl:text-left px-4 xl:ml-[30px] transition-all duration-700 ease-out ${index === currentSection
                   ? "opacity-100 translate-y-0 blur-0"
                   : "opacity-0 translate-y-2 blur-sm absolute"
                   }`}
@@ -564,7 +564,7 @@ export default function Values() {
             ))}
 
             <div
-              className="2xl:hidden w-full px-0 mt-4 md:mt-6 relative sm:px-4"
+              className="xl:hidden w-full px-0 mt-4 md:mt-6 relative sm:px-4"
               style={{ maxWidth: "490px" }}
             >
               {valuesData.map((value, index) => (
